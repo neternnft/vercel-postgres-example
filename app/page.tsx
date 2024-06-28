@@ -72,14 +72,12 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Image
-              src="/game.svg"
-              alt="game.com"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
+          <h2 className="mb-3 text-2xl font-semibold">
+            dextools{" "}
+            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
+              -&gt;
+            </span>
+          </h2>
         </a>
       </div>
     </main>
