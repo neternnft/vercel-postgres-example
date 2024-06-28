@@ -1,5 +1,7 @@
 import Image from "next/image";
 
+
+
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
@@ -91,11 +93,20 @@ export default function Home() {
         </a>
 
         <a
+          
           href="https://game.com/"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
           rel="noopener noreferrer"
         >
+          <Image
+              src="/vercel.svg"
+              alt="Game.com logo"
+              className="dark:invert"
+              width={100}
+              height={24}
+              priority
+          />
           <h2 className="mb-3 text-2xl font-semibold">
             Game.com{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
