@@ -100,13 +100,13 @@ export default function Home() {
           rel="noopener noreferrer"
         >
           <Image
-              src="/vercel.svg"
-              alt="Game.com logo"
+              src="/game.svg"
+              alt="game.com"
               className="dark:invert"
               width={100}
               height={24}
               priority
-          />
+            />
           <h2 className="mb-3 text-2xl font-semibold">
             Game.com{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
