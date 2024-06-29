@@ -4,10 +4,10 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-10">
       {/* First Image Positioned on the Left */}
-      <div className="w-full flex justify-start mb-10">
-        <a className="flex justify-start bg-gradient-to-b from-zinc-50">
+      <div className="w-full flex justify-start mb-10 bg-white">
+        <a className="flex justify-start">
           <Image
-            className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
+            className=""
             src="/DoLabs.svg"
             alt="Dolabs Logo"
             width={100}
@@ -20,7 +20,7 @@ export default function Home() {
       {/* Second Image Centered */}
       <div className="relative z-[-1] flex justify-center place-items-center mb-10">
         <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
+          className="dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
           src="/yoda.svg"
           alt="Yoda Logo"
           width={180}
