@@ -4,7 +4,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-10">
       {/* First Image Positioned on the Left */}
-      <div className="w-full flex justify-start mb-10 bg-white">
+      <div className="flex justify-start mb-10 bg-white">
         <a className="flex justify-start">
           <Image
             className=""
