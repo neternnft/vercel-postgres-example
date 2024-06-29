@@ -4,14 +4,14 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+    <main className="flex min-h-screen flex-col items-center justify-between p-20">
       <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
         <p className="fixed left-0 top-0 flex w-full justify-center bg-gradient-to-b from-zinc-50 dark:from-inherit lg:static lg:w-auto">         
           <Image
             className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
             src="/dolabs.svg"
             alt="yoda Logo"
-            width={180}
+            width={130}
             height={37}
             priority
           />
