@@ -3,18 +3,9 @@ import Image from "next/image";
 export default function Home() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-10">
-      {/* Logo Section */}
-      <div className="flex justify-start mb-10 bg-white">
-        <a href="/" className="flex justify-start">
-          <Image
-            src="/DoLabs.svg"
-            alt="DoLabs Logo"
-            width={100}
-            height={37}
-            priority
-          />
-        </a>
-      </div>
+      <p className="fixed left-0 top-0 flex w-full justify-start  from-zinc-200 pb-6 pt-8">
+          <code className="font-mono font-bold text-white px-5 py-3">DO</code>
+      </p>
 
       {/* Yoda Image Centered */}
       <div className="relative z-[-1] flex justify-center items-center mb-10">
@@ -27,7 +18,18 @@ export default function Home() {
           priority
         />
       </div>
-
+      {/* Dextools Link */}
+      <a
+          className="group"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <h2 className="mb-3 text-lg font-semibold text-white">
+            MEME IS A GAME{" "}
+            <span className="inline-block">
+            </span>
+          </h2>
+        </a>
       {/* Links Section */}
       <div className="mb-32 grid gap-4 lg:grid-cols-4 lg:max-w-5xl lg:text-left">
         {/* X Link */}
