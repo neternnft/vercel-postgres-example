@@ -4,7 +4,7 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-20">
+    <main className="flex min-h-screen flex-col items-center justify-between p-10">
       <div className="z-10 max-w-10xl items-center justify-between lg:flex">
         <p className="fixed right-20 top-5 flex  justify-center bg-gradient-to-b from-zinc-50 dark:from-inherit lg:static lg:w-auto">         
           <Image
