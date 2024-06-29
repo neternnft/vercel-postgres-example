@@ -9,7 +9,7 @@ export default function Home() {
         <p className="fixed right-20 top-5 flex w-full justify-center bg-gradient-to-b from-zinc-50 dark:from-inherit lg:static lg:w-auto">         
           <Image
             className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-            src="/dolabs.svg"
+            src="/DoLabs.svg"
             alt="yoda Logo"
             width={130}
             height={37}
