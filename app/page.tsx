@@ -20,6 +20,8 @@ export default function Home() {
           <code className="font-mono font-bold text-white px-10 py-5 text-4xl">DO</code>
         </p>
 
+        
+
         {/* Centered Image */}
         <div className="flex justify-center items-center mb-10">
           {isLoading && <div className="loader">Loading...</div>}
