@@ -33,11 +33,11 @@ export default function Home() {
         {/* X Link */}
         <a
           href="https://x.com/doitsol"
-          className="group rounded-lg border border-gray-300 px-5 py-4 transition-colors bg-yellow-100 dark:border-neutral-700 dark:bg-neutral-800"
+          className="group rounded-lg border border-gray-300 px-3 py-3 transition-colors bg-yellow-100 dark:border-neutral-700 dark:bg-neutral-800"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <h2 className="mb-3 text-2xl font-semibold">
+          <h2 className="mb-3 text-lg font-semibold">
             X{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
@@ -48,11 +48,11 @@ export default function Home() {
         {/* Telegram Link */}
         <a
           href="https://t.me/docommunity"
-          className="group rounded-lg border border-gray-300 px-5 py-4 transition-colors bg-green-100 dark:border-neutral-700 dark:bg-neutral-800"
+          className="group rounded-lg border border-gray-300 px-3 py-3 transition-colors bg-green-100 dark:border-neutral-700 dark:bg-neutral-800"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <h2 className="mb-3 text-2xl font-semibold">
+          <h2 className="mb-3 text-lg font-semibold">
             telegram{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
@@ -63,11 +63,11 @@ export default function Home() {
         {/* Dextools Link */}
         <a
           href="https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327"
-          className="group rounded-lg border border-gray-300 px-5 py-4 transition-colors bg-blue-100 dark:border-neutral-700 dark:bg-neutral-800"
+          className="group rounded-lg border border-gray-300 px-3 py-3 transition-colors bg-blue-100 dark:border-neutral-700 dark:bg-neutral-800"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <h2 className="mb-3 text-2xl font-semibold">
+          <h2 className="mb-3 text-lg font-semibold">
             dextools{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
@@ -78,11 +78,11 @@ export default function Home() {
         {/* Game.com Link */}
         <a
           href="https://game.com/"
-          className="group rounded-lg border border-gray-300 px-5 py-4 transition-colors bg-red-100 dark:border-neutral-700 dark:bg-neutral-800"
+          className="group rounded-lg border border-gray-300 px-3 py-3 transition-colors bg-red-100 dark:border-neutral-700 dark:bg-neutral-800"
           target="_blank"
           rel="noopener noreferrer"
         >
-          <h2 className="mb-3 text-2xl font-semibold">
+          <h2 className="mb-3 text-lg font-semibold">
             game.com{" "}
             <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
               -&gt;
