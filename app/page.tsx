@@ -2,13 +2,13 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-10">
+    <main className="flex min-h-screen flex-col items-center justify-center p-10">
       <p className="fixed left-0 top-0 flex w-full justify-start items-center from-zinc-200 pb-6 pt-8">
         <code className="font-mono font-bold text-white px-10 py-5 text-4xl">DO</code>
       </p>
 
-      {/* Yoda Image Centered */}
-      <div className="relative z-[-1] flex justify-center items-center mb-10">
+      {/* Centered Image */}
+      <div className="flex justify-center items-center mb-10">
         <Image
           src="/yoda.svg"
           alt="Yoda Logo"
