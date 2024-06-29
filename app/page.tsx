@@ -1,12 +1,11 @@
 import Image from "next/image";
 
-
-
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-start justify-between p-10">
-      <div className="z-10 max-w-10x1 justify-center lg:flex">
-        <a className="left-0 top-5 flex  justify-start bg-gradient-to-b from-zinc-50 lg:static lg:w-auto">         
+    <main className="flex min-h-screen flex-col items-center justify-between p-10">
+      {/* First Image Positioned on the Left */}
+      <div className="w-full flex justify-start mb-10">
+        <a className="flex justify-start bg-gradient-to-b from-zinc-50">
           <Image
             className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
             src="/DoLabs.svg"
@@ -17,17 +16,20 @@ export default function Home() {
           />
         </a>
       </div>
-      <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3">
+
+      {/* Second Image Centered */}
+      <div className="relative z-[-1] flex justify-center place-items-center mb-10">
         <Image
           className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
           src="/yoda.svg"
-          alt="yoda Logo"
+          alt="Yoda Logo"
           width={180}
           height={37}
           priority
         />
       </div>
 
+      {/* Links Section */}
       <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
         <a
           href="https://x.com/doitsol"
@@ -72,7 +74,6 @@ export default function Home() {
         </a>
 
         <a
-          
           href="https://game.com/"
           className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-red-200 hover:bg-red-200 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
           target="_blank"
