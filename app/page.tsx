@@ -10,7 +10,7 @@ export default function Home() {
       {/* Centered Image */}
       <div className="flex justify-center items-center mb-10">
         <Image
-          src="/yoda.svg"
+          src="/yoda.gif"
           alt="Yoda Logo"
           width={180}
           height={37}
