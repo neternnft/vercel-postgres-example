@@ -30,10 +30,10 @@ export default function Home() {
       </div>
 
       {/* Links Section */}
-      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left">
+      <div className="mb-32 grid text-center lg:mb-0 lg:w-full lg:max-w-5xl lg:grid-cols-4 lg:text-left gap-4">
         <a
           href="https://x.com/doitsol"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-yellow-200 hover:bg-yellow-200 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          className="group rounded-lg border border-gray-300 px-5 py-4 transition-colors bg-yellow-100 dark:border-neutral-700 dark:bg-neutral-800"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -47,7 +47,7 @@ export default function Home() {
 
         <a
           href="https://t.me/docommunity"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-green-200 hover:bg-green-200 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          className="group rounded-lg border border-gray-300 px-5 py-4 transition-colors bg-green-100 dark:border-neutral-700 dark:bg-neutral-800"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -61,7 +61,7 @@ export default function Home() {
 
         <a
           href="https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-blue-200 hover:bg-blue-200 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          className="group rounded-lg border border-gray-300 px-5 py-4 transition-colors bg-blue-100 dark:border-neutral-700 dark:bg-neutral-800"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -75,7 +75,7 @@ export default function Home() {
 
         <a
           href="https://game.com/"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-red-200 hover:bg-red-200 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
+          className="group rounded-lg border border-gray-300 px-5 py-4 transition-colors bg-red-100 dark:border-neutral-700 dark:bg-neutral-800"
           target="_blank"
           rel="noopener noreferrer"
         >
