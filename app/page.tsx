@@ -26,7 +26,7 @@ export default function Home() {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <h2 className="mb-3 text-lg font-semibold text-white ">
+        <h2 className="mb-3 text-4xl font-semibold text-white"> {/* Updated font size */}
           MEME IS A GAME{" "}
           <span className="inline-block"></span>
         </h2>
@@ -99,4 +99,5 @@ export default function Home() {
     </main>
   );
 }
+
 
