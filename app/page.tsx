@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import Head from "next/head";
-import Link from "next/link"; // Import Link component from Next.js
 import { useState } from "react";
 
 export default function Home() {
@@ -17,11 +16,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="flex min-h-screen flex-col items-center justify-center p-10">
-        <Link href="/" passHref> {/* Ensure passHref is used */}
-          <a className="fixed left-0 top-0 flex w-full justify-start items-center from-zinc-200 pb-6 pt-8 cursor-pointer"> {/* Wrap with anchor tag */}
-            <code className="font-mono font-bold text-white px-10 py-5 text-4xl">DO</code>
-          </a>
-        </Link>
+        <p className="fixed left-0 top-0 flex w-full justify-start items-center from-zinc-200 pb-6 pt-8">
+          <code className="font-mono font-bold text-white px-10 py-5 text-4xl">DO</code>
+        </p>
 
         {/* Centered Image */}
         <div className="flex justify-center items-center mb-10">
@@ -62,7 +59,7 @@ export default function Home() {
               rel="noopener noreferrer"
               aria-label="X link"
             >
-              <h2 className="mb-2 text-sm font-semibold">
+              <h2 className="mb-2 text-sm font-semibold transform hover:scale-105">
                 X{" "}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   -&gt;
@@ -78,7 +75,7 @@ export default function Home() {
               rel="noopener noreferrer"
               aria-label="Telegram link"
             >
-              <h2 className="mb-2 text-sm font-semibold">
+              <h2 className="mb-2 text-sm font-semibold transform hover:scale-105">
                 telegram{" "}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   -&gt;
@@ -94,7 +91,7 @@ export default function Home() {
               rel="noopener noreferrer"
               aria-label="Dextools link"
             >
-              <h2 className="mb-2 text-sm font-semibold">
+              <h2 className="mb-2 text-sm font-semibold transform hover:scale-105">
                 dextools{" "}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   -&gt;
@@ -110,7 +107,7 @@ export default function Home() {
               rel="noopener noreferrer"
               aria-label="Game.com link"
             >
-              <h2 className="mb-2 text-sm font-semibold">
+              <h2 className="mb-2 text-sm font-semibold transform hover:scale-105">
                 game.com{" "}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   -&gt;
@@ -123,4 +120,3 @@ export default function Home() {
     </>
   );
 }
-
