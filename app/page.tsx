@@ -4,9 +4,9 @@ import Image from "next/image";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-10">
-      <div className="z-10 max-w-10xl justify-between lg:flex">
-        <p className="right-20 top-5 flex  justify-center bg-gradient-to-b from-zinc-50 lg:static lg:w-auto">         
+    <main className="flex min-h-screen flex-col items-start justify-between p-10">
+      <div className="z-10 max-w-10x1 justify-start lg:flex">
+        <a className="left-0 top-5 flex  justify-start bg-gradient-to-b from-zinc-50 lg:static lg:w-auto">         
           <Image
             className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
             src="/DoLabs.svg"
@@ -15,7 +15,7 @@ export default function Home() {
             height={37}
             priority
           />
-        </p>
+        </a>
       </div>
 
       <div className="relative z-[-1] flex place-items-center before:absolute before:h-[300px] before:w-full before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-full after:translate-x-1/3">
