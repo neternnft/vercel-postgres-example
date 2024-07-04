@@ -20,8 +20,6 @@ export default function Home() {
           <code className="font-mono font-bold text-white px-10 py-5 text-4xl">DO</code>
         </p>
 
-        
-
         {/* Centered Image */}
         <div className="flex justify-center items-center mb-10 transition-transform duration-200 transform hover:scale-105">
           <Image
@@ -48,8 +46,8 @@ export default function Home() {
           </h2>
         </a>
 
-        {/* Links Section at the Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 flex justify-center mb-4">
+        {/* Links Section */}
+        <div className="flex justify-center mb-10">
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 max-w-5xl text-center">
             {/* X Link */}
             <a
@@ -120,3 +118,4 @@ export default function Home() {
     </>
   );
 }
+
