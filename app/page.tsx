@@ -23,7 +23,7 @@ export default function Home() {
         
 
         {/* Centered Image */}
-        <div className="flex justify-center items-center mb-10 transition-transform duration-200 transform hover:scale-105">
+        <div className="flex justify-center items-center mb-10  duration-200 transform hover:scale-105">
           <Image
             src="/yoda.gif" // Updated to GIF file
             alt="Yoda GIF"
