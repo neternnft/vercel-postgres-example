@@ -23,7 +23,8 @@ export default function Home() {
         
 
         {/* Centered Image */}
-        <div className="flex justify-center items-center mb-10 ">
+        <div className="flex justify-center items-center mb-10">
+          {isLoading && <div className="loader">Loading...</div>}
           <Image
             src="/yoda.gif" // Updated to GIF file
             alt="Yoda GIF"
