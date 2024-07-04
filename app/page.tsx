@@ -29,7 +29,7 @@ export default function Home() {
             alt="Yoda GIF"
             width={180}
             height={37}
-            className="dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
+            className="dark:drop-shadow-[0_0_0.3rem_#ffffff70]"
             priority
             unoptimized // Added unoptimized property
           />
