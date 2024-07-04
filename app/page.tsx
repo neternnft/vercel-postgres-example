@@ -23,7 +23,7 @@ export default function Home() {
         
 
         {/* Centered Image */}
-        <div className="flex justify-center items-center mb-10">
+        <div className="flex justify-center items-center mb-10 transition-transform duration-200 transform hover:scale-105">
           <Image
             src="/yoda.gif" // Updated to GIF file
             alt="Yoda GIF"
@@ -42,7 +42,7 @@ export default function Home() {
           rel="noopener noreferrer"
           aria-label="Meme is a game link"
         >
-          <h2 className="mb-3 text-4xl font-semibold text-white transition-transform duration-200 transform hover:scale-105"> {/* Updated font size */}
+          <h2 className="mb-3 text-4xl font-semibold text-white"> {/* Updated font size */}
             MEME IS A GAME{" "}
             <span className="inline-block"></span>
           </h2>
