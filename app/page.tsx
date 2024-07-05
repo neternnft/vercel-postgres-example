@@ -15,22 +15,13 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8">
-        {/* Header */}
-        <header className="fixed top-0 left-0 right-0 bg-gray-800 py-2 shadow-md z-10">
-          <div className="container mx-auto flex items-center justify-between">
-            <div className="ml-2 sm:ml-4">
-              <h1 className="text-4xl sm:text-5xl font-bold text-yellow-400 font-pixel">
-                DO
-              </h1>
-            </div>
-            <nav className="hidden md:block">
-              <ul className="flex space-x-4">
-                {/* Navigation links removed */}
-              </ul>
-            </nav>
-          </div>
-        </header>
+      <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative">
+        {/* DO Text */}
+        <div className="absolute top-4 left-4">
+          <h1 className="text-4xl sm:text-5xl font-bold text-yellow-400 font-pixel">
+            DO
+          </h1>
+        </div>
 
         {/* Centered Image */}
         <div className="flex justify-center items-center mb-10 transition-transform duration-200 transform hover:scale-105">
@@ -107,4 +98,5 @@ export default function Home() {
     </>
   );
 }
+
 
