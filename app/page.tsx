@@ -24,7 +24,7 @@ export default function Home() {
         </div>
 
         {/* Centered Image */}
-        <div className="flex justify-center items-center mb-4">
+        <div className="absolute top-1/3 transform -translate-y-1/2">
           <Image
             src="/yoda.gif"
             alt="Yoda GIF"
@@ -37,24 +37,28 @@ export default function Home() {
         </div>
 
         {/* Text */}
-        <a
-          className="group mb-4"
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label="Meme is a game link"
-        >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white font-pixel mb-2 text-center">
-            MEME IS A GAME
-          </h2>
-        </a>
+        <div className="absolute top-1/2 transform -translate-y-1/2">
+          <a
+            className="group mb-4"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Meme is a game link"
+          >
+            <h2 className="text-3xl sm:text-4xl font-bold text-white font-pixel mb-2 text-center">
+              MEME IS A GAME
+            </h2>
+          </a>
+        </div>
 
         {/* New Button */}
-        <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
-          START
-        </button>
+        <div className="absolute top-2/3 transform -translate-y-1/2">
+          <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
+            START
+          </button>
+        </div>
 
         {/* Links Section at the Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 mb-4">
+        <div className="absolute bottom-0 left-0 right-0 mb-4">
           <div className="container mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl text-center">
             {/* X Link */}
             <button
