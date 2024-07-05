@@ -5,6 +5,10 @@ import Head from "next/head";
 import { motion } from "framer-motion";
 
 export default function Home() {
+  const handleStartClick = () => {
+    window.open("https://raydium.io/swap/?inputMint=sol&outputMint=GCMqcME2moJadqk6rnDGzf52BdvCrTuV7bJfwtLyp5XN", "_blank");
+  };
+
   return (
     <>
       <Head>
@@ -74,6 +78,7 @@ export default function Home() {
                   duration: 3,
                 },
               }}
+              onClick={handleStartClick}
             >
               START
             </motion.button>
