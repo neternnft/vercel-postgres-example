@@ -46,76 +46,53 @@ export default function Home() {
           </h2>
         </a>
 
+        {/* New Button */}
+        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+          Click Me
+        </button>
+
         {/* Links Section at the Bottom */}
         <div className="fixed bottom-0 left-0 right-0 flex justify-center mb-4">
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 max-w-5xl text-center">
             {/* X Link */}
-            <a
-              href="https://x.com/doitsol"
-              className="group rounded-lg border border-gray-500 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="X link"
+            <button
+              onClick={() => window.open("https://x.com/doitsol", "_blank")}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-              <h2 className="mb-2 text-sm font-semibold text-white transform hover:scale-105">
-                X{" "}
-                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                  -&gt;
-                </span>
-              </h2>
-            </a>
+              X
+            </button>
 
             {/* Telegram Link */}
-            <a
-              href="https://t.me/docommunity"
-              className="group rounded-lg border border-gray-500 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Telegram link"
+            <button
+              onClick={() => window.open("https://t.me/docommunity", "_blank")}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-              <h2 className="mb-2 text-sm font-semibold text-white transform hover:scale-105">
-                telegram{" "}
-                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                  -&gt;
-                </span>
-              </h2>
-            </a>
+              Telegram
+            </button>
 
             {/* Dextools Link */}
-            <a
-              href="https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327"
-              className="group rounded-lg border border-gray-500 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Dextools link"
+            <button
+              onClick={() =>
+                window.open(
+                  "https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327",
+                  "_blank"
+                )
+              }
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-              <h2 className="mb-2 text-sm font-semibold text-white transform hover:scale-105">
-                dextools{" "}
-                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                  -&gt;
-                </span>
-              </h2>
-            </a>
+              Dextools
+            </button>
 
             {/* Game.com Link */}
-            <a
-              href="https://game.com/"
-              className="group rounded-lg border border-gray-500 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Game.com link"
+            <button
+              onClick={() => window.open("https://game.com/", "_blank")}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
             >
-              <h2 className="mb-2 text-sm font-semibold text-white transform hover:scale-105">
-                game.com{" "}
-                <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-                  -&gt;
-                </span>
-              </h2>
-            </a>
+              Game.com
+            </button>
           </div>
         </div>
       </main>
     </>
   );
 }
-
