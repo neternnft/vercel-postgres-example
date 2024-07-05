@@ -18,7 +18,7 @@ export default function Home() {
       <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative">
         {/* DO Text */}
         <div className="absolute top-4 left-4">
-          <h1 className="text-4xl sm:text-5xl font-bold text-yellow-400 font-pixel">
+          <h1 className="text-4xl sm:text-5xl font-bold text-green-400 font-pixel">
             DO
           </h1>
         </div>
@@ -49,7 +49,7 @@ export default function Home() {
         </a>
 
         {/* New Button */}
-        <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
+        <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
           START
         </button>
 
@@ -59,7 +59,7 @@ export default function Home() {
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/doitsol", "_blank")}
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
               X
             </button>
@@ -67,7 +67,7 @@ export default function Home() {
             {/* Telegram Link */}
             <button
               onClick={() => window.open("https://t.me/docommunity", "_blank")}
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
               Telegram
             </button>
@@ -80,7 +80,7 @@ export default function Home() {
                   "_blank"
                 )
               }
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
               Dextools
             </button>
@@ -88,7 +88,7 @@ export default function Home() {
             {/* Game.com Link */}
             <button
               onClick={() => window.open("https://game.com/", "_blank")}
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
               Game.com
             </button>
@@ -98,5 +98,6 @@ export default function Home() {
     </>
   );
 }
+
 
 
