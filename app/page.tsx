@@ -48,7 +48,7 @@ export default function Home() {
 
         {/* New Button */}
         <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
-          Click Me
+          START
         </button>
 
         {/* Links Section at the Bottom */}
