@@ -24,7 +24,7 @@ export default function Home() {
         </div>
 
         {/* Centered Image */}
-        <div className="flex justify-center items-center mb-10 transition-transform duration-200 transform hover:scale-105">
+        <div className="flex justify-center items-center mb-4">
           <Image
             src="/yoda.gif"
             alt="Yoda GIF"
@@ -38,7 +38,7 @@ export default function Home() {
 
         {/* Text */}
         <a
-          className="group mb-8"
+          className="group mb-4"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Meme is a game link"
@@ -98,6 +98,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 
