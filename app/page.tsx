@@ -19,9 +19,11 @@ export default function Home() {
         {/* Header */}
         <header className="fixed top-0 left-0 right-0 bg-gray-800 py-2 shadow-md z-10">
           <div className="container mx-auto flex items-center justify-between">
-            <h1 className="text-4xl sm:text-5xl font-bold text-yellow-400 font-pixel">
-              DO
-            </h1>
+            <div className="ml-2 sm:ml-4">
+              <h1 className="text-4xl sm:text-5xl font-bold text-yellow-400 font-pixel">
+                DO
+              </h1>
+            </div>
             <nav className="hidden md:block">
               <ul className="flex space-x-4">
                 {/* Navigation links removed */}
@@ -105,3 +107,4 @@ export default function Home() {
     </>
   );
 }
+
