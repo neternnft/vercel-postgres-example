@@ -24,12 +24,12 @@ export default function Home() {
         </div>
 
         {/* Centered Image */}
-        <div className="flex justify-center items-center mb-10 transition-transform duration-200 transform hover:scale-105">
+        <div className="flex justify-center items-center mb-4 transition-transform duration-200 transform hover:scale-105">
           <Image
             src="/yoda.gif"
             alt="Yoda GIF"
-            width={180}
-            height={37}
+            width={120}
+            height={25}
             className="pixelated"
             priority
             unoptimized
@@ -38,66 +38,65 @@ export default function Home() {
 
         {/* Text */}
         <a
-          className="group mb-8"
+          className="group mb-4"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Meme is a game link"
         >
-          <h2 className="text-3xl sm:text-4xl font-bold text-white font-pixel mb-2 text-center">
+          <h2 className="text-2xl sm:text-3xl font-bold text-white font-pixel mb-2 text-center">
             MEME IS A GAME
           </h2>
         </a>
 
         {/* New Button */}
-        <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
+        <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-300 mb-8 font-pixel">
           START
         </button>
 
         {/* Links Section at the Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 mb-4">
-          <div className="container mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl text-center">
-            {/* X Link */}
-            <button
-              onClick={() => window.open("https://x.com/doitsol", "_blank")}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-            >
-              X
-            </button>
+        <div className="flex flex-wrap justify-center gap-4">
+          {/* X Link */}
+          <button
+            onClick={() => window.open("https://x.com/doitsol", "_blank")}
+            className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-300 font-pixel"
+          >
+            X
+          </button>
 
-            {/* Telegram Link */}
-            <button
-              onClick={() => window.open("https://t.me/docommunity", "_blank")}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-            >
-              Telegram
-            </button>
+          {/* Telegram Link */}
+          <button
+            onClick={() => window.open("https://t.me/docommunity", "_blank")}
+            className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-300 font-pixel"
+          >
+            Telegram
+          </button>
 
-            {/* Dextools Link */}
-            <button
-              onClick={() =>
-                window.open(
-                  "https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327",
-                  "_blank"
-                )
-              }
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-            >
-              Dextools
-            </button>
+          {/* Dextools Link */}
+          <button
+            onClick={() =>
+              window.open(
+                "https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327",
+                "_blank"
+              )
+            }
+            className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-300 font-pixel"
+          >
+            Dextools
+          </button>
 
-            {/* Game.com Link */}
-            <button
-              onClick={() => window.open("https://game.com/", "_blank")}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-            >
-              Game.com
-            </button>
-          </div>
+          {/* Game.com Link */}
+          <button
+            onClick={() => window.open("https://game.com/", "_blank")}
+            className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg transition-colors duration-300 font-pixel"
+          >
+            Game.com
+          </button>
         </div>
       </main>
     </>
   );
 }
+
 
 
 
