@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Head from "next/head";
+import { motion } from "framer-motion";
 
 export default function Home() {
   return (
@@ -18,9 +19,7 @@ export default function Home() {
       <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
         {/* DO Text */}
         <div className="fixed top-4 left-4 z-10">
-          <h1 className="text-4xl sm:text-5xl font-bold text-green-400 font-pixel">
-            DO
-          </h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-green-400">DO</h1>
         </div>
 
         {/* Unmovable Container */}
@@ -40,24 +39,32 @@ export default function Home() {
 
           {/* Text */}
           <div className="mt-4">
-            <a
+            <motion.a
               className="group mb-4"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Meme is a game link"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white font-pixel mb-2 text-center whitespace-nowrap">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2 text-center whitespace-nowrap">
                 MEME IS A GAME
               </h2>
-            </a>
+            </motion.a>
           </div>
 
           {/* New Button */}
-          <div className="mt-8">
-            <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel text-xl">
+          <motion.div
+            className="mt-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 text-xl">
               START
             </button>
-          </div>
+          </motion.div>
         </div>
 
         {/* Links Section at the Bottom */}
@@ -66,7 +73,7 @@ export default function Home() {
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/doitsol", "_blank")}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               X
             </button>
@@ -74,7 +81,7 @@ export default function Home() {
             {/* Telegram Link */}
             <button
               onClick={() => window.open("https://t.me/docommunity", "_blank")}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               Telegram
             </button>
@@ -87,7 +94,7 @@ export default function Home() {
                   "_blank"
                 )
               }
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               Dextools
             </button>
@@ -95,7 +102,7 @@ export default function Home() {
             {/* Game.com Link */}
             <button
               onClick={() => window.open("https://game.com/", "_blank")}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               Game.com
             </button>
@@ -105,4 +112,5 @@ export default function Home() {
     </>
   );
 }
+
 
