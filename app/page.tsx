@@ -52,7 +52,7 @@ export default function Home() {
             {/* X Link */}
             <a
               href="https://x.com/doitsol"
-              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
+              className="group rounded-lg border border-gray-500 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="X link"
@@ -68,7 +68,7 @@ export default function Home() {
             {/* Telegram Link */}
             <a
               href="https://t.me/docommunity"
-              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
+              className="group rounded-lg border border-gray-500 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Telegram link"
@@ -84,7 +84,7 @@ export default function Home() {
             {/* Dextools Link */}
             <a
               href="https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327"
-              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
+              className="group rounded-lg border border-gray-500 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Dextools link"
@@ -100,7 +100,7 @@ export default function Home() {
             {/* Game.com Link */}
             <a
               href="https://game.com/"
-              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
+              className="group rounded-lg border border-gray-500 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Game.com link"
