@@ -17,7 +17,7 @@ export default function Home() {
       </Head>
       <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
         {/* DO Text */}
-        <div className="absolute top-4 left-4">
+        <div className="fixed top-4 left-4 z-10">
           <h1 className="text-4xl sm:text-5xl font-bold text-green-400 font-pixel">
             DO
           </h1>
