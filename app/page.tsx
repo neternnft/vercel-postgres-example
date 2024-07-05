@@ -35,7 +35,7 @@ export default function Home() {
           />
         </div>
 
-        {/* Dextools Link */}
+        {/*  text */}
         <a
           className="group"
           target="_blank"
@@ -47,6 +47,7 @@ export default function Home() {
             <span className="inline-block"></span>
           </h2>
         </a>
+
 
         {/* Links Section at the Bottom */}
         <div className="fixed bottom-0 left-0 right-0 flex justify-center mb-4">
