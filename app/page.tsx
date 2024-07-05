@@ -33,8 +33,8 @@ export default function Home() {
             <Image
               src="/yoda.gif"
               alt="Yoda GIF"
-              width={180}
-              height={37}
+              width={320} // Increased width
+              height={65} // Increased height
               className="pixelated"
               priority
               unoptimized
@@ -130,6 +130,3 @@ export default function Home() {
     </>
   );
 }
-
-
-
