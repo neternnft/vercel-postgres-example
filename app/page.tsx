@@ -23,38 +23,41 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Centered Image */}
-        <div className="absolute top-1/3 transform -translate-y-1/2">
-          <Image
-            src="/yoda.gif"
-            alt="Yoda GIF"
-            width={180}
-            height={37}
-            className="pixelated"
-            priority
-            unoptimized
-          />
-        </div>
+        {/* Unmovable Container */}
+        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+          {/* Centered Image */}
+          <div>
+            <Image
+              src="/yoda.gif"
+              alt="Yoda GIF"
+              width={180}
+              height={37}
+              className="pixelated"
+              priority
+              unoptimized
+            />
+          </div>
 
-        {/* Text */}
-        <div className="absolute top-1/2 transform -translate-y-1/2">
-          <a
-            className="group mb-4"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-label="Meme is a game link"
-          >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white font-pixel mb-2 text-center">
-              MEME IS A GAME
-            </h2>
-          </a>
-        </div>
+          {/* Text */}
+          <div className="mt-4">
+            <a
+              className="group mb-4"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Meme is a game link"
+            >
+              <h2 className="text-3xl sm:text-4xl font-bold text-white font-pixel mb-2 text-center">
+                MEME IS A GAME
+              </h2>
+            </a>
+          </div>
 
-        {/* New Button */}
-        <div className="absolute top-2/3 transform -translate-y-1/2">
-          <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
-            START
-          </button>
+          {/* New Button */}
+          <div>
+            <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
+              START
+            </button>
+          </div>
         </div>
 
         {/* Links Section at the Bottom */}
@@ -102,9 +105,4 @@ export default function Home() {
     </>
   );
 }
-
-
-
-
-
 
