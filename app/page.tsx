@@ -20,8 +20,6 @@ export default function Home() {
           <code className="font-mono font-bold text-white px-10 py-5 text-4xl">DO</code>
         </p>
 
-        
-
         {/* Centered Image */}
         <div className="flex justify-center items-center mb-10 transition-transform duration-200 transform hover:scale-105">
           <Image
@@ -35,7 +33,7 @@ export default function Home() {
           />
         </div>
 
-        {/*  text */}
+        {/* Text */}
         <a
           className="group"
           target="_blank"
@@ -48,19 +46,18 @@ export default function Home() {
           </h2>
         </a>
 
-
         {/* Links Section at the Bottom */}
         <div className="fixed bottom-0 left-0 right-0 flex justify-center mb-4">
           <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 max-w-5xl text-center">
             {/* X Link */}
             <a
               href="https://x.com/doitsol"
-              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-yellow-100 dark:border-neutral-700 dark:bg-neutral-800"
+              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="X link"
             >
-              <h2 className="mb-2 text-sm font-semibold transform hover:scale-105">
+              <h2 className="mb-2 text-sm font-semibold text-white transform hover:scale-105">
                 X{" "}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   -&gt;
@@ -71,12 +68,12 @@ export default function Home() {
             {/* Telegram Link */}
             <a
               href="https://t.me/docommunity"
-              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-green-100 dark:border-neutral-700 dark:bg-neutral-800"
+              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Telegram link"
             >
-              <h2 className="mb-2 text-sm font-semibold transform hover:scale-105">
+              <h2 className="mb-2 text-sm font-semibold text-white transform hover:scale-105">
                 telegram{" "}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   -&gt;
@@ -87,12 +84,12 @@ export default function Home() {
             {/* Dextools Link */}
             <a
               href="https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327"
-              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-blue-100 dark:border-neutral-700 dark:bg-neutral-800"
+              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Dextools link"
             >
-              <h2 className="mb-2 text-sm font-semibold transform hover:scale-105">
+              <h2 className="mb-2 text-sm font-semibold text-white transform hover:scale-105">
                 dextools{" "}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   -&gt;
@@ -103,12 +100,12 @@ export default function Home() {
             {/* Game.com Link */}
             <a
               href="https://game.com/"
-              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-red-100 dark:border-neutral-700 dark:bg-neutral-800"
+              className="group rounded-lg border border-gray-300 px-2 py-2 transition-colors bg-gray-900 dark:border-neutral-700 dark:bg-neutral-800"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Game.com link"
             >
-              <h2 className="mb-2 text-sm font-semibold transform hover:scale-105">
+              <h2 className="mb-2 text-sm font-semibold text-white transform hover:scale-105">
                 game.com{" "}
                 <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
                   -&gt;
@@ -121,3 +118,4 @@ export default function Home() {
     </>
   );
 }
+
