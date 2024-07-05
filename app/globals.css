@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Pixelated Font */
+@font-face {
+  font-family: 'Pixel';
+  src: url('/fonts/pixel.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+.font-pixel {
+  font-family: 'Pixel', monospace;
+}
+
+/* Pixelated Image */
+.pixelated {
+  image-rendering: pixelated;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 0, 0, 0;
@@ -31,5 +48,6 @@ body {
     text-wrap: balance;
   }
 }
+
 
 

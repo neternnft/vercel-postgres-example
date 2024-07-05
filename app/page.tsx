@@ -1,63 +1,70 @@
-"use client"; // Add this line to mark the component as a Client Component
+"use client";
 
 import Image from "next/image";
 import Head from "next/head";
-import { useState } from "react";
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(true);
-
   return (
     <>
       <Head>
         <title>DO</title>
-        <meta name="description" content="A fun and interactive website with links to various resources." />
+        <meta
+          name="description"
+          content="A fun and interactive website with links to various resources."
+        />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex min-h-screen flex-col items-center justify-center p-10">
-        <p className="fixed left-0 top-0 flex w-full justify-start items-center from-zinc-200 pb-6 pt-8">
-          <code className="font-mono font-bold text-white px-10 py-5 text-4xl">DO</code>
-        </p>
+      <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
+        {/* Header */}
+        <header className="fixed top-0 left-0 right-0 bg-gray-800 py-2 shadow-md">
+          <div className="container mx-auto flex items-center justify-between">
+            <h1 className="text-2xl font-bold text-yellow-400 font-pixel">DO</h1>
+            <nav>
+              <ul className="flex space-x-4">
+                {/* Navigation links removed */}
+              </ul>
+            </nav>
+          </div>
+        </header>
 
         {/* Centered Image */}
         <div className="flex justify-center items-center mb-10 transition-transform duration-200 transform hover:scale-105">
           <Image
-            src="/yoda.gif" // Updated to GIF file
+            src="/yoda.gif"
             alt="Yoda GIF"
             width={180}
             height={37}
-            className="dark:drop-shadow-[0_0_0.3rem_#ffffff70]"
+            className="pixelated"
             priority
-            unoptimized // Added unoptimized property
+            unoptimized
           />
         </div>
 
         {/* Text */}
         <a
-          className="group"
+          className="group mb-8"
           target="_blank"
           rel="noopener noreferrer"
           aria-label="Meme is a game link"
         >
-          <h2 className="mb-3 text-4xl font-semibold text-white"> {/* Updated font size */}
-            MEME IS A GAME{" "}
-            <span className="inline-block"></span>
+          <h2 className="text-4xl font-bold text-white font-pixel mb-2">
+            MEME IS A GAME
           </h2>
         </a>
 
         {/* New Button */}
-        <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4">
+        <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
           START
         </button>
 
         {/* Links Section at the Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 flex justify-center mb-4">
-          <div className="grid gap-4 grid-cols-2 sm:grid-cols-4 max-w-5xl text-center">
+        <div className="fixed bottom-0 left-0 right-0 mb-4">
+          <div className="container mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl text-center">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/doitsol", "_blank")}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
               X
             </button>
@@ -65,7 +72,7 @@ export default function Home() {
             {/* Telegram Link */}
             <button
               onClick={() => window.open("https://t.me/docommunity", "_blank")}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
               Telegram
             </button>
@@ -78,7 +85,7 @@ export default function Home() {
                   "_blank"
                 )
               }
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
               Dextools
             </button>
@@ -86,7 +93,7 @@ export default function Home() {
             {/* Game.com Link */}
             <button
               onClick={() => window.open("https://game.com/", "_blank")}
-              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
               Game.com
             </button>
