@@ -54,7 +54,7 @@ export default function Home() {
 
           {/* New Button */}
           <div className="mt-8">
-            <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel">
+            <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 font-pixel text-xl">
               START
             </button>
           </div>
@@ -105,3 +105,4 @@ export default function Home() {
     </>
   );
 }
+
