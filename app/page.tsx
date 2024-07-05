@@ -15,7 +15,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative">
+      <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
         {/* DO Text */}
         <div className="absolute top-4 left-4">
           <h1 className="text-4xl sm:text-5xl font-bold text-green-400 font-pixel">
@@ -98,6 +98,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 
