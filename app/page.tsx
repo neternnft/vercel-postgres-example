@@ -61,9 +61,22 @@ export default function Home() {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
-            <button className="bg-green-400 hover:bg-green-500 text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 text-xl">
+            <motion.button
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 text-xl"
+              animate={{
+                boxShadow: [
+                  "0 0 0 0 rgba(46, 204, 113, 0.7)",
+                  "0 0 0 20px rgba(46, 204, 113, 0)",
+                ],
+                transition: {
+                  repeat: Infinity,
+                  repeatType: "reverse",
+                  duration: 3,
+                },
+              }}
+            >
               START
-            </button>
+            </motion.button>
           </motion.div>
         </div>
 
@@ -112,5 +125,6 @@ export default function Home() {
     </>
   );
 }
+
 
 
