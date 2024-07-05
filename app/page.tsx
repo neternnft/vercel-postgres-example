@@ -46,7 +46,7 @@ export default function Home() {
               rel="noopener noreferrer"
               aria-label="Meme is a game link"
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white font-pixel mb-2 text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold text-white font-pixel mb-2 text-center whitespace-nowrap">
                 MEME IS A GAME
               </h2>
             </a>
@@ -105,4 +105,3 @@ export default function Home() {
     </>
   );
 }
-
