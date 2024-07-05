@@ -58,7 +58,7 @@ export default function Home() {
         </div>
 
         {/* Links Section at the Bottom */}
-        <div className="absolute bottom-0 left-0 right-0 mb-4">
+        <div className="fixed bottom-0 left-0 right-0 mb-4 sm:mb-8">
           <div className="container mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl text-center">
             {/* X Link */}
             <button
@@ -102,6 +102,7 @@ export default function Home() {
     </>
   );
 }
+
 
 
 
