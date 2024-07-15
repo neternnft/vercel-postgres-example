@@ -3,10 +3,15 @@
 import Image from "next/image";
 import Head from "next/head";
 import { motion } from "framer-motion";
+import { useState } from 'react';
+import Game from './Game';
+
 
 export default function Home() {
+  const [showGame, setShowGame] = useState(false);
+
   const handleStartClick = () => {
-    window.open("https://raydium.io/swap/?inputMint=sol&outputMint=GCMqcME2moJadqk6rnDGzf52BdvCrTuV7bJfwtLyp5XN", "_blank");
+    setShowGame(true);
   };
 
   return (
@@ -33,8 +38,8 @@ export default function Home() {
             <Image
               src="/yoda.gif"
               alt="Yoda GIF"
-              width={320} // Increased width
-              height={65} // Increased height
+              width={320}
+              height={65}
               className="pixelated"
               priority
               unoptimized
@@ -108,7 +113,7 @@ export default function Home() {
             <button
               onClick={() =>
                 window.open(
-                  "https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmKETyJnqt41J?t=1719616272327",
+                  "https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmMETyJnqt41J?t=1719616272327",
                   "_blank"
                 )
               }
@@ -126,6 +131,8 @@ export default function Home() {
             </button>
           </div>
         </div>
+
+        {showGame && <Game onClose={() => setShowGame(false)} />}
       </main>
     </>
   );
