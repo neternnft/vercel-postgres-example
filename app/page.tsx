@@ -4,8 +4,7 @@ import Image from "next/image";
 import Head from "next/head";
 import { motion } from "framer-motion";
 import { useState } from 'react';
-import Game from './Game';
-
+import Game from './game';
 
 export default function Home() {
   const [showGame, setShowGame] = useState(false);
