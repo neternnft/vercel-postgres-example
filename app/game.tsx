@@ -55,6 +55,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       velocity += gravity;
       playerY += velocity;
 
+      // Keep player within canvas boundaries
+      playerY = Math.max(playerRadius, Math.min(canvas.height - playerRadius, playerY));
+
       // Generate and draw obstacles
       if (Math.random() < 0.01) {
         let height;
@@ -173,6 +176,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 };
 
 export default Game;
+
 
 
 
