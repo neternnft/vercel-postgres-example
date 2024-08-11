@@ -5,7 +5,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "DO",
+  title: "NETERN",
   description: "Created by @netern_sol",
 };
 

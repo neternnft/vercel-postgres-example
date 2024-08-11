@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>DO</title>
+        <title>NETERN</title>
         <meta
           name="description"
           content="A fun and interactive website with links to various resources."
@@ -25,9 +25,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
-        {/* DO Text */}
+        {/* NETERN Text */}
         <div className="fixed top-4 left-4 z-10">
-          <h1 className="text-4xl sm:text-5xl font-bold text-green-400">DO</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-green-400">NETERN</h1>
         </div>
 
         {/* Unmovable Container */}
@@ -94,7 +94,7 @@ export default function Home() {
           <div className="container mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl text-center">
             {/* X Link */}
             <button
-              onClick={() => window.open("https://x.com/doitsol", "_blank")}
+              onClick={() => window.open("https://x.com/netern_sol", "_blank")}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               X
@@ -102,7 +102,7 @@ export default function Home() {
 
             {/* Telegram Link */}
             <button
-              onClick={() => window.open("https://t.me/docommunity", "_blank")}
+              onClick={() => window.open("https://t.me/neternsol", "_blank")}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               Telegram
@@ -112,21 +112,21 @@ export default function Home() {
             <button
               onClick={() =>
                 window.open(
-                  "https://www.dextools.io/app/en/solana/pair-explorer/4WUWq9zLvNpYJw9TrzMk74dsRmQgw3hMmMETyJnqt41J?t=1719616272327",
+                  "https://t.me/neternsol",
                   "_blank"
                 )
               }
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
-              Dextools
+              ...
             </button>
 
             {/* Game.com Link */}
             <button
-              onClick={() => window.open("https://game.com/", "_blank")}
+              onClick={() => window.open("https://t.me/neternsol", "_blank")}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
-              Game.com
+              ...
             </button>
           </div>
         </div>
