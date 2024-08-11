@@ -130,30 +130,26 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             playerY + canvas.width * 0.04 > obstacle.y &&
             playerY - canvas.width * 0.04 < obstacle.y + obstacle.height
           ) {
-            if (obstacle.type === 'dangerous') {
-              setLives(prev => {
-                const newLives = prev - 1;
-                if (newLives <= 0) {
-                  setGameOver(true);
-                  setHighScore(prevHighScore => Math.max(prevHighScore, currentScore));
-                  setLeaderboard(prevLeaderboard => {
-                    const existingEntry = prevLeaderboard.find(entry => entry.score === currentScore);
-                    let newLeaderboard;
-                    if (existingEntry) {
-                      newLeaderboard = prevLeaderboard.map(entry =>
-                        entry.score === currentScore ? { ...entry, name: 'Player' } : entry
-                      );
-                    } else {
-                      newLeaderboard = [...prevLeaderboard, { name: 'Player', score: currentScore }];
-                    }
-                    return newLeaderboard.sort((a, b) => b.score - a.score).slice(0, 10);
-                  });
-                }
-                return newLives;
-              });
-            } else {
-              currentScore += 5;
-            }
+            setLives(prev => {
+              const newLives = prev - 1;
+              if (newLives <= 0) {
+                setGameOver(true);
+                setHighScore(prevHighScore => Math.max(prevHighScore, currentScore));
+                setLeaderboard(prevLeaderboard => {
+                  const existingEntry = prevLeaderboard.find(entry => entry.score === currentScore);
+                  let newLeaderboard;
+                  if (existingEntry) {
+                    newLeaderboard = prevLeaderboard.map(entry =>
+                      entry.score === currentScore ? { ...entry, name: 'Player' } : entry
+                    );
+                  } else {
+                    newLeaderboard = [...prevLeaderboard, { name: 'Player', score: currentScore }];
+                  }
+                  return newLeaderboard.sort((a, b) => b.score - a.score).slice(0, 10);
+                });
+              }
+              return newLives;
+            });
             obstacles.splice(index, 1);
           }
 
