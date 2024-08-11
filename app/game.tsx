@@ -12,6 +12,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
   const [highScore, setHighScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [paused, setPaused] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -62,12 +63,16 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const gameLoop = () => {
-      if (paused) {
+      if (paused || !gameStarted) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#FFFFFF';
         ctx.font = `${canvas.width * 0.05}px Arial`;
-        ctx.fillText('PAUSED', canvas.width * 0.4, canvas.height * 0.5);
+        if (paused) {
+          ctx.fillText('PAUSED', canvas.width * 0.4, canvas.height * 0.5);
+        } else if (!gameStarted) {
+          ctx.fillText('CLICK START', canvas.width * 0.4, canvas.height * 0.5);
+        }
         requestAnimationFrame(gameLoop);
         return;
       }
@@ -180,7 +185,15 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gameOver, score, highScore, lives, paused]);
+  }, [gameOver, score, highScore, lives, paused, gameStarted]);
+
+  const handleStartPause = () => {
+    if (!gameStarted) {
+      setGameStarted(true);
+    } else {
+      setPaused(prev => !prev);
+    }
+  };
 
   return (
     <motion.div
@@ -205,6 +218,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
               setScore(0);
               setLives(3);
               setPaused(false);
+              setGameStarted(false);
             }}
             className="mt-2 bg-black text-white px-4 py-2 rounded mr-2 font-pixel"
           >
@@ -212,10 +226,10 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           </button>
           {!gameOver && (
             <button
-              onClick={() => setPaused(prev => !prev)}
+              onClick={handleStartPause}
               className="mt-2 bg-black text-white px-4 py-2 rounded mr-2 font-pixel"
             >
-              {paused ? 'Resume' : 'Pause'}
+              {!gameStarted ? 'Start' : (paused ? 'Resume' : 'Pause')}
             </button>
           )}
           <button

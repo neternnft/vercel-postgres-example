@@ -84,7 +84,7 @@ export default function Home() {
               }}
               onClick={handleStartClick}
             >
-              START
+              PLAY
             </motion.button>
           </motion.div>
         </div>
