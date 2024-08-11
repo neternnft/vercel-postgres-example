@@ -14,6 +14,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
   const [paused, setPaused] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [leaderboard, setLeaderboard] = useState<{ name: string; score: number }[]>([]);
+  const [frameCount, setFrameCount] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -34,6 +35,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     let powerUpActive = false;
     let powerUpTimer = 0;
     let currentScore = 0;
+    let currentFrameCount = 0;
 
     const calculateCanvasSize = () => {
       const windowWidth = window.innerWidth;
@@ -153,13 +155,17 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             obstacles.splice(index, 1);
           }
 
-          if (obstacle.x + obstacle.width < 0) {
+          if (obstacle.x + obstacle.width < canvas.width * 0.2) {
+            currentScore += 1;
             obstacles.splice(index, 1);
           }
         });
 
-        currentScore++;
-        setScore(currentScore);
+        currentFrameCount++;
+        if (currentFrameCount % 60 === 0) {
+          currentScore++;
+          setScore(currentScore);
+        }
 
         ctx.fillStyle = '#2ecc71';
         ctx.font = `${canvas.width * 0.05}px Arial`;
