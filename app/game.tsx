@@ -70,10 +70,12 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#FFFFFF';
         ctx.font = `${canvas.width * 0.05}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
         if (paused) {
-          ctx.fillText('PAUSED', canvas.width * 0.4, canvas.height * 0.5);
+          ctx.fillText('PAUSED', canvas.width / 2, canvas.height / 2);
         } else if (!gameStarted) {
-          ctx.fillText('CLICK START', canvas.width * 0.4, canvas.height * 0.5);
+          ctx.fillText('CLICK START', canvas.width / 2, canvas.height / 2);
         }
         requestAnimationFrame(gameLoop);
         return;
