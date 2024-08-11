@@ -63,6 +63,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const gameLoop = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
       if (paused || !gameStarted) {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -76,8 +78,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         requestAnimationFrame(gameLoop);
         return;
       }
-
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       drawPlayer();
 
