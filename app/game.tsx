@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 interface GameProps {
@@ -9,6 +9,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
+  const [highScore, setHighScore] = useState(0);
+  const [lives, setLives] = useState(3);
+  const [paused, setPaused] = useState(false);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -20,9 +23,14 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     let animationFrameId: number;
     let playerY: number;
     let velocity = 0;
-    const gravity = 0.2;
+    const gravity = 0.5;
     const jumpStrength = -10;
-    const obstacles: { x: number; y: number; width: number; height: number }[] = [];
+    const obstacles: { x: number; y: number; width: number; height: number; type: string }[] = [];
+    let speed = 2;
+    const maxSpeed = 5;
+    const speedIncrease = 0.0002;
+    let powerUpActive = false;
+    let powerUpTimer = 0;
 
     const calculateCanvasSize = () => {
       const windowWidth = window.innerWidth;
@@ -40,63 +48,93 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     resizeCanvas();
 
+    const drawPlayer = () => {
+      const playerSize = canvas.width * 0.08;
+      ctx.fillStyle = powerUpActive ? '#FFD700' : '#00BFFF';
+      ctx.beginPath();
+      ctx.arc(canvas.width * 0.2, playerY, playerSize / 2, 0, Math.PI * 2);
+      ctx.fill();
+    };
+
+    const drawObstacle = (obstacle: typeof obstacles[0]) => {
+      ctx.fillStyle = obstacle.type === 'standard' ? '#2ecc71' : '#e74c3c';
+      ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
+    };
+
     const gameLoop = () => {
+      if (paused) {
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = `${canvas.width * 0.05}px Arial`;
+        ctx.fillText('PAUSED', canvas.width * 0.4, canvas.height * 0.5);
+        requestAnimationFrame(gameLoop);
+        return;
+      }
+
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      const playerRadius = canvas.width * 0.05;
+      drawPlayer();
 
-      // Draw player (DO token)
-      ctx.fillStyle = 'green';
-      ctx.beginPath();
-      ctx.arc(canvas.width * 0.1, playerY, playerRadius, 0, Math.PI * 2);
-      ctx.fill();
+      if (powerUpActive) {
+        powerUpTimer--;
+        if (powerUpTimer <= 0) {
+          powerUpActive = false;
+        }
+      }
 
-      // Update player position
       velocity += gravity;
       playerY += velocity;
 
-      // Keep player within canvas boundaries
-      playerY = Math.max(playerRadius, Math.min(canvas.height - playerRadius, playerY));
+      playerY = Math.max(canvas.height * 0.08, Math.min(canvas.height - canvas.height * 0.08, playerY));
 
-      // Generate and draw obstacles
-      if (Math.random() < 0.01) {
-        let height;
-        if (Math.random() < 0.5) {
-          // Low obstacle
-          height = canvas.height * 0.2;
-        } else {
-          // High obstacle
-          height = Math.random() * (canvas.height * 0.6) + canvas.height * 0.2;
-        }
-        obstacles.push({ x: canvas.width, y: canvas.height - height, width: canvas.width * 0.1, height });
+      speed = Math.min(speed + speedIncrease, maxSpeed);
+
+      if (Math.random() < 0.02) {
+        const gapHeight = canvas.height * 0.3;
+        const gapY = Math.random() * (canvas.height - gapHeight);
+        const obstacleType = Math.random() < 0.8 ? 'standard' : 'dangerous';
+        obstacles.push(
+          { x: canvas.width, y: 0, width: canvas.width * 0.1, height: gapY, type: obstacleType },
+          { x: canvas.width, y: gapY + gapHeight, width: canvas.width * 0.1, height: canvas.height - gapY - gapHeight, type: obstacleType }
+        );
       }
 
       obstacles.forEach((obstacle, index) => {
-        ctx.fillStyle = 'red';
-        ctx.fillRect(obstacle.x, obstacle.y, obstacle.width, obstacle.height);
-        obstacle.x -= canvas.width * 0.002;
+        drawObstacle(obstacle);
+        obstacle.x -= canvas.width * 0.005 * speed;
 
-        // Collision detection
         if (
-          canvas.width * 0.1 + playerRadius > obstacle.x &&
-          canvas.width * 0.1 - playerRadius < obstacle.x + obstacle.width &&
-          playerY + playerRadius > obstacle.y &&
-          playerY - playerRadius < obstacle.y + obstacle.height
+          !powerUpActive &&
+          canvas.width * 0.2 + canvas.width * 0.04 > obstacle.x &&
+          canvas.width * 0.2 - canvas.width * 0.04 < obstacle.x + obstacle.width &&
+          playerY + canvas.width * 0.04 > obstacle.y &&
+          playerY - canvas.width * 0.04 < obstacle.y + obstacle.height
         ) {
-          setGameOver(true);
+          if (obstacle.type === 'dangerous') {
+            setLives(prev => prev - 1);
+            if (lives <= 1) {
+              setGameOver(true);
+              setHighScore(prev => Math.max(prev, score));
+            }
+          } else {
+            setScore(prev => prev + 5);
+          }
+          obstacles.splice(index, 1);
         }
 
-        // Remove off-screen obstacles and increase score
         if (obstacle.x + obstacle.width < 0) {
           obstacles.splice(index, 1);
-          setScore(prevScore => prevScore + 1);
+          if (index % 2 === 0) {
+            setScore(prevScore => prevScore + 1);
+          }
         }
       });
 
-      // Draw score
-      ctx.fillStyle = 'white';
+      ctx.fillStyle = '#2ecc71';
       ctx.font = `${canvas.width * 0.05}px Arial`;
       ctx.fillText(`Score: ${score}`, canvas.width * 0.02, canvas.height * 0.05);
+      ctx.fillText(`Lives: ${lives}`, canvas.width * 0.02, canvas.height * 0.1);
 
       if (!gameOver) {
         animationFrameId = requestAnimationFrame(gameLoop);
@@ -105,11 +143,17 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     const handleJump = () => {
       velocity = jumpStrength;
+      if (Math.random() < 0.1) {
+        powerUpActive = true;
+        powerUpTimer = 100;
+      }
     };
 
     const handleKeyPress = (e: KeyboardEvent) => {
       if (e.code === 'Space') {
         handleJump();
+      } else if (e.code === 'KeyP' && !gameOver) {
+        setPaused(prev => !prev);
       }
     };
 
@@ -136,7 +180,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gameOver, score]);
+  }, [gameOver, score, highScore, lives, paused]);
 
   return (
     <motion.div
@@ -150,22 +194,33 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         <div className="mt-4 text-center">
           {gameOver && (
             <>
-              <h2 className="text-2xl font-bold">Game Over!</h2>
-              <p>Your score: {score}</p>
+              <h2 className="text-2xl font-bold font-pixel">Game Over!</h2>
+              <p className="font-pixel">Your score: {score}</p>
+              <p className="font-pixel">High score: {highScore}</p>
             </>
           )}
           <button
             onClick={() => {
               setGameOver(false);
               setScore(0);
+              setLives(3);
+              setPaused(false);
             }}
-            className="mt-2 bg-black text-white px-4 py-2 rounded mr-2"
+            className="mt-2 bg-black text-white px-4 py-2 rounded mr-2 font-pixel"
           >
-            Play Again
+            {gameOver ? 'Play Again' : 'Restart'}
           </button>
+          {!gameOver && (
+            <button
+              onClick={() => setPaused(prev => !prev)}
+              className="mt-2 bg-black text-white px-4 py-2 rounded mr-2 font-pixel"
+            >
+              {paused ? 'Resume' : 'Pause'}
+            </button>
+          )}
           <button
             onClick={onClose}
-            className="mt-2 bg-black text-white px-4 py-2 rounded"
+            className="mt-2 bg-black text-white px-4 py-2 rounded font-pixel"
           >
             Close
           </button>
@@ -176,11 +231,3 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 };
 
 export default Game;
-
-
-
-
-
-
-
-
