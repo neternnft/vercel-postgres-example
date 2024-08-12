@@ -1,5 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
+import { sql } from '@vercel/postgres';
 
 interface GameProps {
   onClose: () => void;
@@ -30,7 +31,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       jumpCount: 0,
     };
 
-    const obstacles: { x: number; width: number; height: number }[] = [];
+    const obstacles: { x: number; width: number; height: number; type: string }[] = [];
+    const powerUps: { x: number; y: number; type: string }[] = [];
     let speed = canvas.width / 160;
     let animationFrameId: number;
     let lastObstaclePosition = -1;
@@ -42,8 +44,15 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
-      ctx.fillStyle = '#4ade80';
+      ctx.fillStyle = obstacle.type === 'cactus' ? '#4ade80' : '#ff4500';
       ctx.fillRect(obstacle.x, canvas.height - obstacle.height, obstacle.width, obstacle.height);
+    };
+
+    const drawPowerUp = (powerUp: typeof powerUps[0]) => {
+      ctx.fillStyle = powerUp.type === 'invincibility' ? '#ffd700' : '#00ffff';
+      ctx.beginPath();
+      ctx.arc(powerUp.x, powerUp.y, 10, 0, 2 * Math.PI);
+      ctx.fill();
     };
 
     const updateDinoJump = () => {
@@ -56,7 +65,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           dino.jumping = false;
           dino.yVelocity = 0;
           dino.landingGracePeriod = 10;
-          dino.jumpCount = 0; // Reset jump count
+          dino.jumpCount = 0;
         }
       } else if (dino.landingGracePeriod > 0) {
         dino.landingGracePeriod--;
@@ -85,11 +94,37 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         ) {
           setGameOver(true);
           setHighScore(Math.max(highScore, score));
+          saveHighScore(score);
         }
 
         if (obstacle.x + obstacle.width < 0) {
           obstacles.splice(index, 1);
           setScore(score + 1);
+        }
+      });
+
+      powerUps.forEach((powerUp, index) => {
+        powerUp.x -= speed;
+        drawPowerUp(powerUp);
+
+        if (
+          dino.x < powerUp.x + 20 &&
+          dino.x + dino.width > powerUp.x &&
+          dino.y < powerUp.y + 20 &&
+          dino.y + dino.height > powerUp.y
+        ) {
+          // Apply power-up effect
+          if (powerUp.type === 'invincibility') {
+            // Implement invincibility logic
+          } else if (powerUp.type === 'slowMotion') {
+            speed *= 0.5;
+            setTimeout(() => { speed *= 2; }, 5000);
+          }
+          powerUps.splice(index, 1);
+        }
+
+        if (powerUp.x + 20 < 0) {
+          powerUps.splice(index, 1);
         }
       });
 
@@ -100,8 +135,17 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           x: canvas.width,
           width: 20 + Math.random() * 30,
           height: 40 + Math.random() * 40,
+          type: Math.random() > 0.7 ? 'fire' : 'cactus',
         });
         lastObstaclePosition = canvas.width;
+      }
+
+      if (Math.random() < 0.005) {
+        powerUps.push({
+          x: canvas.width,
+          y: Math.random() * (canvas.height - 100) + 50,
+          type: Math.random() > 0.5 ? 'invincibility' : 'slowMotion',
+        });
       }
 
       ctx.fillStyle = '#4ade80';
@@ -155,6 +199,14 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       cancelAnimationFrame(animationFrameId);
     };
   }, [gameOver, score, highScore]);
+
+  const saveHighScore = async (score: number) => {
+    try {
+      await sql`INSERT INTO high_scores (score) VALUES (${score})`;
+    } catch (error) {
+      console.error('Failed to save high score:', error);
+    }
+  };
 
   return (
     <motion.div
