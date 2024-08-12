@@ -113,7 +113,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           dino.y < powerUp.y + 20 &&
           dino.y + dino.height > powerUp.y
         ) {
-          // Apply power-up effect
           if (powerUp.type === 'invincibility') {
             // Implement invincibility logic
           } else if (powerUp.type === 'slowMotion') {
