@@ -31,6 +31,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const obstacles: { x: number; width: number; height: number }[] = [];
     let speed = canvas.width / 160;
     let animationFrameId: number;
+    let lastObstaclePosition = -1;
+    const minObstacleDistance = canvas.width / 2;
 
     const drawDino = () => {
       ctx.fillStyle = '#535353';
@@ -83,12 +85,15 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         }
       });
 
-      if (Math.random() < 0.02) {
+      if (obstacles.length === 0 || 
+          (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance && 
+           Math.random() < 0.02)) {
         obstacles.push({
           x: canvas.width,
           width: 20 + Math.random() * 30,
           height: 40 + Math.random() * 40,
         });
+        lastObstaclePosition = canvas.width;
       }
 
       ctx.fillStyle = '#535353';
