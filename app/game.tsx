@@ -27,6 +27,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       jumpHeight: 100,
       yVelocity: 0,
       landingGracePeriod: 0,
+      jumpCount: 0,
     };
 
     const obstacles: { x: number; width: number; height: number }[] = [];
@@ -55,6 +56,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           dino.jumping = false;
           dino.yVelocity = 0;
           dino.landingGracePeriod = 10;
+          dino.jumpCount = 0; // Reset jump count
         }
       } else if (dino.landingGracePeriod > 0) {
         dino.landingGracePeriod--;
@@ -118,16 +120,18 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && !dino.jumping && dino.y === canvas.height - dino.height) {
+      if (e.code === 'Space' && dino.jumpCount < 2) {
         dino.jumping = true;
         dino.yVelocity = -14;
+        dino.jumpCount++;
       }
     };
 
     const handleTouch = () => {
-      if (!dino.jumping && dino.y === canvas.height - dino.height) {
+      if (dino.jumpCount < 2) {
         dino.jumping = true;
         dino.yVelocity = -14;
+        dino.jumpCount++;
       }
     };
 
