@@ -56,12 +56,11 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       }
     };
 
-    const checkCollision = (dino: typeof dino, obstacle: typeof obstaclePool[0]) => {
-      return dino.x < obstacle.x + obstacle.width &&
-             dino.x + dino.width > obstacle.x &&
-             dino.y + dino.height > canvas.height - obstacle.height;
-    };
-
+    const checkCollision = (dino: { x: number; y: number; width: number; height: number }, obstacle: typeof obstaclePool[0]) => {
+  return dino.x < obstacle.x + obstacle.width &&
+         dino.x + dino.width > obstacle.x &&
+         dino.y + dino.height > canvas.height - obstacle.height;
+};
     const updateGame = (currentTime: number) => {
       const deltaTime = currentTime - lastTime;
       lastTime = currentTime;
