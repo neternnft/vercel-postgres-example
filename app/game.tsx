@@ -25,10 +25,11 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       height: 60,
       jumping: false,
       jumpHeight: 100,
+      yVelocity: 0,
     };
 
     const obstacles: { x: number; width: number; height: number }[] = [];
-    let speed = 5;
+    let speed = canvas.width / 160;
     let animationFrameId: number;
 
     const drawDino = () => {
@@ -41,21 +42,35 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       ctx.fillRect(obstacle.x, canvas.height - obstacle.height, obstacle.width, obstacle.height);
     };
 
+    const updateDinoJump = () => {
+      if (dino.jumping) {
+        dino.yVelocity -= 0.8;
+      } else {
+        dino.yVelocity += 0.8;
+      }
+
+      dino.y += dino.yVelocity;
+
+      if (dino.y > canvas.height - dino.height) {
+        dino.y = canvas.height - dino.height;
+        dino.jumping = false;
+        dino.yVelocity = 0;
+      }
+    };
+
     const updateGame = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw ground
       ctx.fillStyle = '#535353';
       ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
 
       drawDino();
+      updateDinoJump();
 
-      // Update and draw obstacles
       obstacles.forEach((obstacle, index) => {
         obstacle.x -= speed;
         drawObstacle(obstacle);
 
-        // Check collision
         if (
           dino.x < obstacle.x + obstacle.width &&
           dino.x + dino.width > obstacle.x &&
@@ -65,14 +80,12 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           setHighScore(Math.max(highScore, score));
         }
 
-        // Remove off-screen obstacles
         if (obstacle.x + obstacle.width < 0) {
           obstacles.splice(index, 1);
           setScore(score + 1);
         }
       });
 
-      // Spawn new obstacles
       if (Math.random() < 0.02) {
         obstacles.push({
           x: canvas.width,
@@ -81,17 +94,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         });
       }
 
-      // Update dino jump
-      if (dino.jumping) {
-        dino.y = Math.max(canvas.height - dino.height - dino.jumpHeight, dino.y - 5);
-        if (dino.y === canvas.height - dino.height - dino.jumpHeight) {
-          dino.jumping = false;
-        }
-      } else if (dino.y < canvas.height - dino.height) {
-        dino.y = Math.min(canvas.height - dino.height, dino.y + 5);
-      }
-
-      // Draw score
       ctx.fillStyle = '#535353';
       ctx.font = '20px Arial';
       ctx.fillText(`Score: ${score}`, 10, 30);
@@ -110,14 +112,34 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !dino.jumping && dino.y === canvas.height - dino.height) {
         dino.jumping = true;
+        dino.yVelocity = -15;
       }
     };
 
+    const handleTouch = () => {
+      if (!dino.jumping && dino.y === canvas.height - dino.height) {
+        dino.jumping = true;
+        dino.yVelocity = -15;
+      }
+    };
+
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight * 0.6;
+      dino.y = canvas.height - dino.height;
+      speed = canvas.width / 160;
+    };
+
     window.addEventListener('keydown', handleKeyDown);
+    canvas.addEventListener('touchstart', handleTouch);
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
     updateGame();
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
+      canvas.removeEventListener('touchstart', handleTouch);
+      window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
   }, [gameOver, score, highScore]);
@@ -130,7 +152,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
     >
       <div className="bg-white p-6 rounded-lg shadow-lg">
-        <canvas ref={canvasRef} width={800} height={300} className="border border-gray-300" />
+        <canvas ref={canvasRef} className="border border-gray-300" />
         <div className="mt-4 text-center">
           <button
             onClick={() => {
