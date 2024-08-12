@@ -49,14 +49,12 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       if (dino.jumping) {
         dino.yVelocity += 0.7;
         dino.y += dino.yVelocity;
-        dino.x += 2;
 
         if (dino.y > canvas.height - dino.height) {
           dino.y = canvas.height - dino.height;
           dino.jumping = false;
           dino.yVelocity = 0;
-          dino.x = 50;
-          dino.landingGracePeriod = 10; // Set grace period after landing
+          dino.landingGracePeriod = 10;
         }
       } else if (dino.landingGracePeriod > 0) {
         dino.landingGracePeriod--;
