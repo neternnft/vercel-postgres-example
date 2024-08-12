@@ -48,11 +48,13 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       if (dino.jumping) {
         dino.yVelocity += 0.7;
         dino.y += dino.yVelocity;
+        dino.x += 2; // Add horizontal movement during jump
 
         if (dino.y > canvas.height - dino.height) {
           dino.y = canvas.height - dino.height;
           dino.jumping = false;
           dino.yVelocity = 0;
+          dino.x = 50; // Reset horizontal position after landing
         }
       }
     };
