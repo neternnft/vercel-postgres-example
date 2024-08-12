@@ -24,80 +24,42 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       width: 40,
       height: 60,
       jumping: false,
+      jumpHeight: 100,
       yVelocity: 0,
     };
 
-    const obstaclePool: { x: number; width: number; height: number; active: boolean }[] = Array(10).fill(null).map(() => ({ x: 0, width: 0, height: 0, active: false }));
+    const obstacles: { x: number; width: number; height: number }[] = [];
     let speed = canvas.width / 160;
-    let lastTime = 0;
-    const fixedTimeStep = 1000 / 60;
-    let accumulator = 0;
+    let animationFrameId: number;
+    let lastObstaclePosition = -1;
+    const minObstacleDistance = canvas.width / 2;
 
     const drawDino = () => {
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
     };
 
-    const drawObstacle = (obstacle: typeof obstaclePool[0]) => {
+    const drawObstacle = (obstacle: typeof obstacles[0]) => {
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(obstacle.x, canvas.height - obstacle.height, obstacle.width, obstacle.height);
     };
 
-    const updateDinoJump = (deltaTime: number) => {
+    const updateDinoJump = () => {
       if (dino.jumping) {
-        dino.yVelocity += 0.0015 * deltaTime;
-        dino.y += dino.yVelocity * deltaTime;
+        dino.yVelocity += 0.7;
+        dino.y += dino.yVelocity;
+        dino.x += 2;
 
         if (dino.y > canvas.height - dino.height) {
           dino.y = canvas.height - dino.height;
           dino.jumping = false;
           dino.yVelocity = 0;
+          dino.x = 50;
         }
       }
     };
 
-    const checkCollision = (dino: { x: number; y: number; width: number; height: number }, obstacle: typeof obstaclePool[0]) => {
-  return dino.x < obstacle.x + obstacle.width &&
-         dino.x + dino.width > obstacle.x &&
-         dino.y + dino.height > canvas.height - obstacle.height;
-};
-    const updateGame = (currentTime: number) => {
-      const deltaTime = currentTime - lastTime;
-      lastTime = currentTime;
-      accumulator += deltaTime;
-
-      while (accumulator >= fixedTimeStep) {
-        updateDinoJump(fixedTimeStep);
-
-        obstaclePool.forEach(obstacle => {
-          if (obstacle.active) {
-            obstacle.x -= speed * (fixedTimeStep / 1000);
-
-            if (checkCollision(dino, obstacle)) {
-              setGameOver(true);
-              setHighScore(Math.max(highScore, score));
-            }
-
-            if (obstacle.x + obstacle.width < 0) {
-              obstacle.active = false;
-              setScore(prevScore => prevScore + 1);
-            }
-          }
-        });
-
-        if (Math.random() < 0.02 && obstaclePool.some(o => !o.active)) {
-          const obstacle = obstaclePool.find(o => !o.active);
-          if (obstacle) {
-            obstacle.x = canvas.width;
-            obstacle.width = 20 + Math.random() * 30;
-            obstacle.height = 40 + Math.random() * 40;
-            obstacle.active = true;
-          }
-        }
-
-        accumulator -= fixedTimeStep;
-      }
-
+    const updateGame = () => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
@@ -105,19 +67,44 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
 
       drawDino();
+      updateDinoJump();
 
-      obstaclePool.forEach(obstacle => {
-        if (obstacle.active) {
-          drawObstacle(obstacle);
+      obstacles.forEach((obstacle, index) => {
+        obstacle.x -= speed;
+        drawObstacle(obstacle);
+
+        if (
+          dino.x < obstacle.x + obstacle.width &&
+          dino.x + dino.width > obstacle.x &&
+          dino.y + dino.height > canvas.height - obstacle.height
+        ) {
+          setGameOver(true);
+          setHighScore(Math.max(highScore, score));
+        }
+
+        if (obstacle.x + obstacle.width < 0) {
+          obstacles.splice(index, 1);
+          setScore(score + 1);
         }
       });
+
+      if (obstacles.length === 0 || 
+          (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance && 
+           Math.random() < 0.02)) {
+        obstacles.push({
+          x: canvas.width,
+          width: 20 + Math.random() * 30,
+          height: 40 + Math.random() * 40,
+        });
+        lastObstaclePosition = canvas.width;
+      }
 
       ctx.fillStyle = '#4ade80';
       ctx.font = '20px pixel, Arial';
       ctx.fillText(`Score: ${score}`, 10, 30);
 
       if (!gameOver) {
-        requestAnimationFrame(updateGame);
+        animationFrameId = requestAnimationFrame(updateGame);
       } else {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -130,14 +117,14 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !dino.jumping && dino.y === canvas.height - dino.height) {
         dino.jumping = true;
-        dino.yVelocity = -0.7;
+        dino.yVelocity = -14;
       }
     };
 
     const handleTouch = () => {
       if (!dino.jumping && dino.y === canvas.height - dino.height) {
         dino.jumping = true;
-        dino.yVelocity = -0.7;
+        dino.yVelocity = -14;
       }
     };
 
@@ -152,12 +139,13 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     canvas.addEventListener('touchstart', handleTouch);
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-    requestAnimationFrame(updateGame);
+    updateGame();
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       canvas.removeEventListener('touchstart', handleTouch);
       window.removeEventListener('resize', resizeCanvas);
+      cancelAnimationFrame(animationFrameId);
     };
   }, [gameOver, score, highScore]);
 
