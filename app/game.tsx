@@ -24,7 +24,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       width: 40,
       height: 60,
       jumping: false,
-      jumpHeight: 100,
+      jumpHeight: 80,
       yVelocity: 0,
     };
 
@@ -44,17 +44,14 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     const updateDinoJump = () => {
       if (dino.jumping) {
-        dino.yVelocity -= 0.8;
-      } else {
         dino.yVelocity += 0.8;
-      }
+        dino.y += dino.yVelocity;
 
-      dino.y += dino.yVelocity;
-
-      if (dino.y > canvas.height - dino.height) {
-        dino.y = canvas.height - dino.height;
-        dino.jumping = false;
-        dino.yVelocity = 0;
+        if (dino.y > canvas.height - dino.height) {
+          dino.y = canvas.height - dino.height;
+          dino.jumping = false;
+          dino.yVelocity = 0;
+        }
       }
     };
 
@@ -112,14 +109,14 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !dino.jumping && dino.y === canvas.height - dino.height) {
         dino.jumping = true;
-        dino.yVelocity = -15;
+        dino.yVelocity = -12;
       }
     };
 
     const handleTouch = () => {
       if (!dino.jumping && dino.y === canvas.height - dino.height) {
         dino.jumping = true;
-        dino.yVelocity = -15;
+        dino.yVelocity = -12;
       }
     };
 
