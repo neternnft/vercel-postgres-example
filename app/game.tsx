@@ -14,6 +14,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
   const [paused, setPaused] = useState(false);
   const [gameStarted, setGameStarted] = useState(false);
   const [leaderboard, setLeaderboard] = useState<{ name: string; score: number }[]>([]);
+  const [frameCount, setFrameCount] = useState(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -33,6 +34,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const speedIncrease = 0.0002;
     let powerUpActive = false;
     let powerUpTimer = 0;
+    let currentScore = 0;
     let currentFrameCount = 0;
 
     const calculateCanvasSize = () => {
@@ -134,9 +136,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
               const newLives = prev - 1;
               if (newLives <= 0) {
                 setGameOver(true);
-                setHighScore(prevHighScore => Math.max(prevHighScore, score));
+                setHighScore(prevHighScore => Math.max(prevHighScore, currentScore));
                 setLeaderboard(prevLeaderboard => {
-                  const newLeaderboard = [...prevLeaderboard, { name: 'Player', score: score }];
+                  const newLeaderboard = [...prevLeaderboard, { name: 'Player', score: currentScore }];
                   return newLeaderboard.sort((a, b) => b.score - a.score).slice(0, 10);
                 });
               }
@@ -146,19 +148,20 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           }
 
           if (obstacle.x + obstacle.width < canvas.width * 0.2) {
-            setScore(prevScore => prevScore + 1);
+            currentScore += 1;
             obstacles.splice(index, 1);
           }
         });
 
         currentFrameCount++;
         if (currentFrameCount % 60 === 0) {
-          setScore(prevScore => prevScore + 1);
+          currentScore++;
+          setScore(currentScore);
         }
 
         ctx.fillStyle = '#2ecc71';
         ctx.font = `${canvas.width * 0.05}px Arial`;
-        ctx.fillText(`Score: ${score}`, canvas.width * 0.02, canvas.height * 0.05);
+        ctx.fillText(`Score: ${currentScore}`, canvas.width * 0.02, canvas.height * 0.05);
         ctx.fillText(`Lives: ${lives}`, canvas.width * 0.02, canvas.height * 0.1);
       }
 
@@ -206,7 +209,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gameOver, lives, paused, gameStarted, leaderboard, score]);
+  }, [gameOver, lives, paused, gameStarted, leaderboard]);
 
   const handleStartPause = () => {
     if (!gameStarted) {
