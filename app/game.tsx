@@ -26,6 +26,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       jumping: false,
       jumpHeight: 100,
       yVelocity: 0,
+      landingGracePeriod: 0,
     };
 
     const obstacles: { x: number; width: number; height: number }[] = [];
@@ -55,7 +56,10 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           dino.jumping = false;
           dino.yVelocity = 0;
           dino.x = 50;
+          dino.landingGracePeriod = 10; // Set grace period after landing
         }
+      } else if (dino.landingGracePeriod > 0) {
+        dino.landingGracePeriod--;
       }
     };
 
@@ -74,9 +78,10 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         drawObstacle(obstacle);
 
         if (
+          dino.landingGracePeriod === 0 &&
           dino.x < obstacle.x + obstacle.width &&
-          dino.x + dino.width > obstacle.x &&
-          dino.y + dino.height > canvas.height - obstacle.height
+          dino.x + dino.width * 0.8 > obstacle.x &&
+          dino.y + dino.height * 0.9 > canvas.height - obstacle.height
         ) {
           setGameOver(true);
           setHighScore(Math.max(highScore, score));
