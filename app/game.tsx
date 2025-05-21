@@ -175,42 +175,36 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             <div className="w-full max-w-[200px] flex flex-col gap-3 sm:gap-4">
               <motion.button
                 onClick={startGame}
-                className="relative group w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 text-sm sm:text-base font-pixel"
+                className="w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Start game"
               >
-                <div className="absolute inset-0 rounded-lg bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 rounded-lg ring-2 ring-[#54CA9B] ring-opacity-50 group-hover:ring-opacity-100 transition-all duration-300"></div>
-                <span className="relative z-10 tracking-wide">Start</span>
+                Start
               </motion.button>
 
               <motion.button
                 disabled
-                className="relative w-full bg-gray-600 text-gray-400 font-bold py-3 px-6 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
+                className="relative w-full bg-gray-600 text-gray-400 font-bold py-3 px-6 rounded-lg text-sm sm:text-base font-pixel cursor-not-allowed"
                 aria-label="PvP mode (Coming Soon)"
               >
-                <div className="absolute inset-0 rounded-lg ring-2 ring-gray-500 ring-opacity-50"></div>
-                <span className="relative z-10 tracking-wide">PvP</span>
+                PvP
                 <div className="absolute top-0 right-0 bg-gray-500 text-gray-200 text-xs px-2 py-0.5 rounded-bl-md rounded-tr-md">Soon</div>
               </motion.button>
 
               <motion.button
                 disabled
-                className="relative w-full bg-gray-600 text-gray-400 font-bold py-3 px-6 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
+                className="relative w-full bg-gray-600 text-gray-400 font-bold py-3 px-6 rounded-lg text-sm sm:text-base font-pixel cursor-not-allowed"
                 aria-label="Settings (Coming Soon)"
               >
-                <div className="absolute inset-0 rounded-lg ring-2 ring-gray-500 ring-opacity-50"></div>
-                <span className="relative z-10 tracking-wide">Settings</span>
+                Settings
                 <div className="absolute top-0 right-0 bg-gray-500 text-gray-200 text-xs px-2 py-0.5 rounded-bl-md rounded-tr-md">Soon</div>
               </motion.button>
 
               <motion.button
                 onClick={onClose}
-                className="relative group w-full bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 text-sm sm:text-base font-pixel"
+                className="w-full bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Close game"
               >
-                <div className="absolute inset-0 rounded-lg bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 rounded-lg ring-2 ring-red-400 ring-opacity-50 group-hover:ring-opacity-100 transition-all duration-300"></div>
-                <span className="relative z-10 tracking-wide">Close</span>
+                Close
               </motion.button>
             </div>
           </div>
@@ -227,22 +221,18 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             <div className="w-full max-w-[200px] flex flex-col gap-3">
               <motion.button
                 onClick={startGame}
-                className="relative group w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 text-sm sm:text-base font-pixel"
+                className="w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Play again"
               >
-                <div className="absolute inset-0 rounded-lg bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 rounded-lg ring-2 ring-[#54CA9B] ring-opacity-50 group-hover:ring-opacity-100 transition-all duration-300"></div>
-                <span className="relative z-10 tracking-wide">Play Again</span>
+                Play Again
               </motion.button>
 
               <motion.button
                 onClick={onClose}
-                className="relative group w-full bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 text-sm sm:text-base font-pixel"
+                className="w-full bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Close game"
               >
-                <div className="absolute inset-0 rounded-lg bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
-                <div className="absolute inset-0 rounded-lg ring-2 ring-red-400 ring-opacity-50 group-hover:ring-opacity-100 transition-all duration-300"></div>
-                <span className="relative z-10 tracking-wide">Close</span>
+                Close
               </motion.button>
             </div>
           </div>
