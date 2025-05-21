@@ -25,8 +25,15 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
-        {/* Glurbnok Text */}
-        <div className="fixed top-4 left-4 z-10">
+        {/* Glurbnok Logo and Text */}
+        <div className="fixed top-4 left-4 z-10 flex items-center space-x-2">
+          <Image
+            src="/logo.png" // <-- Your logo image path
+            alt="Logo"
+            width={40}
+            height={40}
+            className="object-contain"
+          />
           <h1 className="text-4xl sm:text-5xl font-bold text-green-400">
             Glurbnok
           </h1>
@@ -114,7 +121,12 @@ export default function Home() {
 
             {/* Buy Link */}
             <button
-              onClick={() => window.open("https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f", "_blank")}
+              onClick={() =>
+                window.open(
+                  "https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f",
+                  "_blank"
+                )
+              }
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               BUY
