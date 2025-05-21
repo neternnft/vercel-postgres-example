@@ -40,6 +40,15 @@ export class GameEngine {
   private lastTime: number = 0;
   private deltaTime: number = 0;
   private _lastJumpTime?: number;
+  private trailPoints: Array<{
+    x: number,
+    y: number,
+    alpha: number,
+    rotation: number,
+    color: string
+  }> = [];
+  private readonly MAX_TRAIL_POINTS = 3;
+  private readonly TRAIL_FADE_SPEED = 0.15;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -316,12 +325,76 @@ export class GameEngine {
     }
   }
 
+  private updateTrail(): void {
+    // Get current player color
+    const colorIndex = Math.floor(this.frameCount / 5) % GAME_CONFIG.COLORS.DISCO.length;
+    const currentColor = GAME_CONFIG.COLORS.DISCO[colorIndex];
+
+    // Add new trail point
+    this.trailPoints.unshift({
+      x: this.player.x,
+      y: this.player.y,
+      alpha: 0.3,
+      rotation: this.player.rotation,
+      color: currentColor
+    });
+
+    // Remove excess points
+    if (this.trailPoints.length > this.MAX_TRAIL_POINTS) {
+      this.trailPoints.pop();
+    }
+
+    // Update alpha of existing points
+    for (let i = 0; i < this.trailPoints.length; i++) {
+      this.trailPoints[i].alpha = Math.max(0, 0.3 - (i * this.TRAIL_FADE_SPEED));
+    }
+  }
+
+  private drawTrail(): void {
+    // Draw trail images from oldest to newest
+    for (let i = this.trailPoints.length - 1; i >= 0; i--) {
+      const point = this.trailPoints[i];
+      
+      this.ctx.save();
+      
+      // Set transparency
+      this.ctx.globalAlpha = point.alpha;
+      
+      // Translate to trail position
+      this.ctx.translate(
+        point.x + this.player.width / 2,
+        point.y + this.player.height / 2
+      );
+      
+      // Apply rotation
+      this.ctx.rotate(point.rotation);
+
+      // Draw player shape with trail color
+      this.ctx.fillStyle = point.color;
+      
+      // Draw with rounded corners (same as player)
+      this.ctx.beginPath();
+      const radius = 5;
+      this.ctx.moveTo(-this.player.width/2 + radius, -this.player.height/2);
+      this.ctx.lineTo(this.player.width/2 - radius, -this.player.height/2);
+      this.ctx.arcTo(this.player.width/2, -this.player.height/2, this.player.width/2, -this.player.height/2 + radius, radius);
+      this.ctx.lineTo(this.player.width/2, this.player.height/2 - radius);
+      this.ctx.arcTo(this.player.width/2, this.player.height/2, this.player.width/2 - radius, this.player.height/2, radius);
+      this.ctx.lineTo(-this.player.width/2 + radius, this.player.height/2);
+      this.ctx.arcTo(-this.player.width/2, this.player.height/2, -this.player.width/2, this.player.height/2 - radius, radius);
+      this.ctx.lineTo(-this.player.width/2, -this.player.height/2 + radius);
+      this.ctx.arcTo(-this.player.width/2, -this.player.height/2, -this.player.width/2 + radius, -this.player.height/2, radius);
+      this.ctx.fill();
+
+      this.ctx.restore();
+    }
+  }
+
   public update(currentTime: number = 0): void {
-    this.deltaTime = Math.min(currentTime - this.lastTime, 32); // Cap delta time to prevent large jumps
+    this.deltaTime = Math.min(currentTime - this.lastTime, 32);
     this.lastTime = currentTime;
 
-    // Update game speed with better scaling
-    const speedIncrease = Math.min(this.score * 0.15, 8); // Increased scaling with score
+    const speedIncrease = Math.min(this.score * 0.15, 8);
     const isMobile = window.innerWidth <= 768;
     const baseMultiplier = isMobile ? GAME_CONFIG.MOBILE_SPEED_MULTIPLIER : GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
     
@@ -330,14 +403,16 @@ export class GameEngine {
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Draw background with parallax
     this.drawBackground();
+
+    // Update and draw trail before player
+    this.updateTrail();
+    this.drawTrail();
 
     // Update and draw power-ups
     this.powerUps.update(this.deltaTime, this.speed);
     this.powerUps.drawActivePowerUps();
 
-    // Spawn power-ups based on score
     this.powerUps.spawnPowerUp(this.score);
 
     this.drawPlayer();
@@ -348,11 +423,9 @@ export class GameEngine {
       this.drawObstacle(obstacle);
     }
 
-    // Update and draw particles
     this.particles.update();
 
     if (this.checkCollisions()) {
-      // Create collision particles
       this.particles.createCollisionParticles(
         this.player.x + this.player.width / 2,
         this.player.y + this.player.height / 2
@@ -364,7 +437,6 @@ export class GameEngine {
       return;
     }
 
-    // Draw score with shadow
     this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     this.ctx.shadowBlur = 5;
     this.ctx.fillStyle = GAME_CONFIG.COLORS.GROUND;
@@ -406,6 +478,7 @@ export class GameEngine {
     this.obstacles = [];
     this.score = 0;
     this.frameCount = 0;
+    this.trailPoints = []; // Clear trail points
     
     // Reset player to safe position
     this.player.y = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT - GAME_CONFIG.PLAYER.HEIGHT;
@@ -417,11 +490,10 @@ export class GameEngine {
     // Clear power-ups
     this.powerUps.clear();
     
-    // Add a small delay before starting the game loop
     setTimeout(() => {
       this.lastTime = performance.now();
       this.update();
-    }, 500); // 500ms delay to ensure everything is ready
+    }, 500);
   }
 
   public stop(): void {
