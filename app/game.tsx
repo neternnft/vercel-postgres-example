@@ -57,7 +57,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
-      ctx.fillStyle = obstacle.type === 'cactus' ? '#4ade80' : '#ff4500';
+      ctx.fillStyle = '#4ade80'; // always green now
       ctx.fillRect(obstacle.x, (canvas.height - obstacle.height) / scale, obstacle.width, obstacle.height);
     };
 
@@ -165,7 +165,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           x: canvas.width,
           width: 20 + Math.random() * 30,
           height: 40 + Math.random() * 40,
-          type: Math.random() > 0.7 ? 'fire' : 'cactus',
+          type: 'cactus', // only green obstacles now
         });
       }
 
