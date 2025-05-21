@@ -274,7 +274,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
               </button>
               <button
                 onClick={onClose}
-                className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+                className="bg-red-600 hover:bg-red-700 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
               >
                 Close
               </button>
