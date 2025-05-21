@@ -9,18 +9,6 @@ interface GameProps {
 const DESKTOP_SPEED_MULTIPLIER = 1.5;
 const MOBILE_SPEED_MULTIPLIER = 1.8;
 
-const discoColors = [
-  '#FF0000', // red
-  '#FF7F00', // orange
-  '#FFFF00', // yellow
-  '#00FF00', // green
-  '#0000FF', // blue
-  '#4B0082', // indigo
-  '#8F00FF', // violet
-  '#00FFFF', // cyan
-  '#FF00FF', // magenta
-];
-
 const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameOver, setGameOver] = useState(false);
@@ -39,96 +27,61 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Set canvas size based on window size - no extra scale transform!
     const resizeCanvas = () => {
       canvas.width = window.innerWidth * 0.9;
       canvas.height = window.innerHeight * 0.6;
     };
-
     resizeCanvas();
 
-    // SCALE adjustment:
-    // We'll NOT scale vertically because it distorts cubes,
-    // instead keep 1:1 aspect for height & width so cubes are squares.
-    // We'll adjust the width with scale but keep height unscaled to keep square shape on mobile.
-    // So remove vertical scaling.
-    // We'll apply scale only horizontally if needed for responsive width.
-
-    const isMobile = window.innerWidth <= 768;
-    const baseSpeed = canvas.width / 160;
-    const speed = isMobile
-      ? baseSpeed * MOBILE_SPEED_MULTIPLIER
-      : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
-
     const groundHeight = 20;
+
+    // Speed adjusted to canvas width
+    const baseSpeed = canvas.width / 160;
+    const speed =
+      window.innerWidth <= 768
+        ? baseSpeed * MOBILE_SPEED_MULTIPLIER
+        : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
+
+    // Player is a perfect square 50x50
     const dino = {
       x: 50,
-      y: 0,
-      width: 60,
-      height: 60,
+      y: canvas.height - groundHeight - 50,
+      width: 50,
+      height: 50,
       jumping: false,
       yVelocity: 0,
       landingGracePeriod: 0,
       jumpCount: 0,
     };
 
-    dino.y = canvas.height - groundHeight - dino.height;
-
     const obstacles: { x: number; width: number; height: number; type: string }[] = [];
     const minObstacleDistance = canvas.width / 2;
 
+    const discoColors = [
+      '#FF0000',
+      '#FF7F00',
+      '#FFFF00',
+      '#00FF00',
+      '#0000FF',
+      '#4B0082',
+      '#8F00FF',
+      '#00FFFF',
+      '#FF00FF',
+    ];
     let frameCount = 0;
     let animationFrameId: number;
 
-    // Sparkling particles under the player cube
-    const sparkleParticles: { x: number; y: number; size: number; color: string; alpha: number; alphaDirection: number }[] = [];
-
-    const createSparkle = () => {
-      const size = Math.random() * 3 + 1;
-      // Sparkles just below the player cube bottom, horizontally centered +/- spread
-      const x = dino.x + dino.width / 2 + (Math.random() - 0.5) * dino.width * 0.8;
-      const y = dino.y + dino.height + (Math.random() * 5);
-      const color = discoColors[Math.floor(Math.random() * discoColors.length)];
-      sparkleParticles.push({ x, y, size, color, alpha: 1, alphaDirection: -0.05 });
-    };
-
-    const updateAndDrawSparkles = () => {
-      for (let i = sparkleParticles.length - 1; i >= 0; i--) {
-        const p = sparkleParticles[i];
-        p.alpha += p.alphaDirection;
-        if (p.alpha <= 0) {
-          sparkleParticles.splice(i, 1);
-        } else {
-          ctx.globalAlpha = p.alpha;
-          ctx.fillStyle = p.color;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.globalAlpha = 1;
-        }
-      }
-
-      if (frameCount % 3 === 0) {
-        createSparkle();
-      }
-    };
-
     const drawDino = () => {
       frameCount++;
-
-      // Player cube color cycles through discoColors over time:
-      const colorIndex = Math.floor(frameCount / 3) % discoColors.length;
+      const colorIndex = Math.floor(frameCount / 5) % discoColors.length;
       ctx.fillStyle = discoColors[colorIndex];
       ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
-
-      // Sparkles under player cube ONLY if sliding (not jumping)
-      if (!dino.jumping) {
-        updateAndDrawSparkles();
-      }
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
       const obstacleY = canvas.height - groundHeight - obstacle.height;
-      ctx.fillStyle = '#4ade80'; // green cubes
+      ctx.fillStyle = '#4ade80';
       ctx.fillRect(obstacle.x, obstacleY, obstacle.width, obstacle.height);
     };
 
@@ -151,21 +104,19 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const updateGame = () => {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Remove scaling to keep squares consistent:
-      // No ctx.setTransform scaling here to avoid vertical distortion
-
-      // Draw background:
+      // Background
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw ground:
+      // Ground
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 
-      // Draw obstacles:
+      drawDino();
+      updateDinoJump();
+
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const obstacle = obstacles[i];
         obstacle.x -= speed;
@@ -196,11 +147,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         }
       }
 
-      // Possibly add new obstacle:
       if (
         obstacles.length === 0 ||
-        (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance &&
-          Math.random() < 0.02)
+        (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance && Math.random() < 0.02)
       ) {
         obstacles.push({
           x: canvas.width,
@@ -210,15 +159,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         });
       }
 
-      drawDino();
-      updateDinoJump();
-
-      // Draw score on top left corner, with both current and high score:
       ctx.fillStyle = '#4ade80';
-      ctx.font = '22px pixel, Arial';
-      ctx.textAlign = 'left';
-      ctx.fillText(`Score: ${scoreRef.current}`, 15, 30);
-      ctx.fillText(`High Score: ${highScoreRef.current}`, 15, 55);
+      ctx.font = '20px pixel, Arial';
+      ctx.fillText(`Score: ${scoreRef.current}`, 10, 30);
 
       if (!gameOver) {
         animationFrameId = requestAnimationFrame(updateGame);
@@ -294,42 +237,44 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
               }}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
             >
-              Start Game
+              Start
             </button>
             <button
-              onClick={onClose}
-              className="bg-red-600 hover:bg-red-700 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              disabled
+              className="bg-gray-600 text-black font-bold py-3 px-6 rounded-lg shadow-md font-pixel cursor-not-allowed"
             >
-              Close
+              PvP (Coming Soon)
+            </button>
+            <button
+              disabled
+              className="bg-gray-600 text-black font-bold py-3 px-6 rounded-lg shadow-md font-pixel cursor-not-allowed"
+            >
+              Leaderboard (Coming Soon)
             </button>
           </div>
         )}
 
         {gameOver && (
           <div
-            className="absolute inset-0 bg-black bg-opacity-90 flex flex-col items-center justify-center gap-8 px-4"
-            style={{ zIndex: 20 }}
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70"
+            style={{ zIndex: 10 }}
           >
-            {/* Game Over Text BIG */}
-            <h2 className="text-white font-pixel text-6xl select-none mb-2">Game Over</h2>
-
-            {/* No score inside game over box, scores are top-left as requested */}
-
-            <div className="flex gap-6 justify-center w-full max-w-xs">
+            <h1 className="text-green-400 font-pixel text-6xl mb-10 select-none">GAME OVER</h1>
+            <div className="flex gap-8">
               <button
                 onClick={() => {
-                  setGameStarted(true);
                   setGameOver(false);
+                  setGameStarted(true);
                   scoreRef.current = 0;
                   setScore(0);
                 }}
-                className="bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+                className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
               >
                 Play Again
               </button>
               <button
                 onClick={onClose}
-                className="bg-red-600 hover:bg-red-700 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+                className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
               >
                 Close
               </button>
