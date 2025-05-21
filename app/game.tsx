@@ -75,7 +75,15 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(obstacle.x, (canvas.height - obstacle.height) / scale, obstacle.width, obstacle.height);
+      ctx.imageSmoothingEnabled = false; // Disable smoothing to avoid gaps
+
+      // Round positions and sizes to avoid subpixel gaps
+      const x = Math.round(obstacle.x);
+      const y = Math.round((canvas.height - obstacle.height) / scale);
+      const width = Math.round(obstacle.width);
+      const height = Math.round(obstacle.height);
+
+      ctx.fillRect(x, y, width, height);
     };
 
     const updateDinoJump = () => {
