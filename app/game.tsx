@@ -63,25 +63,42 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     let animationFrameId: number;
 
     const colorChangeSpeed = 5;
-    const discoColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8F00FF', '#00FFFF', '#FF00FF'];
+    const discoColors = [
+      '#FF0000',
+      '#FF7F00',
+      '#FFFF00',
+      '#00FF00',
+      '#0000FF',
+      '#4B0082',
+      '#8F00FF',
+      '#00FFFF',
+      '#FF00FF',
+    ];
     let frameCount = 0;
+
+    const groundHeight = 20;
+    const scaledGroundY = Math.round((canvas.height - groundHeight) / scale);
 
     const drawDino = () => {
       frameCount++;
       const colorIndex = Math.floor(frameCount / colorChangeSpeed) % discoColors.length;
       ctx.fillStyle = discoColors[colorIndex];
-      ctx.fillRect(dino.x, dino.y / scale, dino.width, dino.height);
+      ctx.fillRect(
+        Math.round(dino.x),
+        Math.round(dino.y / scale),
+        Math.round(dino.width),
+        Math.round(dino.height)
+      );
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
       ctx.fillStyle = '#4ade80';
-      ctx.imageSmoothingEnabled = false; // Disable smoothing to avoid gaps
+      ctx.imageSmoothingEnabled = false; // prevent blurry edges
 
-      // Round positions and sizes to avoid subpixel gaps
       const x = Math.round(obstacle.x);
-      const y = Math.round((canvas.height - obstacle.height) / scale);
       const width = Math.round(obstacle.width);
       const height = Math.round(obstacle.height);
+      const y = scaledGroundY - height; // align bottom exactly to ground
 
       ctx.fillRect(x, y, width, height);
     };
@@ -112,8 +129,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
+      // Draw ground at consistent position with obstacles
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(0, (canvas.height - 20) / scale, canvas.width / scale, 20 / scale);
+      ctx.fillRect(0, scaledGroundY, canvas.width / scale, groundHeight);
 
       drawDino();
       updateDinoJump();
