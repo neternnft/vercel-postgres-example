@@ -27,30 +27,29 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    // Set canvas size based on window size - no extra scale transform!
     const resizeCanvas = () => {
       canvas.width = window.innerWidth * 0.9;
       canvas.height = window.innerHeight * 0.6;
     };
-
     resizeCanvas();
 
-    const scale = window.innerWidth <= 768 ? 0.7 : 0.85;
+    const groundHeight = 20;
+
+    // Speed adjusted to canvas width
     const baseSpeed = canvas.width / 160;
     const speed =
       window.innerWidth <= 768
         ? baseSpeed * MOBILE_SPEED_MULTIPLIER
         : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
 
-    const groundHeight = 20;
-
-    // Player is now a perfect square 50x50
+    // Player is a perfect square 50x50
     const dino = {
       x: 50,
-      y: canvas.height - groundHeight - 50, // height 50
+      y: canvas.height - groundHeight - 50,
       width: 50,
       height: 50,
       jumping: false,
-      jumpHeight: 100,
       yVelocity: 0,
       landingGracePeriod: 0,
       jumpCount: 0,
@@ -59,7 +58,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const obstacles: { x: number; width: number; height: number; type: string }[] = [];
     const minObstacleDistance = canvas.width / 2;
 
-    const colorChangeSpeed = 5;
     const discoColors = [
       '#FF0000',
       '#FF7F00',
@@ -76,15 +74,15 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     const drawDino = () => {
       frameCount++;
-      const colorIndex = Math.floor(frameCount / colorChangeSpeed) % discoColors.length;
+      const colorIndex = Math.floor(frameCount / 5) % discoColors.length;
       ctx.fillStyle = discoColors[colorIndex];
-      ctx.fillRect(dino.x, dino.y / scale, dino.width, dino.height);
+      ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
       const obstacleY = canvas.height - groundHeight - obstacle.height;
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(obstacle.x, obstacleY / scale, obstacle.width, obstacle.height);
+      ctx.fillRect(obstacle.x, obstacleY, obstacle.width, obstacle.height);
     };
 
     const updateDinoJump = () => {
@@ -106,16 +104,15 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const updateGame = () => {
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      ctx.setTransform(scale, 0, 0, scale, 0, 0);
-
+      // Background
       ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Ground
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(0, (canvas.height - groundHeight) / scale, canvas.width / scale, groundHeight / scale);
+      ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 
       drawDino();
       updateDinoJump();
