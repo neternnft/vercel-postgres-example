@@ -3,8 +3,8 @@
 import Image from "next/image";
 import Head from "next/head";
 import { motion } from "framer-motion";
-import { useState } from 'react';
-import Game from './game';
+import { useState } from "react";
+import Game from "./game";
 
 export default function Home() {
   const [showGame, setShowGame] = useState(false);
@@ -27,7 +27,9 @@ export default function Home() {
       <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
         {/* Glurbnok Text */}
         <div className="fixed top-4 left-4 z-10">
-          <h1 className="text-4xl sm:text-5xl font-bold text-green-400">Glurbnok</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-green-400">
+            Glurbnok
+          </h1>
         </div>
 
         {/* Unmovable Container */}
@@ -62,7 +64,7 @@ export default function Home() {
             </motion.a>
           </div>
 
-          {/* New Button */}
+          {/* Start Button */}
           <motion.div
             className="mt-8"
             initial={{ opacity: 0 }}
@@ -91,7 +93,7 @@ export default function Home() {
 
         {/* Links Section at the Bottom */}
         <div className="fixed bottom-0 left-0 right-0 mb-4 sm:mb-8">
-          <div className="container mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl text-center">
+          <div className="container mx-auto grid grid-cols-3 gap-4 max-w-3xl text-center">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
@@ -100,28 +102,17 @@ export default function Home() {
               X
             </button>
 
-            {/* Telegram Link */}
-            <button
-              onClick={() => window.open("https://t.me/neternsol", "_blank")}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
-            >
-              Telegram
-            </button> 
-
-            {/* Dextools Link */}
+            {/* Arena Link */}
             <button
               onClick={() =>
-                window.open(
-                  "https://arena.social/glurbnok",
-                  "_blank"
-                )
+                window.open("https://arena.social/glurbnok", "_blank")
               }
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               Arena
             </button>
 
-            {/* Game.com Link */}
+            {/* Buy Link */}
             <button
               onClick={() => window.open("https://t.me/neternsol", "_blank")}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
