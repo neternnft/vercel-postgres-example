@@ -109,7 +109,7 @@ export default function Home() {
               }
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
-              Arena
+              ARENA
             </button>
 
             {/* Buy Link */}
@@ -117,7 +117,7 @@ export default function Home() {
               onClick={() => window.open("https://t.me/neternsol", "_blank")}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
-              Buy
+              BUY
             </button>
           </div>
         </div>
