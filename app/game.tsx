@@ -44,8 +44,15 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     let animationFrameId: number;
     const minObstacleDistance = canvas.width / 2;
 
+    // ======= Disco colors setup for player cube =======
+    const colorChangeSpeed = 5; // frames per color change (lower = faster)
+    const discoColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8F00FF', '#00FFFF', '#FF00FF'];
+    let frameCount = 0;
+
     const drawDino = () => {
-      ctx.fillStyle = '#4ade80';
+      frameCount++;
+      const colorIndex = Math.floor(frameCount / colorChangeSpeed) % discoColors.length;
+      ctx.fillStyle = discoColors[colorIndex];
       ctx.fillRect(dino.x, dino.y / scale, dino.width, dino.height);
     };
 
