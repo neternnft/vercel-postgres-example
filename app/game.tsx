@@ -9,12 +9,15 @@ interface GameProps {
 const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameOver, setGameOver] = useState(false);
+  const [gameStarted, setGameStarted] = useState(false);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
   const scoreRef = useRef(0);
   const highScoreRef = useRef(0);
 
   useEffect(() => {
+    if (!gameStarted || gameOver) return; // don't run game loop if not started or game over
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -94,6 +97,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           dino.y + dino.height * 0.9 > canvas.height - obstacle.height
         ) {
           setGameOver(true);
+          setGameStarted(false);
           scoreRef.current = scoreRef.current; // hold final score
           highScoreRef.current = Math.max(highScoreRef.current, scoreRef.current);
           setScore(scoreRef.current);
@@ -105,6 +109,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         if (obstacle.x + obstacle.width < 0) {
           obstacles.splice(index, 1);
           scoreRef.current += 1;
+          setScore(scoreRef.current);
         }
       });
 
@@ -119,7 +124,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           dino.y + dino.height > powerUp.y
         ) {
           if (powerUp.type === 'invincibility') {
-            // Implement invincibility logic
+            // Implement invincibility logic here
           } else if (powerUp.type === 'slowMotion') {
             speed *= 0.5;
             setTimeout(() => {
@@ -165,8 +170,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#4ade80';
-        ctx.font = '30px pixel, Arial';
-        ctx.fillText('GAME OVER', canvas.width / 2 - 70, canvas.height / 2);
+        ctx.font = '50px pixel, Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 50);
       }
     };
 
@@ -187,7 +193,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth;
+      canvas.width = window.innerWidth * 0.9;
       canvas.height = window.innerHeight * 0.6;
       dino.y = canvas.height - dino.height;
       speed = canvas.width / 160;
@@ -205,7 +211,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gameOver]);
+  }, [gameStarted, gameOver]);
 
   const saveHighScore = async (score: number) => {
     try {
@@ -220,28 +226,81 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75"
+      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-75"
+      style={{ overflow: 'hidden' }}
     >
-      <div className="bg-black p-6 rounded-lg shadow-lg">
-        <canvas ref={canvasRef} className="border border-green-400" />
-        <div className="mt-4 text-center">
-          <button
-            onClick={() => {
-              setGameOver(false);
-              scoreRef.current = 0;
-              setScore(0);
-            }}
-            className="mt-2 bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel mr-2"
+      <div
+        className="bg-black p-4 rounded-lg shadow-lg relative"
+        style={{ width: '90vw', height: '70vh' }}
+      >
+        <canvas ref={canvasRef} className="block w-full h-full" />
+
+        {/* Start menu overlay */}
+        {!gameStarted && !gameOver && (
+          <div
+            className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center gap-4"
+            style={{ zIndex: 10 }}
           >
-            {gameOver ? 'Play Again' : 'Restart'}
-          </button>
-          <button
-            onClick={onClose}
-            className="mt-2 bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+            <button
+              onClick={() => {
+                setGameStarted(true);
+                setGameOver(false);
+                scoreRef.current = 0;
+                setScore(0);
+              }}
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+            >
+              Start
+            </button>
+            <button
+              disabled
+              className="bg-gray-600 text-black font-bold py-3 px-6 rounded-lg shadow-md font-pixel cursor-not-allowed"
+            >
+              PvP (Coming Soon)
+            </button>
+            <button
+              disabled
+              className="bg-gray-600 text-black font-bold py-3 px-6 rounded-lg shadow-md font-pixel cursor-not-allowed"
+            >
+              Leaderboard (Coming Soon)
+            </button>
+          </div>
+        )}
+
+        {/* Game Over overlay and buttons */}
+        {gameOver && (
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70"
+            style={{ zIndex: 10 }}
           >
-            Close
-          </button>
-        </div>
+            <h1
+              className="text-green-400 font-pixel text-6xl mb-10 select-none"
+              style={{ userSelect: 'none' }}
+            >
+              GAME OVER
+            </h1>
+
+            <div className="flex gap-8">
+              <button
+                onClick={() => {
+                  setGameOver(false);
+                  setGameStarted(true);
+                  scoreRef.current = 0;
+                  setScore(0);
+                }}
+                className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              >
+                Play Again
+              </button>
+              <button
+                onClick={onClose}
+                className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </motion.div>
   );
