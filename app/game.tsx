@@ -36,18 +36,19 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     const scale = window.innerWidth <= 768 ? 0.7 : 0.85;
     const baseSpeed = canvas.width / 160;
-    const speed = window.innerWidth <= 768
-      ? baseSpeed * MOBILE_SPEED_MULTIPLIER
-      : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
+    const speed =
+      window.innerWidth <= 768
+        ? baseSpeed * MOBILE_SPEED_MULTIPLIER
+        : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
 
     const groundHeight = 20;
-    const groundY = canvas.height - groundHeight;
 
+    // Player is now a perfect square 50x50
     const dino = {
       x: 50,
-      y: groundY - 60, // set dino y to sit on ground
-      width: 40,
-      height: 60,
+      y: canvas.height - groundHeight - 50, // height 50
+      width: 50,
+      height: 50,
       jumping: false,
       jumpHeight: 100,
       yVelocity: 0,
@@ -59,7 +60,17 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const minObstacleDistance = canvas.width / 2;
 
     const colorChangeSpeed = 5;
-    const discoColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8F00FF', '#00FFFF', '#FF00FF'];
+    const discoColors = [
+      '#FF0000',
+      '#FF7F00',
+      '#FFFF00',
+      '#00FF00',
+      '#0000FF',
+      '#4B0082',
+      '#8F00FF',
+      '#00FFFF',
+      '#FF00FF',
+    ];
     let frameCount = 0;
     let animationFrameId: number;
 
@@ -71,7 +82,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
-      const obstacleY = groundY - obstacle.height;
+      const obstacleY = canvas.height - groundHeight - obstacle.height;
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(obstacle.x, obstacleY / scale, obstacle.width, obstacle.height);
     };
@@ -81,8 +92,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         dino.yVelocity += 0.7;
         dino.y += dino.yVelocity;
 
-        if (dino.y > groundY - dino.height) {
-          dino.y = groundY - dino.height;
+        const groundY = canvas.height - groundHeight - dino.height;
+        if (dino.y > groundY) {
+          dino.y = groundY;
           dino.jumping = false;
           dino.yVelocity = 0;
           dino.landingGracePeriod = 10;
@@ -99,13 +111,11 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
 
-      // Draw background
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
-      // Draw ground
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(0, groundY / scale, canvas.width / scale, groundHeight / scale);
+      ctx.fillRect(0, (canvas.height - groundHeight) / scale, canvas.width / scale, groundHeight / scale);
 
       drawDino();
       updateDinoJump();
@@ -115,7 +125,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         obstacle.x -= speed;
         drawObstacle(obstacle);
 
-        const obstacleY = groundY - obstacle.height;
+        const obstacleY = canvas.height - groundHeight - obstacle.height;
 
         const isColliding =
           dino.landingGracePeriod === 0 &&
@@ -142,8 +152,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
       if (
         obstacles.length === 0 ||
-        (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance &&
-          Math.random() < 0.02)
+        (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance && Math.random() < 0.02)
       ) {
         obstacles.push({
           x: canvas.width,
@@ -253,9 +262,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70"
             style={{ zIndex: 10 }}
           >
-            <h1 className="text-green-400 font-pixel text-6xl mb-10 select-none">
-              GAME OVER
-            </h1>
+            <h1 className="text-green-400 font-pixel text-6xl mb-10 select-none">GAME OVER</h1>
             <div className="flex gap-8">
               <button
                 onClick={() => {
