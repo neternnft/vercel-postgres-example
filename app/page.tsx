@@ -28,13 +28,16 @@ export default function Home() {
         {/* Glurbnok Logo and Text */}
         <div className="fixed top-4 left-4 z-10 flex items-center space-x-2">
           <Image
-            src="/logo.png" // <-- Your logo image path
+            src="/logo.png"
             alt="Logo"
             width={70}
             height={70}
             className="object-contain"
           />
-          <h1 className="text-4xl sm:text-5xl font-bold text-green-400">
+          <h1
+            className="text-4xl sm:text-5xl font-bold"
+            style={{ color: "#54CA9B" }}
+          >
             Glurbnok
           </h1>
         </div>
@@ -79,11 +82,12 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <motion.button
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 text-xl"
+              style={{ backgroundColor: "#54CA9B" }}
+              className="text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 text-xl"
               animate={{
                 boxShadow: [
-                  "0 0 0 0 rgba(46, 204, 113, 0.7)",
-                  "0 0 0 20px rgba(46, 204, 113, 0)",
+                  "0 0 0 0 rgba(84, 202, 155, 0.7)",
+                  "0 0 0 20px rgba(84, 202, 155, 0)",
                 ],
                 transition: {
                   repeat: Infinity,
@@ -92,6 +96,12 @@ export default function Home() {
                 },
               }}
               onClick={handleStartClick}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#42A97A")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#54CA9B")
+              }
             >
               PLAY
             </motion.button>
@@ -104,7 +114,14 @@ export default function Home() {
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              style={{ backgroundColor: "#54CA9B" }}
+              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#42A97A")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#54CA9B")
+              }
             >
               X
             </button>
@@ -114,7 +131,14 @@ export default function Home() {
               onClick={() =>
                 window.open("https://arena.social/glurbnok", "_blank")
               }
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              style={{ backgroundColor: "#54CA9B" }}
+              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#42A97A")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#54CA9B")
+              }
             >
               ARENA
             </button>
@@ -127,7 +151,14 @@ export default function Home() {
                   "_blank"
                 )
               }
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              style={{ backgroundColor: "#54CA9B" }}
+              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.backgroundColor = "#42A97A")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.backgroundColor = "#54CA9B")
+              }
             >
               BUY
             </button>
