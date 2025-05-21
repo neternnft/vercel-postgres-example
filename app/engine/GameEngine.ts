@@ -49,6 +49,19 @@ export class GameEngine {
   }> = [];
   private readonly MAX_TRAIL_POINTS = 3;
   private readonly TRAIL_FADE_SPEED = 0.15;
+  private parallaxLayers: Array<{
+    x: number;
+    speed: number;
+    elements: Array<{
+      x: number;
+      y: number;
+      size: number;
+      color: string;
+      shape: 'circle' | 'square' | 'star';
+      yOffset?: number;
+      ySpeed?: number;
+    }>;
+  }> = [];
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -89,8 +102,119 @@ export class GameEngine {
       rotation: 0
     };
 
+    // Initialize parallax layers
+    this.initParallaxLayers();
+
     // Start background music
     this.sounds.play('background');
+  }
+
+  private initParallaxLayers(): void {
+    // Create layers with natural depth simulation
+    // Layer 1: Far background (slowest, smallest, most transparent)
+    // Layer 2: Middle ground
+    // Layer 3: Foreground (fastest, largest, most opaque)
+    const layers = [
+      { count: 25, speed: 0.05, size: { min: 1, max: 1.5 }, colors: ['rgba(255, 255, 255, 0.1)'] },  // Stars in far background
+      { count: 15, speed: 0.1, size: { min: 1.5, max: 2 }, colors: ['rgba(96, 165, 250, 0.15)'] }, // Middle layer
+      { count: 10, speed: 0.15, size: { min: 2, max: 2.5 }, colors: ['rgba(52, 211, 153, 0.2)'] }   // Closest layer
+    ];
+
+    layers.forEach((layer, index) => {
+      const elements = Array.from({ length: layer.count }, () => {
+        // Distribute elements more naturally across the screen
+        const x = Math.random() * this.canvas.width;
+        // More elements in upper part of screen for perspective
+        const heightRange = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT;
+        const y = Math.random() * heightRange * 0.9; // Keep slightly away from ground
+        
+        return {
+          x,
+          y,
+          size: layer.size.min + Math.random() * (layer.size.max - layer.size.min),
+          color: layer.colors[Math.floor(Math.random() * layer.colors.length)],
+          shape: 'circle' as 'circle' | 'square' | 'star',
+          // Add slight vertical movement for more natural feel
+          yOffset: 0,
+          ySpeed: (0.1 + Math.random() * 0.1) * (Math.random() < 0.5 ? 1 : -1) // Reduced vertical movement speed
+        };
+      });
+
+      this.parallaxLayers.push({
+        x: 0,
+        speed: layer.speed,
+        elements
+      });
+    });
+  }
+
+  private drawStar(x: number, y: number, size: number): void {
+    const spikes = 5;
+    const outerRadius = size;
+    const innerRadius = size / 2;
+
+    this.ctx.beginPath();
+    for (let i = 0; i < spikes * 2; i++) {
+      const radius = i % 2 === 0 ? outerRadius : innerRadius;
+      const angle = (i * Math.PI) / spikes;
+      const pointX = x + Math.cos(angle) * radius;
+      const pointY = y + Math.sin(angle) * radius;
+      if (i === 0) this.ctx.moveTo(pointX, pointY);
+      else this.ctx.lineTo(pointX, pointY);
+    }
+    this.ctx.closePath();
+    this.ctx.fill();
+  }
+
+  private drawParallaxLayers(): void {
+    this.parallaxLayers.forEach((layer, layerIndex) => {
+      // Move elements from right to left (opposite to player's movement)
+      layer.x -= this.speed * layer.speed * (this.deltaTime / 16);
+      
+      layer.elements.forEach(element => {
+        // Update vertical position for subtle floating movement
+        if ('yOffset' in element) {
+          element.yOffset = (element.yOffset || 0) + (element.ySpeed || 0) * (this.deltaTime / 16);
+          // Reverse direction at bounds
+          if (Math.abs(element.yOffset) > 5) {
+            element.ySpeed = -(element.ySpeed || 0);
+          }
+        }
+
+        this.ctx.fillStyle = element.color;
+        
+        // Calculate wrapped x position
+        let xPos = (element.x - layer.x) % this.canvas.width;
+        if (xPos < 0) xPos += this.canvas.width;
+
+        // Calculate y position with offset
+        const yPos = element.y + (element.yOffset || 0);
+
+        // Draw element with subtle glow effect for closer layers
+        if (layerIndex > 0) {
+          this.ctx.shadowColor = element.color;
+          this.ctx.shadowBlur = layerIndex * 2;
+        }
+
+        // Draw main element
+        this.ctx.beginPath();
+        this.ctx.arc(xPos, yPos, element.size, 0, Math.PI * 2);
+        this.ctx.fill();
+
+        // Reset shadow for efficiency
+        if (layerIndex > 0) {
+          this.ctx.shadowBlur = 0;
+        }
+
+        // Draw wrapped element if it's near the right edge
+        if (xPos > this.canvas.width - element.size * 2) {
+          const wrappedX = xPos - this.canvas.width;
+          this.ctx.beginPath();
+          this.ctx.arc(wrappedX, yPos, element.size, 0, Math.PI * 2);
+          this.ctx.fill();
+        }
+      });
+    });
   }
 
   private drawBackground(): void {
@@ -104,16 +228,8 @@ export class GameEngine {
     this.ctx.fillStyle = gradient;
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Add subtle pattern
-    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-    const patternSize = 20;
-    for (let x = 0; x < this.canvas.width; x += patternSize) {
-      for (let y = 0; y < this.canvas.height; y += patternSize) {
-        if ((x + y) % (patternSize * 2) === 0) {
-          this.ctx.fillRect(x, y, patternSize, patternSize);
-        }
-      }
-    }
+    // Draw parallax layers
+    this.drawParallaxLayers();
 
     // Add a subtle glow at the top
     const glowGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height * 0.4);
@@ -486,6 +602,10 @@ export class GameEngine {
     this.player.yVelocity = 0;
     this.player.jumpCount = 0;
     this.player.rotation = 0;
+    
+    // Reset parallax layers
+    this.parallaxLayers = [];
+    this.initParallaxLayers();
     
     // Clear power-ups
     this.powerUps.clear();
