@@ -166,7 +166,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = '#4ade80';
         ctx.font = '30px pixel, Arial';
-        ctx.fillText('Game Over', canvas.width / 2 - 70, canvas.height / 2);
+        ctx.fillText('GAME OVER', canvas.width / 2 - 70, canvas.height / 2);
       }
     };
 
