@@ -11,6 +11,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
+  const scoreRef = useRef(0);
+  const highScoreRef = useRef(0);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -35,7 +37,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const powerUps: { x: number; y: number; type: string }[] = [];
     let speed = canvas.width / 160;
     let animationFrameId: number;
-    let lastObstaclePosition = -1;
     const minObstacleDistance = canvas.width / 2;
 
     const drawDino = () => {
@@ -93,13 +94,17 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           dino.y + dino.height * 0.9 > canvas.height - obstacle.height
         ) {
           setGameOver(true);
-          setHighScore(Math.max(highScore, score));
-          saveHighScore(score);
+          scoreRef.current = scoreRef.current; // hold final score
+          highScoreRef.current = Math.max(highScoreRef.current, scoreRef.current);
+          setScore(scoreRef.current);
+          setHighScore(highScoreRef.current);
+          saveHighScore(scoreRef.current);
+          return; // stop further processing in this frame
         }
 
         if (obstacle.x + obstacle.width < 0) {
           obstacles.splice(index, 1);
-          setScore(score + 1);
+          scoreRef.current += 1;
         }
       });
 
@@ -117,7 +122,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             // Implement invincibility logic
           } else if (powerUp.type === 'slowMotion') {
             speed *= 0.5;
-            setTimeout(() => { speed *= 2; }, 5000);
+            setTimeout(() => {
+              speed *= 2;
+            }, 5000);
           }
           powerUps.splice(index, 1);
         }
@@ -127,16 +134,17 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         }
       });
 
-      if (obstacles.length === 0 || 
-          (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance && 
-           Math.random() < 0.02)) {
+      if (
+        obstacles.length === 0 ||
+        (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance &&
+          Math.random() < 0.02)
+      ) {
         obstacles.push({
           x: canvas.width,
           width: 20 + Math.random() * 30,
           height: 40 + Math.random() * 40,
           type: Math.random() > 0.7 ? 'fire' : 'cactus',
         });
-        lastObstaclePosition = canvas.width;
       }
 
       if (Math.random() < 0.005) {
@@ -149,7 +157,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
       ctx.fillStyle = '#4ade80';
       ctx.font = '20px pixel, Arial';
-      ctx.fillText(`Score: ${score}`, 10, 30);
+      ctx.fillText(`Score: ${scoreRef.current}`, 10, 30);
 
       if (!gameOver) {
         animationFrameId = requestAnimationFrame(updateGame);
@@ -197,7 +205,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
-  }, [gameOver, score, highScore]);
+  }, [gameOver]);
 
   const saveHighScore = async (score: number) => {
     try {
@@ -220,6 +228,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           <button
             onClick={() => {
               setGameOver(false);
+              scoreRef.current = 0;
               setScore(0);
             }}
             className="mt-2 bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 font-pixel mr-2"
