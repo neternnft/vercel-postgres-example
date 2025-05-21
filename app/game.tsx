@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useCallback } from 'react';
+import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GameEngine } from './engine/GameEngine';
 import { useGameState } from './hooks/useGameState';
@@ -11,6 +11,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const { gameState, startGame, endGame, updateScore } = useGameState();
+  const [isMuted, setIsMuted] = useState(false);
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current;
@@ -30,6 +31,13 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
   const handleTouch = useCallback(() => {
     engineRef.current?.jump();
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    if (engineRef.current) {
+      const muted = engineRef.current.toggleMute();
+      setIsMuted(muted);
+    }
   }, []);
 
   useEffect(() => {
@@ -79,6 +87,24 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           role="application"
           aria-label="Game canvas"
         />
+
+        {/* Sound control button */}
+        <button
+          onClick={toggleMute}
+          className="absolute top-4 right-4 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-md transition-colors duration-300"
+          aria-label={isMuted ? "Unmute game sounds" : "Mute game sounds"}
+        >
+          {isMuted ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+            </svg>
+          )}
+        </button>
 
         {!gameState.gameStarted && !gameState.gameOver && (
           <div
