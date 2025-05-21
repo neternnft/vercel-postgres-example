@@ -6,9 +6,8 @@ interface GameProps {
   onClose: () => void;
 }
 
-// Speed multipliers to easily adjust game speed on desktop and mobile
-const DESKTOP_SPEED_MULTIPLIER = 2.2;    // Normal desktop speed (1 = base speed)
-const MOBILE_SPEED_MULTIPLIER = 1.5;   // Mobile speed multiplier (1.3 = 30% faster)
+const DESKTOP_SPEED_MULTIPLIER = 1.5;
+const MOBILE_SPEED_MULTIPLIER = 1.5;
 
 const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -27,6 +26,14 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
+
+    // Resize canvas before calculating speed
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth * 0.9;
+      canvas.height = window.innerHeight * 0.6;
+    };
+
+    resizeCanvas(); // Ensure canvas size is correct before starting
 
     // Determine scale and speed based on screen width
     const scale = window.innerWidth <= 768 ? 0.7 : 0.85;
@@ -103,7 +110,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       drawDino();
       updateDinoJump();
 
-      obstacles.forEach((obstacle, index) => {
+      for (let i = obstacles.length - 1; i >= 0; i--) {
+        const obstacle = obstacles[i];
         obstacle.x -= speed;
         drawObstacle(obstacle);
 
@@ -115,7 +123,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         ) {
           setGameOver(true);
           setGameStarted(false);
-          scoreRef.current = scoreRef.current;
           highScoreRef.current = Math.max(highScoreRef.current, scoreRef.current);
           setScore(scoreRef.current);
           setHighScore(highScoreRef.current);
@@ -124,11 +131,11 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         }
 
         if (obstacle.x + obstacle.width < 0) {
-          obstacles.splice(index, 1);
+          obstacles.splice(i, 1);
           scoreRef.current += 1;
           setScore(scoreRef.current);
         }
-      });
+      }
 
       if (
         obstacles.length === 0 ||
@@ -177,16 +184,10 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       }
     };
 
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth * 0.9;
-      canvas.height = window.innerHeight * 0.6;
-      dino.y = canvas.height - dino.height;
-    };
-
     window.addEventListener('keydown', handleKeyDown);
     canvas.addEventListener('touchstart', handleTouch);
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
+
     updateGame();
 
     return () => {
