@@ -112,7 +112,7 @@ export default function Home() {
             <button
               onClick={() =>
                 window.open(
-                  "https://t.me/neternsol",
+                  "https://arena.social/glurbnok",
                   "_blank"
                 )
               }
@@ -123,7 +123,7 @@ export default function Home() {
 
             {/* Game.com Link */}
             <button
-              onClick={() => window.open("https://arena.social/glurbnok", "_blank")}
+              onClick={() => window.open("https://t.me/neternsol", "_blank")}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               Buy
