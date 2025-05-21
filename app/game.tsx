@@ -173,34 +173,45 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             style={{ zIndex: 10 }}
           >
             <div className="w-full max-w-[200px] flex flex-col gap-3 sm:gap-4">
-              <button
+              <motion.button
                 onClick={startGame}
-                className="w-full bg-green-400 hover:bg-green-500 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
+                className="relative group w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Start game"
               >
-                Start
-              </button>
-              <button
+                <div className="absolute inset-0 rounded-lg bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 rounded-lg ring-2 ring-[#54CA9B] ring-opacity-50 group-hover:ring-opacity-100 transition-all duration-300"></div>
+                <span className="relative z-10 tracking-wide">Start</span>
+              </motion.button>
+
+              <motion.button
                 disabled
-                className="w-full bg-gray-600 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
+                className="relative w-full bg-gray-600 text-gray-400 font-bold py-3 px-6 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
                 aria-label="PvP mode (Coming Soon)"
               >
-                PvP
-              </button>
-              <button
+                <div className="absolute inset-0 rounded-lg ring-2 ring-gray-500 ring-opacity-50"></div>
+                <span className="relative z-10 tracking-wide">PvP</span>
+                <div className="absolute top-0 right-0 bg-gray-500 text-gray-200 text-xs px-2 py-0.5 rounded-bl-md rounded-tr-md">Soon</div>
+              </motion.button>
+
+              <motion.button
                 disabled
-                className="w-full bg-gray-600 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
+                className="relative w-full bg-gray-600 text-gray-400 font-bold py-3 px-6 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
                 aria-label="Settings (Coming Soon)"
               >
-                Settings
-              </button>
-              <button
+                <div className="absolute inset-0 rounded-lg ring-2 ring-gray-500 ring-opacity-50"></div>
+                <span className="relative z-10 tracking-wide">Settings</span>
+                <div className="absolute top-0 right-0 bg-gray-500 text-gray-200 text-xs px-2 py-0.5 rounded-bl-md rounded-tr-md">Soon</div>
+              </motion.button>
+
+              <motion.button
                 onClick={onClose}
-                className="w-full bg-red-400 hover:bg-red-500 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
+                className="relative group w-full bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Close game"
               >
-                Close
-              </button>
+                <div className="absolute inset-0 rounded-lg bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 rounded-lg ring-2 ring-red-400 ring-opacity-50 group-hover:ring-opacity-100 transition-all duration-300"></div>
+                <span className="relative z-10 tracking-wide">Close</span>
+              </motion.button>
             </div>
           </div>
         )}
@@ -214,20 +225,25 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             <p className="text-xl sm:text-2xl text-white mb-1 sm:mb-2">Score: {gameState.score}</p>
             <p className="text-lg sm:text-xl text-white mb-3 sm:mb-4">High Score: {gameState.highScore}</p>
             <div className="w-full max-w-[200px] flex flex-col gap-3">
-              <button
+              <motion.button
                 onClick={startGame}
-                className="w-full bg-green-400 hover:bg-green-500 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
+                className="relative group w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Play again"
               >
-                Play Again
-              </button>
-              <button
+                <div className="absolute inset-0 rounded-lg bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 rounded-lg ring-2 ring-[#54CA9B] ring-opacity-50 group-hover:ring-opacity-100 transition-all duration-300"></div>
+                <span className="relative z-10 tracking-wide">Play Again</span>
+              </motion.button>
+
+              <motion.button
                 onClick={onClose}
-                className="w-full bg-red-400 hover:bg-red-500 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
+                className="relative group w-full bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg transition-all duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Close game"
               >
-                Close
-              </button>
+                <div className="absolute inset-0 rounded-lg bg-black opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+                <div className="absolute inset-0 rounded-lg ring-2 ring-red-400 ring-opacity-50 group-hover:ring-opacity-100 transition-all duration-300"></div>
+                <span className="relative z-10 tracking-wide">Close</span>
+              </motion.button>
             </div>
           </div>
         )}
