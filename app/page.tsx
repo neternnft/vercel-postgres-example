@@ -30,8 +30,8 @@ export default function Home() {
           <Image
             src="/logo.png" // <-- Your logo image path
             alt="Logo"
-            width={40}
-            height={40}
+            width={70}
+            height={70}
             className="object-contain"
           />
           <h1 className="text-4xl sm:text-5xl font-bold text-green-400">
