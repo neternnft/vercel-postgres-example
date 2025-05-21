@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { sql } from '@vercel/postgres';
 
 interface GameState {
@@ -19,6 +19,16 @@ export const useGameState = () => {
   const scoreRef = useRef(0);
   const highScoreRef = useRef(0);
 
+  // Load high score from localStorage on mount
+  useEffect(() => {
+    const savedHighScore = localStorage.getItem('glurbnokHighScore');
+    if (savedHighScore) {
+      const parsedHighScore = parseInt(savedHighScore, 10);
+      setGameState(prev => ({ ...prev, highScore: parsedHighScore }));
+      highScoreRef.current = parsedHighScore;
+    }
+  }, []);
+
   const startGame = useCallback(() => {
     setGameState(prev => ({
       ...prev,
@@ -32,6 +42,11 @@ export const useGameState = () => {
   const endGame = useCallback(async () => {
     const finalScore = scoreRef.current;
     const newHighScore = Math.max(highScoreRef.current, finalScore);
+    
+    // Save new high score to localStorage if it's higher
+    if (newHighScore > highScoreRef.current) {
+      localStorage.setItem('glurbnokHighScore', newHighScore.toString());
+    }
     
     setGameState(prev => ({
       ...prev,

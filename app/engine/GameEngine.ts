@@ -60,13 +60,14 @@ export class GameEngine {
     this.sounds = new SoundManager();
     this.powerUps = new PowerUpSystem(ctx, canvas.width, canvas.height);
 
-    // Initialize speed based on screen size
-    this.baseSpeed = canvas.width / 160;
-    this.speed = window.innerWidth <= 768
+    // Initialize speed based on screen size with better scaling
+    this.baseSpeed = Math.min(canvas.width / 160, 8); // Cap the base speed
+    const isMobile = window.innerWidth <= 768;
+    this.speed = isMobile
       ? this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER
       : this.baseSpeed * GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
 
-    // Initialize player
+    // Initialize player with safe starting position
     this.player = {
       x: GAME_CONFIG.PLAYER.INITIAL_X,
       y: canvas.height - GAME_CONFIG.GROUND_HEIGHT - GAME_CONFIG.PLAYER.HEIGHT,
@@ -210,18 +211,19 @@ export class GameEngine {
         ? GAME_CONFIG.PLAYER.GRAVITY * 0.5 
         : GAME_CONFIG.PLAYER.GRAVITY;
       
-      this.player.yVelocity += gravity * (this.deltaTime / 16);
-      this.player.y += this.player.yVelocity;
+      // Fixed timestep for more consistent physics
+      const fixedDeltaTime = Math.min(this.deltaTime, 32) / 16;
+      this.player.yVelocity += gravity * fixedDeltaTime;
+      this.player.y += this.player.yVelocity * fixedDeltaTime;
 
       const groundY = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT - this.player.height;
       if (this.player.y > groundY) {
         this.player.y = groundY;
         this.player.jumping = false;
         this.player.yVelocity = 0;
-        this.player.landingGracePeriod = 10;
+        this.player.landingGracePeriod = 5; // Reduced from 10 to 5 for more responsive jumps
         this.player.jumpCount = 0;
         
-        // Create landing particles
         this.particles.createJumpParticles(
           this.player.x,
           this.player.y + this.player.height
@@ -231,7 +233,6 @@ export class GameEngine {
       this.player.landingGracePeriod--;
     }
 
-    // Ensure player stays within canvas bounds
     if (this.player.y < 0) {
       this.player.y = 0;
       this.player.yVelocity = 0;
@@ -274,6 +275,12 @@ export class GameEngine {
   }
 
   private updateObstacles(): void {
+    // Don't spawn obstacles immediately at game start
+    if (this.frameCount < 60) { // Wait for 60 frames
+      this.frameCount++;
+      return;
+    }
+
     for (let i = this.obstacles.length - 1; i >= 0; i--) {
       const obstacle = this.obstacles[i];
       obstacle.x -= this.speed * (this.deltaTime / 16);
@@ -283,7 +290,6 @@ export class GameEngine {
         this.score += 1;
         this.onScore();
         
-        // Create score particles
         this.particles.createScoreParticles(10, 30);
         this.sounds.play('score');
       }
@@ -295,8 +301,13 @@ export class GameEngine {
       (this.canvas.width - this.obstacles[this.obstacles.length - 1].x > minObstacleDistance &&
         Math.random() < GAME_CONFIG.OBSTACLE.SPAWN_CHANCE)
     ) {
+      // Ensure first obstacle is far enough away
+      const startingX = this.obstacles.length === 0 
+        ? this.canvas.width * 1.5 // Place first obstacle further away
+        : this.canvas.width;
+
       this.obstacles.push({
-        x: this.canvas.width,
+        x: startingX,
         y: this.canvas.height - GAME_CONFIG.GROUND_HEIGHT,
         width: GAME_CONFIG.OBSTACLE.MIN_WIDTH + Math.random() * GAME_CONFIG.OBSTACLE.MAX_WIDTH_ADDITION,
         height: GAME_CONFIG.OBSTACLE.MIN_HEIGHT + Math.random() * GAME_CONFIG.OBSTACLE.MAX_HEIGHT_ADDITION,
@@ -306,13 +317,16 @@ export class GameEngine {
   }
 
   public update(currentTime: number = 0): void {
-    this.deltaTime = currentTime - this.lastTime;
+    this.deltaTime = Math.min(currentTime - this.lastTime, 32); // Cap delta time to prevent large jumps
     this.lastTime = currentTime;
 
-    // Update game speed based on score
-    const speedIncrease = Math.min(this.score * 0.1, 5);
+    // Update game speed with better scaling
+    const speedIncrease = Math.min(this.score * 0.15, 8); // Increased scaling with score
+    const isMobile = window.innerWidth <= 768;
+    const baseMultiplier = isMobile ? GAME_CONFIG.MOBILE_SPEED_MULTIPLIER : GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
+    
     this.speed = (this.powerUps.hasPowerUp('slowMotion') ? 0.5 : 1) * 
-                 (this.baseSpeed + speedIncrease);
+                 (this.baseSpeed + speedIncrease) * baseMultiplier;
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -366,15 +380,14 @@ export class GameEngine {
     const maxJumps = this.powerUps.hasPowerUp('doubleJump') ? 3 : 2;
     
     if (this.player.jumpCount < maxJumps) {
-      // Add a small delay between jumps to prevent super-fast double jumps
+      // Reduced jump cooldown for more responsive controls
       const now = performance.now();
-      if (!this._lastJumpTime || now - this._lastJumpTime > 100) {
+      if (!this._lastJumpTime || now - this._lastJumpTime > 50) { // Reduced from 100 to 50ms
         this.player.jumping = true;
         this.player.yVelocity = GAME_CONFIG.PLAYER.JUMP_VELOCITY;
         this.player.jumpCount++;
         this._lastJumpTime = now;
         
-        // Create jump particles
         this.particles.createJumpParticles(
           this.player.x,
           this.player.y + this.player.height
@@ -389,9 +402,26 @@ export class GameEngine {
   }
 
   public start(): void {
-    this.lastTime = performance.now();
+    // Clear any existing game state
+    this.obstacles = [];
+    this.score = 0;
+    this.frameCount = 0;
+    
+    // Reset player to safe position
+    this.player.y = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT - GAME_CONFIG.PLAYER.HEIGHT;
+    this.player.jumping = false;
+    this.player.yVelocity = 0;
+    this.player.jumpCount = 0;
+    this.player.rotation = 0;
+    
+    // Clear power-ups
     this.powerUps.clear();
-    this.update();
+    
+    // Add a small delay before starting the game loop
+    setTimeout(() => {
+      this.lastTime = performance.now();
+      this.update();
+    }, 500); // 500ms delay to ensure everything is ready
   }
 
   public stop(): void {
@@ -401,8 +431,10 @@ export class GameEngine {
   }
 
   public resize(): void {
-    this.baseSpeed = this.canvas.width / 160;
-    this.speed = window.innerWidth <= 768
+    // Update base speed with better scaling on resize
+    this.baseSpeed = Math.min(this.canvas.width / 160, 8);
+    const isMobile = window.innerWidth <= 768;
+    this.speed = isMobile
       ? this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER
       : this.baseSpeed * GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
   }

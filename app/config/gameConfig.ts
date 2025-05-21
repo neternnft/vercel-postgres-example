@@ -6,9 +6,9 @@ export const GAME_CONFIG = {
     WIDTH: 50,
     HEIGHT: 50,
     INITIAL_X: 50,
-    JUMP_VELOCITY: -15,
+    JUMP_VELOCITY: -18,
     MAX_JUMPS: 2,
-    GRAVITY: 0.8,
+    GRAVITY: 1.0,
   },
   OBSTACLE: {
     MIN_WIDTH: 15,
