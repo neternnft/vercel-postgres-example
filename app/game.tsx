@@ -7,7 +7,7 @@ interface GameProps {
 }
 
 const DESKTOP_SPEED_MULTIPLIER = 1.5;
-const MOBILE_SPEED_MULTIPLIER = 1.5;
+const MOBILE_SPEED_MULTIPLIER = 1.8;
 
 const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
