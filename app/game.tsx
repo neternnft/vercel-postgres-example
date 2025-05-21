@@ -1,213 +1,63 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
-import { sql } from '@vercel/postgres';
+import { GameEngine } from './engine/GameEngine';
+import { useGameState } from './hooks/useGameState';
 
 interface GameProps {
   onClose: () => void;
 }
 
-const DESKTOP_SPEED_MULTIPLIER = 1.5;
-const MOBILE_SPEED_MULTIPLIER = 1.8;
-
 const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [gameOver, setGameOver] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(0);
-  const scoreRef = useRef(0);
-  const highScoreRef = useRef(0);
+  const engineRef = useRef<GameEngine | null>(null);
+  const { gameState, startGame, endGame, updateScore } = useGameState();
+
+  const resizeCanvas = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      canvas.width = window.innerWidth * 0.9;
+      canvas.height = window.innerHeight * 0.6;
+      engineRef.current?.resize();
+    }
+  }, []);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.code === 'Space') {
+      e.preventDefault();
+      engineRef.current?.jump();
+    }
+  }, []);
+
+  const handleTouch = useCallback(() => {
+    engineRef.current?.jump();
+  }, []);
 
   useEffect(() => {
-    if (!gameStarted || gameOver) return;
+    if (!gameState.gameStarted || gameState.gameOver) {
+      engineRef.current?.stop();
+      return;
+    }
 
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Set canvas size based on window size - no extra scale transform!
-    const resizeCanvas = () => {
-      canvas.width = window.innerWidth * 0.9;
-      canvas.height = window.innerHeight * 0.6;
-    };
     resizeCanvas();
 
-    const groundHeight = 20;
-
-    // Speed adjusted to canvas width
-    const baseSpeed = canvas.width / 160;
-    const speed =
-      window.innerWidth <= 768
-        ? baseSpeed * MOBILE_SPEED_MULTIPLIER
-        : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
-
-    // Player is a perfect square 50x50
-    const dino = {
-      x: 50,
-      y: canvas.height - groundHeight - 50,
-      width: 50,
-      height: 50,
-      jumping: false,
-      yVelocity: 0,
-      landingGracePeriod: 0,
-      jumpCount: 0,
-    };
-
-    const obstacles: { x: number; width: number; height: number; type: string }[] = [];
-    const minObstacleDistance = canvas.width / 2;
-
-    const discoColors = [
-      '#FF0000',
-      '#FF7F00',
-      '#FFFF00',
-      '#00FF00',
-      '#0000FF',
-      '#4B0082',
-      '#8F00FF',
-      '#00FFFF',
-      '#FF00FF',
-    ];
-    let frameCount = 0;
-    let animationFrameId: number;
-
-    const drawDino = () => {
-      frameCount++;
-      const colorIndex = Math.floor(frameCount / 5) % discoColors.length;
-      ctx.fillStyle = discoColors[colorIndex];
-      ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
-    };
-
-    const drawObstacle = (obstacle: typeof obstacles[0]) => {
-      const obstacleY = canvas.height - groundHeight - obstacle.height;
-      ctx.fillStyle = '#4ade80';
-      ctx.fillRect(obstacle.x, obstacleY, obstacle.width, obstacle.height);
-    };
-
-    const updateDinoJump = () => {
-      if (dino.jumping) {
-        dino.yVelocity += 0.7;
-        dino.y += dino.yVelocity;
-
-        const groundY = canvas.height - groundHeight - dino.height;
-        if (dino.y > groundY) {
-          dino.y = groundY;
-          dino.jumping = false;
-          dino.yVelocity = 0;
-          dino.landingGracePeriod = 10;
-          dino.jumpCount = 0;
-        }
-      } else if (dino.landingGracePeriod > 0) {
-        dino.landingGracePeriod--;
-      }
-    };
-
-    const updateGame = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      // Background
-      ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Ground
-      ctx.fillStyle = '#4ade80';
-      ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
-
-      drawDino();
-      updateDinoJump();
-
-      for (let i = obstacles.length - 1; i >= 0; i--) {
-        const obstacle = obstacles[i];
-        obstacle.x -= speed;
-        drawObstacle(obstacle);
-
-        const obstacleY = canvas.height - groundHeight - obstacle.height;
-
-        const isColliding =
-          dino.landingGracePeriod === 0 &&
-          dino.x < obstacle.x + obstacle.width &&
-          dino.x + dino.width > obstacle.x &&
-          dino.y + dino.height > obstacleY;
-
-        if (isColliding) {
-          setGameOver(true);
-          setGameStarted(false);
-          highScoreRef.current = Math.max(highScoreRef.current, scoreRef.current);
-          setScore(scoreRef.current);
-          setHighScore(highScoreRef.current);
-          saveHighScore(scoreRef.current);
-          return;
-        }
-
-        if (obstacle.x + obstacle.width < 0) {
-          obstacles.splice(i, 1);
-          scoreRef.current += 1;
-          setScore(scoreRef.current);
-        }
-      }
-
-      if (
-        obstacles.length === 0 ||
-        (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance && Math.random() < 0.02)
-      ) {
-        obstacles.push({
-          x: canvas.width,
-          width: 20 + Math.random() * 30,
-          height: 40 + Math.random() * 40,
-          type: 'cactus',
-        });
-      }
-
-      ctx.fillStyle = '#4ade80';
-      ctx.font = '20px pixel, Arial';
-      ctx.fillText(`Score: ${scoreRef.current}`, 10, 30);
-
-      if (!gameOver) {
-        animationFrameId = requestAnimationFrame(updateGame);
-      }
-    };
-
-    const jump = () => {
-      if (dino.jumpCount < 2) {
-        dino.jumping = true;
-        dino.yVelocity = -14;
-        dino.jumpCount++;
-      }
-    };
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space') {
-        e.preventDefault();
-        jump();
-      }
-    };
-
-    const handleTouch = () => {
-      jump();
-    };
+    // Initialize game engine
+    engineRef.current = new GameEngine(canvas, updateScore, endGame);
+    engineRef.current.start();
 
     window.addEventListener('keydown', handleKeyDown);
     canvas.addEventListener('touchstart', handleTouch);
     window.addEventListener('resize', resizeCanvas);
 
-    updateGame();
-
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       canvas.removeEventListener('touchstart', handleTouch);
       window.removeEventListener('resize', resizeCanvas);
-      cancelAnimationFrame(animationFrameId);
+      engineRef.current?.stop();
     };
-  }, [gameStarted, gameOver]);
-
-  const saveHighScore = async (score: number) => {
-    try {
-      await sql`INSERT INTO high_scores (score) VALUES (${score})`;
-    } catch (error) {
-      console.error('Failed to save high score:', error);
-    }
-  };
+  }, [gameState.gameStarted, gameState.gameOver, endGame, updateScore, handleKeyDown, handleTouch, resizeCanvas]);
 
   return (
     <motion.div
@@ -216,69 +66,78 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       exit={{ opacity: 0 }}
       className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-75"
       style={{ overflow: 'hidden' }}
+      role="dialog"
+      aria-label="Game window"
     >
       <div
         className="bg-black p-4 rounded-lg shadow-lg relative"
         style={{ width: '90vw', height: '70vh' }}
       >
-        <canvas ref={canvasRef} className="block w-full h-full" />
+        <canvas 
+          ref={canvasRef} 
+          className="block w-full h-full"
+          role="application"
+          aria-label="Game canvas"
+        />
 
-        {!gameStarted && !gameOver && (
+        {!gameState.gameStarted && !gameState.gameOver && (
           <div
             className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center gap-4"
             style={{ zIndex: 10 }}
           >
             <button
-              onClick={() => {
-                setGameStarted(true);
-                setGameOver(false);
-                scoreRef.current = 0;
-                setScore(0);
-              }}
+              onClick={startGame}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              aria-label="Start game"
             >
               Start
             </button>
             <button
               disabled
               className="bg-gray-600 text-black font-bold py-3 px-6 rounded-lg shadow-md font-pixel cursor-not-allowed"
+              aria-label="PvP mode (Coming Soon)"
             >
               PvP (Coming Soon)
             </button>
             <button
               disabled
               className="bg-gray-600 text-black font-bold py-3 px-6 rounded-lg shadow-md font-pixel cursor-not-allowed"
+              aria-label="Settings (Coming Soon)"
             >
-              Leaderboard (Coming Soon)
+              Settings (Coming Soon)
+            </button>
+            <button
+              onClick={onClose}
+              className="bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              aria-label="Close game"
+            >
+              Close
             </button>
           </div>
         )}
 
-        {gameOver && (
+        {gameState.gameOver && (
           <div
-            className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70"
+            className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center gap-4"
             style={{ zIndex: 10 }}
           >
-            <h1 className="text-green-400 font-pixel text-6xl mb-10 select-none">GAME OVER</h1>
-            <div className="flex gap-8">
-              <button
-                onClick={() => {
-                  setGameOver(false);
-                  setGameStarted(true);
-                  scoreRef.current = 0;
-                  setScore(0);
-                }}
-                className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-              >
-                Play Again
-              </button>
-              <button
-                onClick={onClose}
-                className="bg-red-600 hover:bg-red-700 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-              >
-                Close
-              </button>
-            </div>
+            <h2 className="text-4xl font-bold text-white mb-4">Game Over!</h2>
+            <p className="text-2xl text-white mb-2">Score: {gameState.score}</p>
+            <p className="text-xl text-white mb-4">High Score: {gameState.highScore}</p>
+            <button
+              onClick={startGame}
+              className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
+              aria-label="Play again"
+            >
+              Play Again
+            </button>
+            <button
+              onClick={onClose}
+              className="bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel mt-2"
+              aria-label="Close game"
+            >
+              Close
+            </button>
           </div>
         )}
       </div>

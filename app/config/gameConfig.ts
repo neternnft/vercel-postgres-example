@@ -1,0 +1,35 @@
+export const GAME_CONFIG = {
+  DESKTOP_SPEED_MULTIPLIER: 1.5,
+  MOBILE_SPEED_MULTIPLIER: 1.8,
+  GROUND_HEIGHT: 20,
+  PLAYER: {
+    WIDTH: 50,
+    HEIGHT: 50,
+    INITIAL_X: 50,
+    JUMP_VELOCITY: -14,
+    MAX_JUMPS: 2,
+    GRAVITY: 0.7,
+  },
+  OBSTACLE: {
+    MIN_WIDTH: 20,
+    MAX_WIDTH_ADDITION: 30,
+    MIN_HEIGHT: 40,
+    MAX_HEIGHT_ADDITION: 40,
+    SPAWN_CHANCE: 0.02,
+  },
+  COLORS: {
+    DISCO: [
+      '#FF0000',
+      '#FF7F00',
+      '#FFFF00',
+      '#00FF00',
+      '#0000FF',
+      '#4B0082',
+      '#8F00FF',
+      '#00FFFF',
+      '#FF00FF',
+    ],
+    GROUND: '#4ade80',
+    BACKGROUND: '#000000',
+  },
+} as const; 
