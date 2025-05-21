@@ -1,13 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { sql } from '@vercel/postgres';
 
 interface GameProps {
   onClose: () => void;
 }
-
-const DESKTOP_SPEED_MULTIPLIER = 1.5;
-const MOBILE_SPEED_MULTIPLIER = 1.8;
 
 const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -23,55 +19,87 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     const canvas = canvasRef.current;
     if (!canvas) return;
-
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth * 0.9;
-      canvas.height = window.innerHeight * 0.6;
+      if (window.innerWidth <= 768) {
+        // Mobile
+        canvas.width = window.innerWidth * 0.9;
+        canvas.height = window.innerHeight * 0.5;
+      } else {
+        // Desktop
+        canvas.width = window.innerWidth * 0.7;
+        canvas.height = window.innerHeight * 0.7;
+      }
     };
 
     resizeCanvas();
 
-    const scale = window.innerWidth <= 768 ? 1 : 1;
-    const baseSpeed = canvas.width / 160;
-    const speed = window.innerWidth <= 768
-      ? baseSpeed * MOBILE_SPEED_MULTIPLIER
-      : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
+    // Recalculate sizes dynamically based on canvas size
+    const isMobile = window.innerWidth <= 768;
 
-    const groundHeight = 20;
-    const squareSize = 60;
+    // Player and obstacle size relative to canvas height
+    const playerSize = isMobile ? canvas.height * 0.15 : canvas.height * 0.1; // bigger on mobile relatively
+    const groundHeight = canvas.height * 0.1; // 10% of canvas height
+    const obstacleWidth = playerSize * 0.6;
+    const obstacleMinHeight = playerSize * 0.6;
+    const obstacleMaxHeight = playerSize * 1.2;
+
+    // Speed relative to canvas width
+    const baseSpeed = canvas.width / 160;
+    const speed = isMobile ? baseSpeed * 1.8 : baseSpeed * 1.5;
+
     const dino = {
-      x: 50,
-      y: 0,
-      width: squareSize,
-      height: squareSize,
+      x: canvas.width * 0.1,
+      y: canvas.height - groundHeight - playerSize,
+      width: playerSize,
+      height: playerSize,
       jumping: false,
-      jumpHeight: 100,
       yVelocity: 0,
-      landingGracePeriod: 0,
       jumpCount: 0,
+      landingGracePeriod: 0,
     };
 
-    dino.y = canvas.height - groundHeight - dino.height;
-
-    const obstacles: { x: number; width: number; height: number; type: string }[] = [];
+    const obstacles: { x: number; width: number; height: number }[] = [];
     const minObstacleDistance = canvas.width / 2;
 
     const discoColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8F00FF', '#00FFFF', '#FF00FF'];
     let frameCount = 0;
     let animationFrameId: number;
 
-    const drawSparkles = () => {
-      const sparkleCount = 6;
-      for (let i = 0; i < sparkleCount; i++) {
-        const x = dino.x + Math.random() * dino.width;
-        const y = dino.y + dino.height - 5 - Math.random() * 4;
-        const size = 2 + Math.random() * 2;
-        ctx.fillStyle = discoColors[Math.floor(Math.random() * discoColors.length)];
-        ctx.fillRect(x, y, size, size);
-      }
+    type Particle = { x: number; y: number; alpha: number; size: number; color: string; life: number };
+    const particles: Particle[] = [];
+
+    const drawParticles = () => {
+      particles.forEach((p, i) => {
+        p.alpha -= 0.03;
+        p.y += 0.5;
+        p.life--;
+        if (p.alpha <= 0 || p.life <= 0) {
+          particles.splice(i, 1);
+        } else {
+          ctx.fillStyle = p.color;
+          ctx.globalAlpha = p.alpha;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.globalAlpha = 1;
+        }
+      });
+    };
+
+    const createSparkle = () => {
+      const color = discoColors[Math.floor(Math.random() * discoColors.length)];
+      const size = Math.random() * 1.5 + 0.5;
+      particles.push({
+        x: dino.x + dino.width / 2 + (Math.random() * 20 - 10),
+        y: dino.y + dino.height + 2,
+        alpha: 1,
+        size,
+        color,
+        life: 20 + Math.floor(Math.random() * 10),
+      });
     };
 
     const drawDino = () => {
@@ -80,8 +108,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       ctx.fillStyle = discoColors[colorIndex];
       ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
 
-      if (!dino.jumping && dino.landingGracePeriod === 0) {
-        drawSparkles();
+      if (!dino.jumping && dino.landingGracePeriod > 0) {
+        createSparkle();
       }
     };
 
@@ -116,11 +144,22 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
+      // Draw ground
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 
       drawDino();
+      drawParticles();
       updateDinoJump();
+
+      if (obstacles.length === 0 || (canvas.width - obstacles[obstacles.length - 1].x) > minObstacleDistance) {
+        const obsHeight = obstacleMinHeight + Math.random() * (obstacleMaxHeight - obstacleMinHeight);
+        obstacles.push({
+          x: canvas.width,
+          width: obstacleWidth,
+          height: obsHeight,
+        });
+      }
 
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const obstacle = obstacles[i];
@@ -128,6 +167,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         drawObstacle(obstacle);
 
         const obstacleY = canvas.height - groundHeight - obstacle.height;
+
         const isColliding =
           dino.landingGracePeriod === 0 &&
           dino.x < obstacle.x + obstacle.width &&
@@ -140,7 +180,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           highScoreRef.current = Math.max(highScoreRef.current, scoreRef.current);
           setScore(scoreRef.current);
           setHighScore(highScoreRef.current);
-          saveHighScore(scoreRef.current);
           return;
         }
 
@@ -151,22 +190,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         }
       }
 
-      if (
-        obstacles.length === 0 ||
-        (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance &&
-          Math.random() < 0.02)
-      ) {
-        obstacles.push({
-          x: canvas.width,
-          width: 20 + Math.random() * 30,
-          height: 40 + Math.random() * 40,
-          type: 'cactus',
-        });
-      }
-
       ctx.fillStyle = '#4ade80';
-      ctx.font = '20px pixel, Arial';
-      ctx.fillText(`Score: ${scoreRef.current}`, 10, 30);
+      ctx.font = `${Math.floor(canvas.height * 0.04)}px pixel, Arial`;
+      ctx.fillText(`Score: ${scoreRef.current}`, 10, canvas.height * 0.06);
 
       if (!gameOver) {
         animationFrameId = requestAnimationFrame(updateGame);
@@ -206,90 +232,99 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
   }, [gameStarted, gameOver]);
 
-  const saveHighScore = async (score: number) => {
-    try {
-      await sql`INSERT INTO high_scores (score) VALUES (${score})`;
-    } catch (error) {
-      console.error('Failed to save high score:', error);
-    }
-  };
-
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black bg-opacity-75"
-      style={{ overflow: 'hidden' }}
+    <div
+      style={{
+        position: 'fixed',
+        inset: 0,
+        backgroundColor: 'rgba(0,0,0,0.8)',
+        zIndex: 9999,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+      }}
     >
-      <div
-        className="bg-black p-4 rounded-lg shadow-lg relative"
-        style={{ width: '90vw', height: '70vh' }}
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        exit={{ scale: 0 }}
+        transition={{ type: 'spring', stiffness: 260, damping: 20 }}
+        style={{
+          backgroundColor: 'black',
+          borderRadius: '1rem',
+          padding: '20px',
+          maxWidth: 720,
+          width: '100%',
+          border: '4px solid #4ade80',
+          boxShadow: '0 0 30px #4ade80',
+        }}
       >
-        <canvas ref={canvasRef} className="block w-full h-full" />
-
-        {!gameStarted && !gameOver && (
-          <div
-            className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center gap-4"
-            style={{ zIndex: 10 }}
+        <canvas
+          ref={canvasRef}
+          style={{
+            borderRadius: '1rem',
+            display: 'block',
+            margin: '0 auto 20px',
+            width: '100%',
+            maxHeight: '70vh',
+            backgroundColor: 'black',
+            userSelect: 'none',
+          }}
+        />
+        {!gameStarted && (
+          <motion.button
+            onClick={() => {
+              setGameOver(false);
+              scoreRef.current = 0;
+              setScore(0);
+              setGameStarted(true);
+            }}
+            style={{
+              backgroundColor: '#54CA9B',
+              color: 'black',
+              fontWeight: 'bold',
+              padding: '12px 24px',
+              borderRadius: '0.5rem',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+              transition: 'background-color 0.3s',
+              cursor: 'pointer',
+              width: '100%',
+              fontSize: '1.25rem',
+              marginBottom: 10,
+            }}
+            whileTap={{ scale: 0.95 }}
           >
-            <button
-              onClick={() => {
-                setGameStarted(true);
-                setGameOver(false);
-                scoreRef.current = 0;
-                setScore(0);
-              }}
-              className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-            >
-              Start
-            </button>
-            <button
-              disabled
-              className="bg-gray-600 text-black font-bold py-3 px-6 rounded-lg shadow-md font-pixel cursor-not-allowed"
-            >
-              PvP (Coming Soon)
-            </button>
-            <button
-              disabled
-              className="bg-gray-600 text-black font-bold py-3 px-6 rounded-lg shadow-md font-pixel cursor-not-allowed"
-            >
-              Leaderboard (Coming Soon)
-            </button>
-          </div>
+            Start Game
+          </motion.button>
         )}
-
         {gameOver && (
-          <div
-            className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70"
-            style={{ zIndex: 10 }}
-          >
-            <h1 className="text-green-400 font-pixel text-6xl mb-10 select-none">
-              GAME OVER
-            </h1>
-            <div className="flex gap-8">
-              <button
-                onClick={() => {
-                  setGameOver(false);
-                  setGameStarted(true);
-                  scoreRef.current = 0;
-                  setScore(0);
-                }}
-                className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-              >
-                Play Again
-              </button>
-              <button
-                onClick={onClose}
-                className="bg-green-400 hover:bg-green-500 text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 font-pixel"
-              >
-                Close
-              </button>
-            </div>
+          <div style={{ textAlign: 'center', color: 'white', marginTop: 10 }}>
+            <p>Game Over! Your score: {score}</p>
+            <p>High Score: {highScore}</p>
           </div>
         )}
-      </div>
-    </motion.div>
+        <motion.button
+          onClick={onClose}
+          style={{
+            backgroundColor: '#54CA9B',
+            color: 'black',
+            fontWeight: 'bold',
+            padding: '12px 24px',
+            borderRadius: '0.5rem',
+            boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+            transition: 'background-color 0.3s',
+            cursor: 'pointer',
+            width: '100%',
+            fontSize: '1.25rem',
+          }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Close
+        </motion.button>
+      </motion.div>
+    </div>
   );
 };
 
