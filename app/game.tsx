@@ -27,76 +27,76 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const dpr = window.devicePixelRatio || 1;
+    const resizeCanvas = () => {
+      canvas.width = window.innerWidth * 0.9;
+      canvas.height = window.innerHeight * 0.6;
+    };
 
-    // Set CSS size of the canvas
-    const cssWidth = window.innerWidth * 0.9;
-    const cssHeight = window.innerHeight * 0.6;
+    resizeCanvas();
 
-    // Set canvas internal resolution for sharpness
-    canvas.width = cssWidth * dpr;
-    canvas.height = cssHeight * dpr;
-
-    // Set CSS size to control on-screen size
-    canvas.style.width = `${cssWidth}px`;
-    canvas.style.height = `${cssHeight}px`;
-
-    // Reset transform and scale context to DPR
-    ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.scale(dpr, dpr);
-
-    // Constants for the game
-    const scale = window.innerWidth <= 768 ? 0.7 : 0.85;
-    const baseSpeed = cssWidth / 160;
+    const scale = window.innerWidth <= 768 ? 1 : 1;
+    const baseSpeed = canvas.width / 160;
     const speed = window.innerWidth <= 768
       ? baseSpeed * MOBILE_SPEED_MULTIPLIER
       : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
 
     const groundHeight = 20;
-
-    // Player dino object (perfect square for width=height)
+    const squareSize = 60;
     const dino = {
       x: 50,
       y: 0,
-      width: 50,
-      height: 50,
+      width: squareSize,
+      height: squareSize,
       jumping: false,
+      jumpHeight: 100,
       yVelocity: 0,
       landingGracePeriod: 0,
       jumpCount: 0,
-      jumpHeight: 100,
     };
 
-    // Start player on the ground (account for scale)
-    dino.y = cssHeight - groundHeight - dino.height;
+    dino.y = canvas.height - groundHeight - dino.height;
 
     const obstacles: { x: number; width: number; height: number; type: string }[] = [];
-    const minObstacleDistance = cssWidth / 2;
+    const minObstacleDistance = canvas.width / 2;
 
-    const colorChangeSpeed = 5;
     const discoColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8F00FF', '#00FFFF', '#FF00FF'];
     let frameCount = 0;
     let animationFrameId: number;
 
+    const drawSparkles = () => {
+      const sparkleCount = 6;
+      for (let i = 0; i < sparkleCount; i++) {
+        const x = dino.x + Math.random() * dino.width;
+        const y = dino.y + dino.height - 5 - Math.random() * 4;
+        const size = 2 + Math.random() * 2;
+        ctx.fillStyle = discoColors[Math.floor(Math.random() * discoColors.length)];
+        ctx.fillRect(x, y, size, size);
+      }
+    };
+
     const drawDino = () => {
       frameCount++;
-      const colorIndex = Math.floor(frameCount / colorChangeSpeed) % discoColors.length;
+      const colorIndex = Math.floor(frameCount / 5) % discoColors.length;
       ctx.fillStyle = discoColors[colorIndex];
       ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+
+      if (!dino.jumping && dino.landingGracePeriod === 0) {
+        drawSparkles();
+      }
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
-      const obstacleY = cssHeight - groundHeight - obstacle.height;
+      const obstacleY = canvas.height - groundHeight - obstacle.height;
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(obstacle.x, obstacleY, obstacle.width, obstacle.height);
     };
 
     const updateDinoJump = () => {
       if (dino.jumping) {
-        dino.yVelocity += 0.7; // gravity
+        dino.yVelocity += 0.7;
         dino.y += dino.yVelocity;
 
-        const groundY = cssHeight - groundHeight - dino.height;
+        const groundY = canvas.height - groundHeight - dino.height;
         if (dino.y > groundY) {
           dino.y = groundY;
           dino.jumping = false;
@@ -110,28 +110,24 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const updateGame = () => {
-      // Clear canvas
-      ctx.clearRect(0, 0, cssWidth, cssHeight);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Draw background
       ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, cssWidth, cssHeight);
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      // Draw ground
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(0, cssHeight - groundHeight, cssWidth, groundHeight);
+      ctx.fillRect(0, canvas.height - groundHeight, canvas.width, groundHeight);
 
       drawDino();
       updateDinoJump();
 
-      // Update obstacles
       for (let i = obstacles.length - 1; i >= 0; i--) {
         const obstacle = obstacles[i];
         obstacle.x -= speed;
         drawObstacle(obstacle);
 
-        const obstacleY = cssHeight - groundHeight - obstacle.height;
-
+        const obstacleY = canvas.height - groundHeight - obstacle.height;
         const isColliding =
           dino.landingGracePeriod === 0 &&
           dino.x < obstacle.x + obstacle.width &&
@@ -155,21 +151,19 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         }
       }
 
-      // Add new obstacles randomly with spacing
       if (
         obstacles.length === 0 ||
-        (cssWidth - obstacles[obstacles.length - 1].x > minObstacleDistance &&
+        (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance &&
           Math.random() < 0.02)
       ) {
         obstacles.push({
-          x: cssWidth,
+          x: canvas.width,
           width: 20 + Math.random() * 30,
           height: 40 + Math.random() * 40,
           type: 'cactus',
         });
       }
 
-      // Draw score
       ctx.fillStyle = '#4ade80';
       ctx.font = '20px pixel, Arial';
       ctx.fillText(`Score: ${scoreRef.current}`, 10, 30);
@@ -200,25 +194,14 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     window.addEventListener('keydown', handleKeyDown);
     canvas.addEventListener('touchstart', handleTouch);
-    window.addEventListener('resize', () => {
-      // On resize, reset canvas size and update dino.y accordingly
-      const newCssWidth = window.innerWidth * 0.9;
-      const newCssHeight = window.innerHeight * 0.6;
-      canvas.width = newCssWidth * dpr;
-      canvas.height = newCssHeight * dpr;
-      canvas.style.width = `${newCssWidth}px`;
-      canvas.style.height = `${newCssHeight}px`;
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.scale(dpr, dpr);
-      dino.y = newCssHeight - groundHeight - dino.height;
-    });
+    window.addEventListener('resize', resizeCanvas);
 
     updateGame();
 
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
       canvas.removeEventListener('touchstart', handleTouch);
-      window.removeEventListener('resize', () => {});
+      window.removeEventListener('resize', resizeCanvas);
       cancelAnimationFrame(animationFrameId);
     };
   }, [gameStarted, gameOver]);
