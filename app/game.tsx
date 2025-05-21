@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GameEngine } from './engine/GameEngine';
@@ -134,12 +136,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           maxHeight: '90vh'
         }}
       >
-        {isLandscape ? null : (
-          <div className="absolute top-0 left-0 right-0 text-center py-2 text-white text-sm bg-black bg-opacity-50 rounded-t-lg">
-            Tip: Rotate device for better gameplay
-          </div>
-        )}
-
         <canvas 
           ref={canvasRef} 
           className="block rounded-lg"
@@ -176,34 +172,36 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center gap-3 sm:gap-4 p-4"
             style={{ zIndex: 10 }}
           >
-            <button
-              onClick={startGame}
-              className="w-full sm:w-auto bg-green-400 hover:bg-green-500 text-black font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
-              aria-label="Start game"
-            >
-              Start
-            </button>
-            <button
-              disabled
-              className="w-full sm:w-auto bg-gray-600 text-black font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
-              aria-label="PvP mode (Coming Soon)"
-            >
-              PvP (Coming Soon)
-            </button>
-            <button
-              disabled
-              className="w-full sm:w-auto bg-gray-600 text-black font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
-              aria-label="Settings (Coming Soon)"
-            >
-              Settings (Coming Soon)
-            </button>
-            <button
-              onClick={onClose}
-              className="w-full sm:w-auto bg-red-400 hover:bg-red-500 text-black font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
-              aria-label="Close game"
-            >
-              Close
-            </button>
+            <div className="w-full max-w-[200px] flex flex-col gap-3 sm:gap-4">
+              <button
+                onClick={startGame}
+                className="w-full bg-green-400 hover:bg-green-500 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
+                aria-label="Start game"
+              >
+                Start
+              </button>
+              <button
+                disabled
+                className="w-full bg-gray-600 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
+                aria-label="PvP mode (Coming Soon)"
+              >
+                PvP
+              </button>
+              <button
+                disabled
+                className="w-full bg-gray-600 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md text-sm sm:text-base font-pixel cursor-not-allowed"
+                aria-label="Settings (Coming Soon)"
+              >
+                Settings
+              </button>
+              <button
+                onClick={onClose}
+                className="w-full bg-red-400 hover:bg-red-500 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
+                aria-label="Close game"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
 
@@ -215,20 +213,22 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             <h2 className="text-2xl sm:text-4xl font-bold text-white mb-2 sm:mb-4">Game Over!</h2>
             <p className="text-xl sm:text-2xl text-white mb-1 sm:mb-2">Score: {gameState.score}</p>
             <p className="text-lg sm:text-xl text-white mb-3 sm:mb-4">High Score: {gameState.highScore}</p>
-            <button
-              onClick={startGame}
-              className="w-full sm:w-auto bg-green-400 hover:bg-green-500 text-black font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
-              aria-label="Play again"
-            >
-              Play Again
-            </button>
-            <button
-              onClick={onClose}
-              className="w-full sm:w-auto bg-red-400 hover:bg-red-500 text-black font-bold py-2 sm:py-3 px-4 sm:px-6 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel mt-2"
-              aria-label="Close game"
-            >
-              Close
-            </button>
+            <div className="w-full max-w-[200px] flex flex-col gap-3">
+              <button
+                onClick={startGame}
+                className="w-full bg-green-400 hover:bg-green-500 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
+                aria-label="Play again"
+              >
+                Play Again
+              </button>
+              <button
+                onClick={onClose}
+                className="w-full bg-red-400 hover:bg-red-500 text-black font-bold py-2 sm:py-3 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base font-pixel"
+                aria-label="Close game"
+              >
+                Close
+              </button>
+            </div>
           </div>
         )}
       </div>
