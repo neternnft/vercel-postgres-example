@@ -39,7 +39,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const obstacles: { x: number; width: number; height: number; type: string }[] = [];
-    const powerUps: { x: number; y: number; type: string }[] = [];
     let speed = canvas.width / 160;
     let animationFrameId: number;
     const minObstacleDistance = canvas.width / 2;
@@ -59,13 +58,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
       ctx.fillStyle = '#4ade80'; // always green now
       ctx.fillRect(obstacle.x, (canvas.height - obstacle.height) / scale, obstacle.width, obstacle.height);
-    };
-
-    const drawPowerUp = (powerUp: typeof powerUps[0]) => {
-      ctx.fillStyle = powerUp.type === 'invincibility' ? '#ffd700' : '#00ffff';
-      ctx.beginPath();
-      ctx.arc(powerUp.x, powerUp.y / scale, 10, 0, 2 * Math.PI);
-      ctx.fill();
     };
 
     const updateDinoJump = () => {
@@ -130,32 +122,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         }
       });
 
-      powerUps.forEach((powerUp, index) => {
-        powerUp.x -= speed;
-        drawPowerUp(powerUp);
-
-        if (
-          dino.x < powerUp.x + 20 &&
-          dino.x + dino.width > powerUp.x &&
-          dino.y < powerUp.y + 20 &&
-          dino.y + dino.height > powerUp.y
-        ) {
-          if (powerUp.type === 'invincibility') {
-            // Implement invincibility logic here
-          } else if (powerUp.type === 'slowMotion') {
-            speed *= 0.5;
-            setTimeout(() => {
-              speed *= 2;
-            }, 5000);
-          }
-          powerUps.splice(index, 1);
-        }
-
-        if (powerUp.x + 20 < 0) {
-          powerUps.splice(index, 1);
-        }
-      });
-
       if (
         obstacles.length === 0 ||
         (canvas.width - obstacles[obstacles.length - 1].x > minObstacleDistance &&
@@ -166,14 +132,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           width: 20 + Math.random() * 30,
           height: 40 + Math.random() * 40,
           type: 'cactus', // only green obstacles now
-        });
-      }
-
-      if (Math.random() < 0.005) {
-        powerUps.push({
-          x: canvas.width,
-          y: Math.random() * (canvas.height - 100) + 50,
-          type: Math.random() > 0.5 ? 'invincibility' : 'slowMotion',
         });
       }
 
