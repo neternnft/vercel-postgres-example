@@ -114,7 +114,7 @@ export default function Home() {
 
             {/* Buy Link */}
             <button
-              onClick={() => window.open("https://t.me/neternsol", "_blank")}
+              onClick={() => window.open("https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f", "_blank")}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               BUY
