@@ -24,7 +24,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const scale = 0.85; // Zoom out scale factor (adjust if needed)
+    // Determine scale based on screen width (mobile vs desktop)
+    const scale = window.innerWidth <= 768 ? 0.7 : 0.85;
 
     const dino = {
       x: 50,
