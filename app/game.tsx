@@ -41,9 +41,11 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
 
     const groundHeight = 20;
+    const groundY = canvas.height - groundHeight;
+
     const dino = {
       x: 50,
-      y: 0,
+      y: groundY - 60, // set dino y to sit on ground
       width: 40,
       height: 60,
       jumping: false,
@@ -52,8 +54,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       landingGracePeriod: 0,
       jumpCount: 0,
     };
-
-    dino.y = canvas.height - groundHeight - dino.height;
 
     const obstacles: { x: number; width: number; height: number; type: string }[] = [];
     const minObstacleDistance = canvas.width / 2;
@@ -71,7 +71,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
-      const obstacleY = canvas.height - groundHeight - obstacle.height;
+      const obstacleY = groundY - obstacle.height;
       ctx.fillStyle = '#4ade80';
       ctx.fillRect(obstacle.x, obstacleY / scale, obstacle.width, obstacle.height);
     };
@@ -81,9 +81,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         dino.yVelocity += 0.7;
         dino.y += dino.yVelocity;
 
-        const groundY = canvas.height - groundHeight - dino.height;
-        if (dino.y > groundY) {
-          dino.y = groundY;
+        if (dino.y > groundY - dino.height) {
+          dino.y = groundY - dino.height;
           dino.jumping = false;
           dino.yVelocity = 0;
           dino.landingGracePeriod = 10;
@@ -100,11 +99,13 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
 
+      // Draw background
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
+      // Draw ground
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(0, (canvas.height - groundHeight) / scale, canvas.width / scale, groundHeight / scale);
+      ctx.fillRect(0, groundY / scale, canvas.width / scale, groundHeight / scale);
 
       drawDino();
       updateDinoJump();
@@ -114,7 +115,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         obstacle.x -= speed;
         drawObstacle(obstacle);
 
-        const obstacleY = canvas.height - groundHeight - obstacle.height;
+        const obstacleY = groundY - obstacle.height;
 
         const isColliding =
           dino.landingGracePeriod === 0 &&
