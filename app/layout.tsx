@@ -6,8 +6,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "NETERN",
-  description: "Created by @netern_sol",
+  title: "$GAME",
+  description: "Created by @Glurbnok",
 };
 
 export default function RootLayout({
