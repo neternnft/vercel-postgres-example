@@ -94,7 +94,7 @@ export default function Home() {
           <div className="container mx-auto grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-5xl text-center">
             {/* X Link */}
             <button
-              onClick={() => window.open("https://x.com/netern_sol", "_blank")}
+              onClick={() => window.open("https://x.com/glurbnok", "_blank")}
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               X
@@ -106,7 +106,7 @@ export default function Home() {
               className="bg-green-400 hover:bg-green-500 text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
             >
               Telegram
-            </button>
+            </button> 
 
             {/* Dextools Link */}
             <button
