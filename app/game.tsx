@@ -27,28 +27,23 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Resize canvas before calculating speed
     const resizeCanvas = () => {
       canvas.width = window.innerWidth * 0.9;
       canvas.height = window.innerHeight * 0.6;
     };
 
-    resizeCanvas(); // Ensure canvas size is correct before starting
+    resizeCanvas();
 
-    // Determine scale and speed based on screen width
     const scale = window.innerWidth <= 768 ? 0.7 : 0.85;
-
     const baseSpeed = canvas.width / 160;
+    const speed = window.innerWidth <= 768
+      ? baseSpeed * MOBILE_SPEED_MULTIPLIER
+      : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
 
-    // Speed adjusted by device type
-    const speed =
-      window.innerWidth <= 768
-        ? baseSpeed * MOBILE_SPEED_MULTIPLIER
-        : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
-
+    const groundHeight = 20;
     const dino = {
       x: 50,
-      y: canvas.height - 60,
+      y: 0,
       width: 40,
       height: 60,
       jumping: false,
@@ -58,49 +53,27 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       jumpCount: 0,
     };
 
+    dino.y = canvas.height - groundHeight - dino.height;
+
     const obstacles: { x: number; width: number; height: number; type: string }[] = [];
     const minObstacleDistance = canvas.width / 2;
-    let animationFrameId: number;
 
     const colorChangeSpeed = 5;
-    const discoColors = [
-      '#FF0000',
-      '#FF7F00',
-      '#FFFF00',
-      '#00FF00',
-      '#0000FF',
-      '#4B0082',
-      '#8F00FF',
-      '#00FFFF',
-      '#FF00FF',
-    ];
+    const discoColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8F00FF', '#00FFFF', '#FF00FF'];
     let frameCount = 0;
-
-    const groundHeight = 20;
-    const scaledGroundY = Math.round((canvas.height - groundHeight) / scale);
+    let animationFrameId: number;
 
     const drawDino = () => {
       frameCount++;
       const colorIndex = Math.floor(frameCount / colorChangeSpeed) % discoColors.length;
       ctx.fillStyle = discoColors[colorIndex];
-      ctx.fillRect(
-        Math.round(dino.x),
-        Math.round(dino.y / scale),
-        Math.round(dino.width),
-        Math.round(dino.height)
-      );
+      ctx.fillRect(dino.x, dino.y / scale, dino.width, dino.height);
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
+      const obstacleY = canvas.height - groundHeight - obstacle.height;
       ctx.fillStyle = '#4ade80';
-      ctx.imageSmoothingEnabled = false; // prevent blurry edges
-
-      const x = Math.round(obstacle.x);
-      const width = Math.round(obstacle.width);
-      const height = Math.round(obstacle.height);
-      const y = scaledGroundY - height; // align bottom exactly to ground
-
-      ctx.fillRect(x, y, width, height);
+      ctx.fillRect(obstacle.x, obstacleY / scale, obstacle.width, obstacle.height);
     };
 
     const updateDinoJump = () => {
@@ -108,8 +81,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         dino.yVelocity += 0.7;
         dino.y += dino.yVelocity;
 
-        if (dino.y > canvas.height - dino.height) {
-          dino.y = canvas.height - dino.height;
+        const groundY = canvas.height - groundHeight - dino.height;
+        if (dino.y > groundY) {
+          dino.y = groundY;
           dino.jumping = false;
           dino.yVelocity = 0;
           dino.landingGracePeriod = 10;
@@ -129,9 +103,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
-      // Draw ground at consistent position with obstacles
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(0, scaledGroundY, canvas.width / scale, groundHeight);
+      ctx.fillRect(0, (canvas.height - groundHeight) / scale, canvas.width / scale, groundHeight / scale);
 
       drawDino();
       updateDinoJump();
@@ -141,12 +114,15 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         obstacle.x -= speed;
         drawObstacle(obstacle);
 
-        if (
+        const obstacleY = canvas.height - groundHeight - obstacle.height;
+
+        const isColliding =
           dino.landingGracePeriod === 0 &&
           dino.x < obstacle.x + obstacle.width &&
-          dino.x + dino.width * 0.8 > obstacle.x &&
-          dino.y + dino.height * 0.9 > canvas.height - obstacle.height
-        ) {
+          dino.x + dino.width > obstacle.x &&
+          dino.y + dino.height > obstacleY;
+
+        if (isColliding) {
           setGameOver(true);
           setGameStarted(false);
           highScoreRef.current = Math.max(highScoreRef.current, scoreRef.current);
@@ -182,32 +158,26 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
       if (!gameOver) {
         animationFrameId = requestAnimationFrame(updateGame);
-      } else {
-        ctx.setTransform(1, 0, 0, 1, 0, 0);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-        ctx.fillStyle = '#4ade80';
-        ctx.font = '50px pixel, Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('GAME OVER', canvas.width / 2, canvas.height / 2 - 50);
       }
     };
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.code === 'Space' && dino.jumpCount < 2) {
-        dino.jumping = true;
-        dino.yVelocity = -14;
-        dino.jumpCount++;
-      }
-    };
-
-    const handleTouch = () => {
+    const jump = () => {
       if (dino.jumpCount < 2) {
         dino.jumping = true;
         dino.yVelocity = -14;
         dino.jumpCount++;
       }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.code === 'Space') {
+        e.preventDefault();
+        jump();
+      }
+    };
+
+    const handleTouch = () => {
+      jump();
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -282,13 +252,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70"
             style={{ zIndex: 10 }}
           >
-            <h1
-              className="text-green-400 font-pixel text-6xl mb-10 select-none"
-              style={{ userSelect: 'none' }}
-            >
+            <h1 className="text-green-400 font-pixel text-6xl mb-10 select-none">
               GAME OVER
             </h1>
-
             <div className="flex gap-8">
               <button
                 onClick={() => {
