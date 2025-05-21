@@ -1,6 +1,7 @@
 import { GAME_CONFIG } from '../config/gameConfig';
 import { ParticleSystem } from './ParticleSystem';
 import { SoundManager } from './SoundManager';
+import { PowerUpSystem, PowerUp } from './PowerUpSystem';
 
 interface GameObject {
   x: number;
@@ -14,6 +15,7 @@ interface Player extends GameObject {
   yVelocity: number;
   landingGracePeriod: number;
   jumpCount: number;
+  rotation: number;
 }
 
 interface Obstacle extends GameObject {
@@ -28,11 +30,13 @@ export class GameEngine {
   private frameCount: number;
   private score: number;
   private speed: number;
+  private baseSpeed: number;
   private animationFrameId?: number;
   private onScore: () => void;
   private onGameOver: () => void;
   private particles: ParticleSystem;
   private sounds: SoundManager;
+  private powerUps: PowerUpSystem;
   private lastTime: number = 0;
   private deltaTime: number = 0;
   private _lastJumpTime?: number;
@@ -54,12 +58,13 @@ export class GameEngine {
     this.obstacles = [];
     this.particles = new ParticleSystem(ctx);
     this.sounds = new SoundManager();
+    this.powerUps = new PowerUpSystem(ctx, canvas.width, canvas.height);
 
     // Initialize speed based on screen size
-    const baseSpeed = canvas.width / 160;
+    this.baseSpeed = canvas.width / 160;
     this.speed = window.innerWidth <= 768
-      ? baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER
-      : baseSpeed * GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
+      ? this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER
+      : this.baseSpeed * GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
 
     // Initialize player
     this.player = {
@@ -71,22 +76,96 @@ export class GameEngine {
       yVelocity: 0,
       landingGracePeriod: 0,
       jumpCount: 0,
+      rotation: 0
     };
 
     // Start background music
     this.sounds.play('background');
   }
 
+  private drawBackground(): void {
+    // Create a modern gradient background
+    const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
+    gradient.addColorStop(0, '#1a1a1a');  // Dark top
+    gradient.addColorStop(0.5, '#2d2d2d'); // Slightly lighter middle
+    gradient.addColorStop(1, '#1a1a1a');   // Dark bottom
+
+    // Fill background
+    this.ctx.fillStyle = gradient;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Add subtle pattern
+    this.ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+    const patternSize = 20;
+    for (let x = 0; x < this.canvas.width; x += patternSize) {
+      for (let y = 0; y < this.canvas.height; y += patternSize) {
+        if ((x + y) % (patternSize * 2) === 0) {
+          this.ctx.fillRect(x, y, patternSize, patternSize);
+        }
+      }
+    }
+
+    // Add a subtle glow at the top
+    const glowGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height * 0.4);
+    glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
+    glowGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
+    this.ctx.fillStyle = glowGradient;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height * 0.4);
+
+    // Draw ground
+    this.ctx.fillStyle = GAME_CONFIG.COLORS.GROUND;
+    this.ctx.fillRect(0, this.canvas.height - GAME_CONFIG.GROUND_HEIGHT, this.canvas.width, GAME_CONFIG.GROUND_HEIGHT);
+
+    // Add subtle ground texture
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
+    for (let x = 0; x < this.canvas.width; x += 40) {
+      this.ctx.fillRect(x, this.canvas.height - GAME_CONFIG.GROUND_HEIGHT, 20, GAME_CONFIG.GROUND_HEIGHT);
+    }
+  }
+
   private drawPlayer(): void {
+    this.ctx.save();
+    
+    // Translate to player center for rotation
+    this.ctx.translate(
+      this.player.x + this.player.width / 2,
+      this.player.y + this.player.height / 2
+    );
+    
+    // Rotate based on vertical velocity
+    const targetRotation = this.player.yVelocity * 0.05;
+    this.player.rotation += (targetRotation - this.player.rotation) * 0.1;
+    this.ctx.rotate(this.player.rotation);
+
+    // Draw player
     this.frameCount++;
     const colorIndex = Math.floor(this.frameCount / 5) % GAME_CONFIG.COLORS.DISCO.length;
     this.ctx.fillStyle = GAME_CONFIG.COLORS.DISCO[colorIndex];
-    this.ctx.fillRect(
-      this.player.x,
-      this.player.y,
-      this.player.width,
-      this.player.height
-    );
+    
+    // Draw with rounded corners
+    this.ctx.beginPath();
+    const radius = 5;
+    this.ctx.moveTo(-this.player.width/2 + radius, -this.player.height/2);
+    this.ctx.lineTo(this.player.width/2 - radius, -this.player.height/2);
+    this.ctx.arcTo(this.player.width/2, -this.player.height/2, this.player.width/2, -this.player.height/2 + radius, radius);
+    this.ctx.lineTo(this.player.width/2, this.player.height/2 - radius);
+    this.ctx.arcTo(this.player.width/2, this.player.height/2, this.player.width/2 - radius, this.player.height/2, radius);
+    this.ctx.lineTo(-this.player.width/2 + radius, this.player.height/2);
+    this.ctx.arcTo(-this.player.width/2, this.player.height/2, -this.player.width/2, this.player.height/2 - radius, radius);
+    this.ctx.lineTo(-this.player.width/2, -this.player.height/2 + radius);
+    this.ctx.arcTo(-this.player.width/2, -this.player.height/2, -this.player.width/2 + radius, -this.player.height/2, radius);
+    this.ctx.fill();
+
+    // Draw shield effect if active
+    if (this.powerUps.hasPowerUp('shield')) {
+      this.ctx.beginPath();
+      this.ctx.arc(0, 0, this.player.width * 0.7, 0, Math.PI * 2);
+      this.ctx.strokeStyle = '#60a5fa';
+      this.ctx.lineWidth = 3;
+      this.ctx.stroke();
+    }
+
+    this.ctx.restore();
 
     // Draw player shadow
     this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
@@ -127,7 +206,11 @@ export class GameEngine {
 
   private updatePlayerJump(): void {
     if (this.player.jumping) {
-      this.player.yVelocity += GAME_CONFIG.PLAYER.GRAVITY * (this.deltaTime / 16);
+      const gravity = this.powerUps.hasPowerUp('slowMotion') 
+        ? GAME_CONFIG.PLAYER.GRAVITY * 0.5 
+        : GAME_CONFIG.PLAYER.GRAVITY;
+      
+      this.player.yVelocity += gravity * (this.deltaTime / 16);
       this.player.y += this.player.yVelocity;
 
       const groundY = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT - this.player.height;
@@ -156,7 +239,23 @@ export class GameEngine {
   }
 
   private checkCollisions(): boolean {
-    // Don't use landingGracePeriod for collision detection
+    // Check power-up collisions
+    const powerUp = this.powerUps.checkCollision(
+      this.player.x,
+      this.player.y,
+      this.player.width,
+      this.player.height
+    );
+
+    if (powerUp) {
+      this.sounds.play('powerup');
+      this.particles.createScoreParticles(
+        this.player.x + this.player.width / 2,
+        this.player.y + this.player.height / 2
+      );
+    }
+
+    // Check obstacle collisions
     for (const obstacle of this.obstacles) {
       const obstacleY = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT - obstacle.height;
       
@@ -167,7 +266,7 @@ export class GameEngine {
         this.player.y + this.player.height > obstacleY &&
         this.player.y < obstacleY + obstacle.height;
 
-      if (collision) {
+      if (collision && !this.powerUps.hasPowerUp('shield')) {
         return true;
       }
     }
@@ -210,20 +309,22 @@ export class GameEngine {
     this.deltaTime = currentTime - this.lastTime;
     this.lastTime = currentTime;
 
+    // Update game speed based on score
+    const speedIncrease = Math.min(this.score * 0.1, 5);
+    this.speed = (this.powerUps.hasPowerUp('slowMotion') ? 0.5 : 1) * 
+                 (this.baseSpeed + speedIncrease);
+
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // Draw background
-    this.ctx.fillStyle = GAME_CONFIG.COLORS.BACKGROUND;
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    // Draw background with parallax
+    this.drawBackground();
 
-    // Draw ground
-    this.ctx.fillStyle = GAME_CONFIG.COLORS.GROUND;
-    this.ctx.fillRect(
-      0,
-      this.canvas.height - GAME_CONFIG.GROUND_HEIGHT,
-      this.canvas.width,
-      GAME_CONFIG.GROUND_HEIGHT
-    );
+    // Update and draw power-ups
+    this.powerUps.update(this.deltaTime, this.speed);
+    this.powerUps.drawActivePowerUps();
+
+    // Spawn power-ups based on score
+    this.powerUps.spawnPowerUp(this.score);
 
     this.drawPlayer();
     this.updatePlayerJump();
@@ -249,16 +350,22 @@ export class GameEngine {
       return;
     }
 
-    // Draw score
+    // Draw score with shadow
+    this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
+    this.ctx.shadowBlur = 5;
     this.ctx.fillStyle = GAME_CONFIG.COLORS.GROUND;
-    this.ctx.font = '20px pixel, Arial';
+    this.ctx.font = 'bold 24px Arial';
+    this.ctx.textAlign = 'left';
     this.ctx.fillText(`Score: ${this.score}`, 10, 30);
+    this.ctx.shadowBlur = 0;
 
     this.animationFrameId = requestAnimationFrame((time) => this.update(time));
   }
 
   public jump(): void {
-    if (this.player.jumpCount < GAME_CONFIG.PLAYER.MAX_JUMPS) {
+    const maxJumps = this.powerUps.hasPowerUp('doubleJump') ? 3 : 2;
+    
+    if (this.player.jumpCount < maxJumps) {
       // Add a small delay between jumps to prevent super-fast double jumps
       const now = performance.now();
       if (!this._lastJumpTime || now - this._lastJumpTime > 100) {
@@ -283,6 +390,7 @@ export class GameEngine {
 
   public start(): void {
     this.lastTime = performance.now();
+    this.powerUps.clear();
     this.update();
   }
 
@@ -293,9 +401,9 @@ export class GameEngine {
   }
 
   public resize(): void {
-    const baseSpeed = this.canvas.width / 160;
+    this.baseSpeed = this.canvas.width / 160;
     this.speed = window.innerWidth <= 768
-      ? baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER
-      : baseSpeed * GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
+      ? this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER
+      : this.baseSpeed * GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
   }
 } 
