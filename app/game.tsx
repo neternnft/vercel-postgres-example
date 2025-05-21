@@ -6,6 +6,10 @@ interface GameProps {
   onClose: () => void;
 }
 
+// Speed multipliers to easily adjust game speed on desktop and mobile
+const DESKTOP_SPEED_MULTIPLIER = 2.2;    // Normal desktop speed (1 = base speed)
+const MOBILE_SPEED_MULTIPLIER = 1.5;   // Mobile speed multiplier (1.3 = 30% faster)
+
 const Game: React.FC<GameProps> = ({ onClose }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [gameOver, setGameOver] = useState(false);
@@ -16,7 +20,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
   const highScoreRef = useRef(0);
 
   useEffect(() => {
-    if (!gameStarted || gameOver) return; // don't run game loop if not started or game over
+    if (!gameStarted || gameOver) return;
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -24,8 +28,16 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Determine scale based on screen width (mobile vs desktop)
+    // Determine scale and speed based on screen width
     const scale = window.innerWidth <= 768 ? 0.7 : 0.85;
+
+    const baseSpeed = canvas.width / 160;
+
+    // Speed adjusted by device type
+    const speed =
+      window.innerWidth <= 768
+        ? baseSpeed * MOBILE_SPEED_MULTIPLIER
+        : baseSpeed * DESKTOP_SPEED_MULTIPLIER;
 
     const dino = {
       x: 50,
@@ -40,12 +52,10 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const obstacles: { x: number; width: number; height: number; type: string }[] = [];
-    let speed = canvas.width / 160;
-    let animationFrameId: number;
     const minObstacleDistance = canvas.width / 2;
+    let animationFrameId: number;
 
-    // ======= Disco colors setup for player cube =======
-    const colorChangeSpeed = 5; // frames per color change (lower = faster)
+    const colorChangeSpeed = 5;
     const discoColors = ['#FF0000', '#FF7F00', '#FFFF00', '#00FF00', '#0000FF', '#4B0082', '#8F00FF', '#00FFFF', '#FF00FF'];
     let frameCount = 0;
 
@@ -57,7 +67,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
-      ctx.fillStyle = '#4ade80'; // always green now
+      ctx.fillStyle = '#4ade80';
       ctx.fillRect(obstacle.x, (canvas.height - obstacle.height) / scale, obstacle.width, obstacle.height);
     };
 
@@ -79,14 +89,11 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const updateGame = () => {
-      // Reset transform and clear canvas scaled correctly
       ctx.setTransform(1, 0, 0, 1, 0, 0);
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Apply scaling transform for zoom out effect
       ctx.setTransform(scale, 0, 0, scale, 0, 0);
 
-      // Draw background and ground (adjust for scale)
       ctx.fillStyle = '#000000';
       ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
@@ -108,12 +115,12 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
         ) {
           setGameOver(true);
           setGameStarted(false);
-          scoreRef.current = scoreRef.current; // hold final score
+          scoreRef.current = scoreRef.current;
           highScoreRef.current = Math.max(highScoreRef.current, scoreRef.current);
           setScore(scoreRef.current);
           setHighScore(highScoreRef.current);
           saveHighScore(scoreRef.current);
-          return; // stop further processing in this frame
+          return;
         }
 
         if (obstacle.x + obstacle.width < 0) {
@@ -132,7 +139,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           x: canvas.width,
           width: 20 + Math.random() * 30,
           height: 40 + Math.random() * 40,
-          type: 'cactus', // only green obstacles now
+          type: 'cactus',
         });
       }
 
@@ -143,7 +150,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       if (!gameOver) {
         animationFrameId = requestAnimationFrame(updateGame);
       } else {
-        // Reset transform before drawing overlay (full canvas size)
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -175,7 +181,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       canvas.width = window.innerWidth * 0.9;
       canvas.height = window.innerHeight * 0.6;
       dino.y = canvas.height - dino.height;
-      speed = canvas.width / 160;
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -214,7 +219,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       >
         <canvas ref={canvasRef} className="block w-full h-full" />
 
-        {/* Start menu overlay */}
         {!gameStarted && !gameOver && (
           <div
             className="absolute inset-0 bg-black bg-opacity-80 flex flex-col items-center justify-center gap-4"
@@ -246,7 +250,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           </div>
         )}
 
-        {/* Game Over overlay and buttons */}
         {gameOver && (
           <div
             className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-70"
