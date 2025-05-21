@@ -24,6 +24,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
+    const scale = 0.85; // Zoom out scale factor (adjust if needed)
+
     const dino = {
       x: 50,
       y: canvas.height - 60,
@@ -44,18 +46,18 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     const drawDino = () => {
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(dino.x, dino.y, dino.width, dino.height);
+      ctx.fillRect(dino.x, dino.y / scale, dino.width, dino.height);
     };
 
     const drawObstacle = (obstacle: typeof obstacles[0]) => {
       ctx.fillStyle = obstacle.type === 'cactus' ? '#4ade80' : '#ff4500';
-      ctx.fillRect(obstacle.x, canvas.height - obstacle.height, obstacle.width, obstacle.height);
+      ctx.fillRect(obstacle.x, (canvas.height - obstacle.height) / scale, obstacle.width, obstacle.height);
     };
 
     const drawPowerUp = (powerUp: typeof powerUps[0]) => {
       ctx.fillStyle = powerUp.type === 'invincibility' ? '#ffd700' : '#00ffff';
       ctx.beginPath();
-      ctx.arc(powerUp.x, powerUp.y, 10, 0, 2 * Math.PI);
+      ctx.arc(powerUp.x, powerUp.y / scale, 10, 0, 2 * Math.PI);
       ctx.fill();
     };
 
@@ -77,11 +79,19 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
     };
 
     const updateGame = () => {
+      // Reset transform and clear canvas scaled correctly
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Apply scaling transform for zoom out effect
+      ctx.setTransform(scale, 0, 0, scale, 0, 0);
+
+      // Draw background and ground (adjust for scale)
       ctx.fillStyle = '#000000';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.fillRect(0, 0, canvas.width / scale, canvas.height / scale);
 
       ctx.fillStyle = '#4ade80';
-      ctx.fillRect(0, canvas.height - 20, canvas.width, 20);
+      ctx.fillRect(0, (canvas.height - 20) / scale, canvas.width / scale, 20 / scale);
 
       drawDino();
       updateDinoJump();
@@ -167,8 +177,11 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
       if (!gameOver) {
         animationFrameId = requestAnimationFrame(updateGame);
       } else {
+        // Reset transform before drawing overlay (full canvas size)
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
+
         ctx.fillStyle = '#4ade80';
         ctx.font = '50px pixel, Arial';
         ctx.textAlign = 'center';
