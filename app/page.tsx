@@ -16,7 +16,7 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>$GAME</title>
+        <title>Glurbnok</title>
         <meta
           name="description"
           content="A fun and interactive website with links to various resources."
@@ -25,9 +25,9 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
-        {/* $GAME Text */}
+        {/* Glurbnok Text */}
         <div className="fixed top-4 left-4 z-10">
-          <h1 className="text-4xl sm:text-5xl font-bold text-green-400">$GAME</h1>
+          <h1 className="text-4xl sm:text-5xl font-bold text-green-400">Glurbnok</h1>
         </div>
 
         {/* Unmovable Container */}
