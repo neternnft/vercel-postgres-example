@@ -76,12 +76,13 @@ export default function Home() {
             #f64f59,
             #54CA9B
           );
-          background-size: 300% 300%;
-          animation: gradient 8s ease infinite;
+          background-size: 200% 200%;
+          animation: gradient 4s ease infinite;
           -webkit-background-clip: text;
           background-clip: text;
           color: transparent;
-          text-shadow: none !important;
+          font-weight: 900;
+          letter-spacing: 0.1em;
         }
       `}</style>
       <main 
@@ -126,7 +127,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center whitespace-nowrap tracking-wider gradient-text">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center whitespace-nowrap tracking-wider gradient-text">
                 MEME IS A GAME
               </h2>
             </motion.a>
