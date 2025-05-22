@@ -195,9 +195,9 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
               <motion.button
                 disabled
                 className="relative w-full bg-gray-600 text-gray-400 font-bold py-3 px-6 rounded-lg text-sm sm:text-base font-pixel cursor-not-allowed"
-                aria-label="Settings (Coming Soon)"
+                aria-label="Leaderboard (Coming Soon)"
               >
-                Settings
+                Leaderboard
                 <div className="absolute top-0 right-0 bg-gray-500 text-gray-200 text-xs px-2 py-0.5 rounded-bl-md rounded-tr-md">Soon</div>
               </motion.button>
 
