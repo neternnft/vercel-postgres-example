@@ -2,16 +2,57 @@
 
 import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { motion } from 'framer-motion';
+import { useAccount } from 'wagmi';
+import { useState, useEffect } from 'react';
+import UserProfileModal, { useUserProfile } from './UserProfile';
 
 export default function WalletConnect() {
+  const { isConnected } = useAccount();
+  const { profileData } = useUserProfile();
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  // Handle client-side mounting
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Don't render anything on server-side
+  if (!isMounted) {
+    return null;
+  }
+  
   return (
-    <motion.div
-      className="fixed top-4 right-4 z-20"
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: 0.5 }}
-    >
-      <ConnectButton />
-    </motion.div>
+    <>
+      <motion.div
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.5 }}
+        className="flex items-center space-x-4"
+      >
+        {isConnected && (
+          <div 
+            className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
+            onClick={() => setIsProfileOpen(true)}
+          >
+            {/* Profile picture or initial */}
+            <div className="w-8 h-8 rounded-full bg-[#54CA9B] flex items-center justify-center text-black">
+              {profileData.username ? profileData.username[0].toUpperCase() : '?'}
+            </div>
+            
+            {/* Username display */}
+            <span className="text-[#54CA9B] text-sm">
+              {profileData.username || 'Set Username'}
+            </span>
+          </div>
+        )}
+        <ConnectButton />
+      </motion.div>
+
+      <UserProfileModal 
+        isOpen={isProfileOpen}
+        onClose={() => setIsProfileOpen(false)}
+      />
+    </>
   );
 } 
