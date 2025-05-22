@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      colors: {
+        // Add your custom colors here
+      },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
         "gradient-conic":
@@ -16,5 +19,10 @@ const config: Config = {
     },
   },
   plugins: [],
+  // Enable JIT mode for better performance
+  future: {
+    hoverOnlyWhenSupported: true,
+  },
 };
+
 export default config;
