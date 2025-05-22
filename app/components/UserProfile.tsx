@@ -27,15 +27,20 @@ export function useUserProfile() {
     async function loadProfile() {
       if (!isMounted || !address) return;
       
+      console.log('Loading profile data for address:', address);
       setIsLoading(true);
       try {
         const response = await fetch(`/api/users?walletAddress=${address}`);
+        console.log('Profile data response:', response.status);
         if (response.ok) {
           const userData = await response.json();
+          console.log('Loaded user data:', userData);
           setProfileData(prev => ({
             ...prev,
             username: userData.username
           }));
+        } else {
+          console.log('No profile found for address');
         }
       } catch (error) {
         console.error('Error loading profile:', error);
@@ -51,11 +56,13 @@ export function useUserProfile() {
   const updateProfile = async (newData: Partial<UserProfileData>) => {
     if (!address || !isMounted || !newData.username) return;
     
+    console.log('Updating profile:', { address, newData });
     setIsLoading(true);
     try {
       // Check if user exists
       const checkResponse = await fetch(`/api/users?walletAddress=${address}`);
       const method = checkResponse.ok ? 'PUT' : 'POST';
+      console.log('User exists check:', { status: checkResponse.status, method });
       
       // Create or update user
       const response = await fetch('/api/users', {
@@ -70,6 +77,7 @@ export function useUserProfile() {
       });
 
       const data = await response.json();
+      console.log('Profile update response:', { status: response.status, data });
       
       if (!response.ok) {
         throw new Error(data.details || data.error || 'Failed to update profile');

@@ -4,12 +4,17 @@ import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import { GameEngine } from './engine/GameEngine';
 import { useGameState } from './hooks/useGameState';
+import Leaderboard from './components/Leaderboard';
+import { useAccount } from 'wagmi';
+import { useUserProfile } from './components/UserProfile';
 
 interface GameProps {
   onClose: () => void;
 }
 
 const Game: React.FC<GameProps> = ({ onClose }) => {
+  const { address } = useAccount();
+  const { profileData } = useUserProfile();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const { gameState, startGame, endGame, updateScore } = useGameState();
@@ -17,6 +22,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
   const [isLandscape, setIsLandscape] = useState(false);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [isMobile, setIsMobile] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const calculateOptimalGameSize = useCallback(() => {
     const screenWidth = window.innerWidth;
@@ -193,12 +199,11 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
               </motion.button>
 
               <motion.button
-                disabled
-                className="relative w-full bg-gray-600 text-gray-400 font-bold py-3 px-6 rounded-lg text-sm sm:text-base font-pixel cursor-not-allowed"
-                aria-label="Leaderboard (Coming Soon)"
+                onClick={() => setShowLeaderboard(true)}
+                className="w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-sm sm:text-base font-pixel"
+                aria-label="View leaderboard"
               >
                 Leaderboard
-                <div className="absolute top-0 right-0 bg-gray-500 text-gray-200 text-xs px-2 py-0.5 rounded-bl-md rounded-tr-md">Soon</div>
               </motion.button>
 
               <motion.button
@@ -219,7 +224,24 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           >
             <h2 className="text-2xl sm:text-4xl font-bold text-white mb-2 sm:mb-4">Game Over!</h2>
             <p className="text-xl sm:text-2xl text-white mb-1 sm:mb-2">Score: {gameState.score}</p>
-            <p className="text-lg sm:text-xl text-white mb-3 sm:mb-4">High Score: {gameState.highScore}</p>
+            
+            {/* Score save status message */}
+            {!address && (
+              <p className="text-yellow-400 text-sm text-center mb-3">
+                Connect your wallet and set a username to compete for the top 10 leaderboard!
+              </p>
+            )}
+            {address && !profileData.username && (
+              <p className="text-yellow-400 text-sm text-center mb-3">
+                Set a username in your profile to compete for the top 10 leaderboard!
+              </p>
+            )}
+            {address && profileData.username && (
+              <p className="text-[#54CA9B] text-sm text-center mb-3">
+                Your score will be saved if it makes it to the top 10!
+              </p>
+            )}
+            
             <div className="w-full max-w-[200px] flex flex-col gap-3">
               <motion.button
                 onClick={startGame}
@@ -227,6 +249,14 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
                 aria-label="Play again"
               >
                 Play Again
+              </motion.button>
+
+              <motion.button
+                onClick={() => setShowLeaderboard(true)}
+                className="w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-sm sm:text-base font-pixel"
+                aria-label="View leaderboard"
+              >
+                View Leaderboard
               </motion.button>
 
               <motion.button
@@ -240,6 +270,7 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           </div>
         )}
       </div>
+      <Leaderboard isOpen={showLeaderboard} onClose={() => setShowLeaderboard(false)} />
     </motion.div>
   );
 };
