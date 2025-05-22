@@ -54,6 +54,35 @@ export default function Home() {
           width: 100%;
           height: 100%;
         }
+        
+        @keyframes gradient {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+
+        .gradient-text {
+          background: linear-gradient(
+            90deg,
+            #54CA9B,
+            #4a90e2,
+            #c471ed,
+            #f64f59,
+            #54CA9B
+          );
+          background-size: 300% 300%;
+          animation: gradient 8s ease infinite;
+          -webkit-background-clip: text;
+          background-clip: text;
+          color: transparent;
+          text-shadow: none !important;
+        }
       `}</style>
       <main 
         className="bg-black flex flex-col overflow-hidden w-full"
@@ -97,9 +126,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center whitespace-nowrap tracking-wider"
-                  style={{ textShadow: '0 0 10px rgba(84, 202, 155, 0.5)' }}
-              >
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center whitespace-nowrap tracking-wider gradient-text">
                 MEME IS A GAME
               </h2>
             </motion.a>
