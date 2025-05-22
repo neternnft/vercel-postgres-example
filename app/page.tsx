@@ -47,7 +47,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="h-[calc(var(--vh,1vh)*100)] bg-black flex flex-col items-center justify-between px-4 relative overflow-hidden">
+      <main className="h-[calc(var(--vh,1vh)*100)] bg-black flex flex-col items-center px-4 relative overflow-hidden">
         {/* Wallet Connect Button */}
         <div className="fixed top-[calc(var(--vh,1vh)*2)] right-4 z-20">
           <WalletConnect />
@@ -70,23 +70,23 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Main Content Container */}
-        <div className="flex flex-col items-center justify-center h-[calc(var(--vh,1vh)*50)] mt-[calc(var(--vh,1vh)*10)]">
-          {/* Centered Image */}
-          <div className="w-full max-w-[min(320px,80vw)]">
-            <Image
-              src="/yoda.gif"
-              alt="Yoda GIF"
-              width={320}
-              height={65}
-              className="pixelated w-full h-auto"
-              priority
-              unoptimized
-            />
-          </div>
+        {/* Main Content Container - Centered */}
+        <div className="flex-1 flex items-center justify-center w-full">
+          <div className="flex flex-col items-center justify-center gap-[calc(var(--vh,1vh)*3)] max-w-[min(320px,80vw)]">
+            {/* Centered Image */}
+            <div className="w-full">
+              <Image
+                src="/yoda.gif"
+                alt="Yoda GIF"
+                width={320}
+                height={65}
+                className="pixelated w-full h-auto"
+                priority
+                unoptimized
+              />
+            </div>
 
-          {/* Text */}
-          <div className="mt-[calc(var(--vh,1vh)*2)]">
+            {/* Text */}
             <motion.a
               className="group"
               target="_blank"
@@ -100,44 +100,43 @@ export default function Home() {
                 MEME IS A GAME
               </h2>
             </motion.a>
-          </div>
 
-          {/* Start Button */}
-          <motion.div
-            className="mt-[calc(var(--vh,1vh)*3)]"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <motion.button
-              style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-[calc(var(--vh,1vh)*1.5)] px-[3vw] rounded-lg shadow-md transition-colors duration-300 text-base sm:text-lg md:text-xl"
-              animate={{
-                boxShadow: [
-                  "0 0 0 0 rgba(84, 202, 155, 0.7)",
-                  "0 0 0 20px rgba(84, 202, 155, 0)",
-                ],
-                transition: {
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  duration: 3,
-                },
-              }}
-              onClick={handleStartClick}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#42A97A")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#54CA9B")
-              }
+            {/* Start Button */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              PLAY
-            </motion.button>
-          </motion.div>
+              <motion.button
+                style={{ backgroundColor: "#54CA9B" }}
+                className="text-black font-bold py-[calc(var(--vh,1vh)*1.5)] px-[3vw] rounded-lg shadow-md transition-colors duration-300 text-base sm:text-lg md:text-xl"
+                animate={{
+                  boxShadow: [
+                    "0 0 0 0 rgba(84, 202, 155, 0.7)",
+                    "0 0 0 20px rgba(84, 202, 155, 0)",
+                  ],
+                  transition: {
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    duration: 3,
+                  },
+                }}
+                onClick={handleStartClick}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#42A97A")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#54CA9B")
+                }
+              >
+                PLAY
+              </motion.button>
+            </motion.div>
+          </div>
         </div>
 
         {/* Links Section at the Bottom */}
-        <div className="w-full mb-[calc(var(--vh,1vh)*4)] mt-auto">
+        <div className="w-full mb-[calc(var(--vh,1vh)*4)]">
           <div className="container mx-auto grid grid-cols-3 gap-[2vw] max-w-3xl text-center px-4">
             {/* X Link */}
             <button
