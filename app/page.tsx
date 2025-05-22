@@ -3,12 +3,25 @@
 import Image from "next/image";
 import Head from "next/head";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Game from "./game";
 import WalletConnect from "./components/WalletConnect";
 
 export default function Home() {
   const [showGame, setShowGame] = useState(false);
+
+  // Handle mobile viewport height
+  useEffect(() => {
+    const setHeight = () => {
+      document.documentElement.style.setProperty(
+        '--app-height',
+        `${window.innerHeight}px`
+      );
+    };
+    setHeight();
+    window.addEventListener('resize', setHeight);
+    return () => window.removeEventListener('resize', setHeight);
+  }, []);
 
   const handleStartClick = () => {
     setShowGame(true);
@@ -22,14 +35,34 @@ export default function Home() {
           name="description"
           content="A fun and interactive website with links to various resources."
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta 
+          name="viewport" 
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" 
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="h-[100vh] bg-black flex flex-col overflow-hidden">
-        {/* Top Bar - 10vh */}
-        <div className="h-[10vh] flex justify-between items-center px-2">
+      <style jsx global>{`
+        :root {
+          --app-height: 100vh;
+        }
+        html,
+        body {
+          padding: 0;
+          margin: 0;
+          overflow: hidden;
+          position: fixed;
+          width: 100%;
+          height: 100%;
+        }
+      `}</style>
+      <main 
+        className="bg-black flex flex-col overflow-hidden w-full"
+        style={{ height: 'var(--app-height)' }}
+      >
+        {/* Top Bar */}
+        <div className="shrink-0 h-16 flex justify-between items-center px-4 sm:px-6 md:px-8 mt-4">
           {/* Logo and Text */}
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-2">
             <Image
               src="/logo.png"
               alt="Logo"
@@ -51,9 +84,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Main Content - 80vh */}
-        <div className="h-[80vh] flex items-center justify-center px-2">
-          <div className="flex flex-col items-center justify-center gap-3 max-w-[min(280px,80vw)]">
+        {/* Main Content */}
+        <div className="flex-1 flex items-center justify-center px-4 sm:px-6 md:px-8 min-h-0 -mt-8">
+          <div className="flex flex-col items-center justify-center gap-4 max-w-[min(280px,80vw)]">
             {/* Centered Image */}
             <div className="w-full">
               <Image
@@ -90,7 +123,7 @@ export default function Home() {
             >
               <motion.button
                 style={{ backgroundColor: "#54CA9B" }}
-                className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base md:text-lg"
+                className="text-black font-bold py-2.5 px-6 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base md:text-lg"
                 animate={{
                   boxShadow: [
                     "0 0 0 0 rgba(84, 202, 155, 0.7)",
@@ -116,14 +149,14 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom Links - 10vh */}
-        <div className="h-[10vh] flex items-center px-2">
-          <div className="w-full grid grid-cols-3 gap-2 max-w-3xl mx-auto text-center">
+        {/* Bottom Links */}
+        <div className="shrink-0 h-12 flex items-center px-4 sm:px-6 md:px-8 mb-2">
+          <div className="w-full grid grid-cols-3 gap-3 max-w-3xl mx-auto text-center">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-1.5 px-2 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -140,7 +173,7 @@ export default function Home() {
                 window.open("https://arena.social/glurbnok", "_blank")
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-1.5 px-2 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -160,7 +193,7 @@ export default function Home() {
                 )
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-1.5 px-2 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
