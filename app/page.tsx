@@ -3,34 +3,12 @@
 import Image from "next/image";
 import Head from "next/head";
 import { motion } from "framer-motion";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Game from "./game";
 import WalletConnect from "./components/WalletConnect";
 
 export default function Home() {
   const [showGame, setShowGame] = useState(false);
-
-  // Handle mobile viewport height
-  useEffect(() => {
-    // Function to update viewport height
-    const updateViewportHeight = () => {
-      const vh = window.innerHeight * 0.01;
-      document.documentElement.style.setProperty('--vh', `${vh}px`);
-    };
-
-    // Initial call
-    updateViewportHeight();
-
-    // Update on resize and orientation change
-    window.addEventListener('resize', updateViewportHeight);
-    window.addEventListener('orientationchange', updateViewportHeight);
-
-    // Cleanup
-    return () => {
-      window.removeEventListener('resize', updateViewportHeight);
-      window.removeEventListener('orientationchange', updateViewportHeight);
-    };
-  }, []);
 
   const handleStartClick = () => {
     setShowGame(true);
@@ -44,17 +22,17 @@ export default function Home() {
           name="description"
           content="A fun and interactive website with links to various resources."
         />
-        <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="h-[calc(var(--vh,1vh)*100)] bg-black flex flex-col items-center px-4 relative overflow-hidden">
+      <main className="h-screen bg-black flex flex-col items-center relative overflow-hidden">
         {/* Wallet Connect Button */}
-        <div className="fixed top-[calc(var(--vh,1vh)*2)] right-4 z-20">
+        <div className="fixed top-4 right-4 z-20">
           <WalletConnect />
         </div>
 
         {/* Glurbnok Logo and Text */}
-        <div className="fixed top-[calc(var(--vh,1vh)*2)] left-4 z-10 flex items-center space-x-2">
+        <div className="fixed top-4 left-4 z-10 flex items-center space-x-2">
           <Image
             src="/logo.png"
             alt="Logo"
@@ -70,9 +48,9 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Main Content Container - Centered */}
-        <div className="flex-1 flex items-center justify-center w-full">
-          <div className="flex flex-col items-center justify-center gap-[calc(var(--vh,1vh)*3)] max-w-[min(320px,80vw)]">
+        {/* Main Content Container */}
+        <div className="flex-1 flex items-center justify-center w-full px-4">
+          <div className="flex flex-col items-center justify-center gap-6 max-w-[min(320px,80vw)]">
             {/* Centered Image */}
             <div className="w-full">
               <Image
@@ -109,7 +87,7 @@ export default function Home() {
             >
               <motion.button
                 style={{ backgroundColor: "#54CA9B" }}
-                className="text-black font-bold py-[calc(var(--vh,1vh)*1.5)] px-[3vw] rounded-lg shadow-md transition-colors duration-300 text-base sm:text-lg md:text-xl"
+                className="text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 text-base sm:text-lg md:text-xl"
                 animate={{
                   boxShadow: [
                     "0 0 0 0 rgba(84, 202, 155, 0.7)",
@@ -136,13 +114,13 @@ export default function Home() {
         </div>
 
         {/* Links Section at the Bottom */}
-        <div className="w-full mb-[calc(var(--vh,1vh)*4)]">
-          <div className="container mx-auto grid grid-cols-3 gap-[2vw] max-w-3xl text-center px-4">
+        <div className="fixed bottom-0 left-0 right-0 bg-black pb-4">
+          <div className="container mx-auto grid grid-cols-3 gap-3 max-w-3xl text-center px-4">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-[calc(var(--vh,1vh)*1)] px-[1.5vw] rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -159,7 +137,7 @@ export default function Home() {
                 window.open("https://arena.social/glurbnok", "_blank")
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-[calc(var(--vh,1vh)*1)] px-[1.5vw] rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -179,7 +157,7 @@ export default function Home() {
                 )
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-[calc(var(--vh,1vh)*1)] px-[1.5vw] rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
