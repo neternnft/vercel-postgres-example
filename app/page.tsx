@@ -5,6 +5,7 @@ import Head from "next/head";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import Game from "./game";
+import WalletConnect from "./components/WalletConnect";
 
 export default function Home() {
   const [showGame, setShowGame] = useState(false);
@@ -25,6 +26,42 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
+        {/* Background gradient effect */}
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-gray-900 to-black opacity-50" />
+        
+        {/* Animated background dots */}
+        <div className="absolute inset-0 overflow-hidden">
+          <div className="absolute inset-0 opacity-20">
+            {Array.from({ length: 50 }).map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute rounded-full bg-[#54CA9B]"
+                style={{
+                  width: Math.random() * 4 + 1 + "px",
+                  height: Math.random() * 4 + 1 + "px",
+                  left: Math.random() * 100 + "%",
+                  top: Math.random() * 100 + "%",
+                }}
+                animate={{
+                  y: [0, -20, 0],
+                  opacity: [0.2, 0.5, 0.2],
+                }}
+                transition={{
+                  duration: Math.random() * 3 + 2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                  delay: Math.random() * 2,
+                }}
+              />
+            ))}
+          </div>
+        </div>
+
+        {/* Wallet Connect Button */}
+        <div className="absolute top-4 right-4 z-20">
+          <WalletConnect />
+        </div>
+
         {/* Glurbnok Logo and Text */}
         <div className="fixed top-4 left-4 z-10 flex items-center space-x-2">
           <Image
@@ -42,126 +79,129 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Unmovable Container */}
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
-          {/* Centered Image */}
-          <div>
-            <Image
-              src="/yoda.gif"
-              alt="Yoda GIF"
-              width={320}
-              height={65}
-              className="pixelated"
-              priority
-              unoptimized
-            />
-          </div>
+        {/* Main Content */}
+        <div className="relative z-10 flex flex-col items-center justify-center space-y-8">
+          {/* Unmovable Container */}
+          <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+            {/* Centered Image */}
+            <div>
+              <Image
+                src="/yoda.gif"
+                alt="Yoda GIF"
+                width={320}
+                height={65}
+                className="pixelated"
+                priority
+                unoptimized
+              />
+            </div>
 
-          {/* Text */}
-          <div className="mt-4">
-            <motion.a
-              className="group mb-4"
-              target="_blank"
-              rel="noopener noreferrer"
-              aria-label="Meme is a game link"
+            {/* Text */}
+            <div className="mt-4">
+              <motion.a
+                className="group mb-4"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Meme is a game link"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2 text-center whitespace-nowrap">
+                  MEME IS A GAME
+                </h2>
+              </motion.a>
+            </div>
+
+            {/* Start Button */}
+            <motion.div
+              className="mt-8"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2 text-center whitespace-nowrap">
-                MEME IS A GAME
-              </h2>
-            </motion.a>
+              <motion.button
+                style={{ backgroundColor: "#54CA9B" }}
+                className="text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 text-xl"
+                animate={{
+                  boxShadow: [
+                    "0 0 0 0 rgba(84, 202, 155, 0.7)",
+                    "0 0 0 20px rgba(84, 202, 155, 0)",
+                  ],
+                  transition: {
+                    repeat: Infinity,
+                    repeatType: "reverse",
+                    duration: 3,
+                  },
+                }}
+                onClick={handleStartClick}
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#42A97A")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#54CA9B")
+                }
+              >
+                PLAY
+              </motion.button>
+            </motion.div>
           </div>
 
-          {/* Start Button */}
-          <motion.div
-            className="mt-8"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <motion.button
-              style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 text-xl"
-              animate={{
-                boxShadow: [
-                  "0 0 0 0 rgba(84, 202, 155, 0.7)",
-                  "0 0 0 20px rgba(84, 202, 155, 0)",
-                ],
-                transition: {
-                  repeat: Infinity,
-                  repeatType: "reverse",
-                  duration: 3,
-                },
-              }}
-              onClick={handleStartClick}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#42A97A")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#54CA9B")
-              }
-            >
-              PLAY
-            </motion.button>
-          </motion.div>
-        </div>
+          {/* Links Section at the Bottom */}
+          <div className="fixed bottom-0 left-0 right-0 mb-8 sm:mb-12">
+            <div className="container mx-auto grid grid-cols-3 gap-4 max-w-3xl text-center">
+              {/* X Link */}
+              <button
+                onClick={() => window.open("https://x.com/glurbnok", "_blank")}
+                style={{ backgroundColor: "#54CA9B" }}
+                className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#42A97A")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#54CA9B")
+                }
+              >
+                X
+              </button>
 
-        {/* Links Section at the Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 mb-4 sm:mb-8">
-          <div className="container mx-auto grid grid-cols-3 gap-4 max-w-3xl text-center">
-            {/* X Link */}
-            <button
-              onClick={() => window.open("https://x.com/glurbnok", "_blank")}
-              style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#42A97A")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#54CA9B")
-              }
-            >
-              X
-            </button>
+              {/* Arena Link */}
+              <button
+                onClick={() =>
+                  window.open("https://arena.social/glurbnok", "_blank")
+                }
+                style={{ backgroundColor: "#54CA9B" }}
+                className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#42A97A")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#54CA9B")
+                }
+              >
+                ARENA
+              </button>
 
-            {/* Arena Link */}
-            <button
-              onClick={() =>
-                window.open("https://arena.social/glurbnok", "_blank")
-              }
-              style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#42A97A")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#54CA9B")
-              }
-            >
-              ARENA
-            </button>
-
-            {/* Buy Link */}
-            <button
-              onClick={() =>
-                window.open(
-                  "https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f",
-                  "_blank"
-                )
-              }
-              style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.backgroundColor = "#42A97A")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.backgroundColor = "#54CA9B")
-              }
-            >
-              BUY
-            </button>
+              {/* Buy Link */}
+              <button
+                onClick={() =>
+                  window.open(
+                    "https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f",
+                    "_blank"
+                  )
+                }
+                style={{ backgroundColor: "#54CA9B" }}
+                className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+                onMouseEnter={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#42A97A")
+                }
+                onMouseLeave={(e) =>
+                  (e.currentTarget.style.backgroundColor = "#54CA9B")
+                }
+              >
+                BUY
+              </button>
+            </div>
           </div>
         </div>
 
