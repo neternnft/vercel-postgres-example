@@ -4,6 +4,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 import { motion } from 'framer-motion';
 import { useAccount } from 'wagmi';
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import UserProfileModal, { useUserProfile } from './UserProfile';
 
 export default function WalletConnect() {
@@ -44,10 +45,14 @@ export default function WalletConnect() {
         )}
       </div>
 
-      <UserProfileModal 
-        isOpen={isProfileOpen}
-        onClose={() => setIsProfileOpen(false)}
-      />
+      {/* Render modal in a portal */}
+      {isMounted && isProfileOpen && createPortal(
+        <UserProfileModal 
+          isOpen={isProfileOpen}
+          onClose={() => setIsProfileOpen(false)}
+        />,
+        document.body
+      )}
     </>
   );
 } 

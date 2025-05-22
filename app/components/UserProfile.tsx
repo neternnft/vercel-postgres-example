@@ -9,56 +9,6 @@ interface UserProfileData {
   pfpUrl?: string;
 }
 
-// Global username registry
-const USERNAMES_KEY = 'glurbnok_usernames_registry';
-
-function useUsernameRegistry() {
-  // Get all registered usernames
-  const getAllUsernames = () => {
-    try {
-      const data = localStorage.getItem(USERNAMES_KEY);
-      return data ? JSON.parse(data) : {};
-    } catch (e) {
-      console.error('Error reading username registry:', e);
-      return {};
-    }
-  };
-
-  // Check if username is taken
-  const isUsernameTaken = (username: string, currentAddress: string): boolean => {
-    const registry = getAllUsernames();
-    const normalizedUsername = username.toLowerCase().trim();
-    
-    // Check each address's username
-    for (const [addr, data] of Object.entries(registry)) {
-      if (addr !== currentAddress) {
-        const existingUsername = (data as any).username.toLowerCase().trim();
-        if (existingUsername === normalizedUsername) {
-          return true;
-        }
-      }
-    }
-    return false;
-  };
-
-  // Register a username
-  const registerUsername = (username: string, address: string) => {
-    try {
-      const registry = getAllUsernames();
-      registry[address] = {
-        username: username.trim(),
-        registeredAt: new Date().toISOString()
-      };
-      localStorage.setItem(USERNAMES_KEY, JSON.stringify(registry));
-    } catch (e) {
-      console.error('Error registering username:', e);
-      throw new Error('Failed to register username');
-    }
-  };
-
-  return { isUsernameTaken, registerUsername, getAllUsernames };
-}
-
 export function useUserProfile() {
   const { address } = useAccount();
   const [profileData, setProfileData] = useState<UserProfileData>({
@@ -66,62 +16,82 @@ export function useUserProfile() {
     pfpUrl: undefined
   });
   const [isMounted, setIsMounted] = useState(false);
-  const { isUsernameTaken, registerUsername } = useUsernameRegistry();
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Load profile data when component mounts
+  // Load profile data when component mounts or address changes
   useEffect(() => {
-    if (isMounted && address) {
-      // Load from username registry first
-      const registry = JSON.parse(localStorage.getItem(USERNAMES_KEY) || '{}');
-      const registeredData = registry[address];
+    async function loadProfile() {
+      if (!isMounted || !address) return;
       
-      if (registeredData) {
-        setProfileData(prev => ({
-          ...prev,
-          username: registeredData.username
-        }));
-      } else {
-        // Fallback to old storage method
-        const savedProfile = localStorage.getItem(`profile-${address}`);
-        if (savedProfile) {
-          const data = JSON.parse(savedProfile);
-          setProfileData(data);
-          // Migrate to new registry
-          if (data.username) {
-            registerUsername(data.username, address);
-          }
+      setIsLoading(true);
+      try {
+        const response = await fetch(`/api/users?walletAddress=${address}`);
+        if (response.ok) {
+          const userData = await response.json();
+          setProfileData(prev => ({
+            ...prev,
+            username: userData.username
+          }));
         }
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
-  }, [address, isMounted, registerUsername]);
 
-  // Save profile data
-  const updateProfile = (newData: Partial<UserProfileData>) => {
-    if (!address || !isMounted) return;
+    loadProfile();
+  }, [address, isMounted]);
+
+  // Update profile data
+  const updateProfile = async (newData: Partial<UserProfileData>) => {
+    if (!address || !isMounted || !newData.username) return;
     
-    if (newData.username) {
-      const trimmedUsername = newData.username.trim();
+    setIsLoading(true);
+    try {
+      // Check if user exists
+      const checkResponse = await fetch(`/api/users?walletAddress=${address}`);
+      const method = checkResponse.ok ? 'PUT' : 'POST';
       
-      // Check if username is taken
-      if (isUsernameTaken(trimmedUsername, address)) {
-        throw new Error('This username is already taken by another player');
+      // Create or update user
+      const response = await fetch('/api/users', {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          walletAddress: address,
+          username: newData.username.trim(),
+        }),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.details || data.error || 'Failed to update profile');
       }
 
-      // Register in the global registry
-      registerUsername(trimmedUsername, address);
-      newData.username = trimmedUsername;
+      setProfileData(prev => ({
+        ...prev,
+        username: data.username
+      }));
+    } catch (error) {
+      console.error('Profile update error:', error);
+      if (error instanceof Error) {
+        throw new Error(`Failed to update profile: ${error.message}`);
+      } else {
+        throw new Error('An unexpected error occurred while saving');
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    const updatedData = { ...profileData, ...newData };
-    setProfileData(updatedData);
-    localStorage.setItem(`profile-${address}`, JSON.stringify(updatedData));
   };
 
-  return { profileData, updateProfile, isMounted };
+  return { profileData, updateProfile, isMounted, isLoading };
 }
 
 export default function UserProfileModal({ 
@@ -131,11 +101,10 @@ export default function UserProfileModal({
   isOpen: boolean; 
   onClose: () => void;
 }) {
-  const { profileData, updateProfile, isMounted } = useUserProfile();
+  const { profileData, updateProfile, isMounted, isLoading } = useUserProfile();
   const [tempUsername, setTempUsername] = useState('');
   const [error, setError] = useState<string>('');
   const { address } = useAccount();
-  const { isUsernameTaken } = useUsernameRegistry();
 
   useEffect(() => {
     if (isMounted) {
@@ -161,15 +130,10 @@ export default function UserProfileModal({
       return 'Please connect your wallet first';
     }
 
-    // Check for unique username
-    if (isUsernameTaken(username, address)) {
-      return 'This username is already taken by another player';
-    }
-
     return null;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!isMounted || !address) return;
     
     try {
@@ -181,7 +145,7 @@ export default function UserProfileModal({
       }
 
       // Try to update profile
-      updateProfile({ username: tempUsername });
+      await updateProfile({ username: tempUsername });
       onClose();
     } catch (err) {
       if (err instanceof Error) {
@@ -239,6 +203,7 @@ export default function UserProfileModal({
                 className="w-full px-3 py-2 bg-[#2A2A2A] rounded border border-[#54CA9B] text-white focus:outline-none focus:ring-2 focus:ring-[#54CA9B]"
                 placeholder="Enter username (3-20 characters)"
                 maxLength={20}
+                disabled={isLoading}
               />
               {error && (
                 <p className="mt-2 text-red-500 text-sm">{error}</p>
@@ -260,14 +225,16 @@ export default function UserProfileModal({
               <button
                 onClick={onClose}
                 className="px-4 py-2 rounded bg-[#2A2A2A] text-[#54CA9B] hover:bg-[#3A3A3A] transition-colors"
+                disabled={isLoading}
               >
                 Cancel
               </button>
               <button
                 onClick={handleSave}
-                className="px-4 py-2 rounded bg-[#54CA9B] text-black hover:bg-[#3DA77B] transition-colors"
+                className="px-4 py-2 rounded bg-[#54CA9B] text-black hover:bg-[#3DA77B] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={isLoading}
               >
-                Save Changes
+                {isLoading ? 'Saving...' : 'Save Changes'}
               </button>
             </div>
           </motion.div>
