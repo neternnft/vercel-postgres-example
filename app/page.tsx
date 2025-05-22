@@ -25,9 +25,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="h-screen bg-black flex flex-col overflow-hidden">
-        {/* Top Bar */}
-        <div className="flex justify-between items-center p-2">
+      <main className="h-[100vh] bg-black flex flex-col overflow-hidden">
+        {/* Top Bar - 10vh */}
+        <div className="h-[10vh] flex justify-between items-center px-2">
           {/* Logo and Text */}
           <div className="flex items-center space-x-1">
             <Image
@@ -51,8 +51,8 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Main Content */}
-        <div className="flex-1 flex items-center justify-center min-h-0 px-2">
+        {/* Main Content - 80vh */}
+        <div className="h-[80vh] flex items-center justify-center px-2">
           <div className="flex flex-col items-center justify-center gap-3 max-w-[min(280px,80vw)]">
             {/* Centered Image */}
             <div className="w-full">
@@ -116,9 +116,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Bottom Links */}
-        <div className="p-2">
-          <div className="container mx-auto grid grid-cols-3 gap-2 max-w-3xl text-center">
+        {/* Bottom Links - 10vh */}
+        <div className="h-[10vh] flex items-center px-2">
+          <div className="w-full grid grid-cols-3 gap-2 max-w-3xl mx-auto text-center">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
