@@ -148,8 +148,8 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
           aria-label="Game canvas"
         />
 
-        {/* Sound control button - only show when game is active */}
-        {gameState.gameStarted && !gameState.gameOver && (
+        {/* Sound control button - only show when game is active and not on mobile */}
+        {gameState.gameStarted && !gameState.gameOver && !isMobile && (
           <button
             onClick={toggleMute}
             className="absolute top-2 right-2 sm:top-4 sm:right-4 bg-gray-800 hover:bg-gray-700 text-white p-2 rounded-full shadow-md transition-colors duration-300 z-20"
