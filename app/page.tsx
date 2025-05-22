@@ -170,16 +170,7 @@ export default function Home() {
         </div>
       ) : (
         <main 
-          className={`bg-black flex flex-col overflow-hidden w-full content-wrapper fade-in ${!isLoading ? 'visible' : ''}`}
-          style={{ 
-            height: 'var(--app-height)',
-            minHeight: '100vh',
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0
-          }}
+          className="bg-black min-h-screen w-full"
         >
           {/* Top Bar - Fixed height */}
           <div className="h-[80px] flex justify-between items-center px-4 sm:px-6 md:px-8">
@@ -207,9 +198,9 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Main Content - Fixed height and centered */}
-          <div className="flex-1 flex items-center justify-center min-h-[400px]">
-            <div className="flex flex-col items-center justify-center gap-12 w-full">
+          {/* Main Content */}
+          <div className="flex flex-col items-center justify-center min-h-[calc(100vh-140px)] py-8">
+            <div className="flex flex-col items-center justify-center gap-12 w-full px-4">
               {/* Text */}
               <motion.a
                 className="group w-full"
@@ -252,8 +243,8 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Bottom Links - Fixed height */}
-          <div className="h-[60px] flex items-center px-4 sm:px-6 md:px-8">
+          {/* Bottom Links */}
+          <div className="h-[60px] flex items-center justify-center px-4 sm:px-6 md:px-8">
             <div className="w-full grid grid-cols-3 gap-3 max-w-3xl mx-auto text-center">
               {/* X Link */}
               <button
