@@ -25,7 +25,7 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-h-screen bg-black flex flex-col items-center justify-between px-4 py-8 relative overflow-hidden">
+      <main className="h-screen bg-black flex flex-col items-center justify-between px-4 py-4 relative overflow-hidden">
         {/* Wallet Connect Button */}
         <div className="fixed top-4 right-4 z-20">
           <WalletConnect />
@@ -49,24 +49,24 @@ export default function Home() {
         </div>
 
         {/* Main Content Container */}
-        <div className="flex flex-col items-center justify-center flex-grow mt-20 mb-4">
+        <div className="flex flex-col items-center justify-center h-full max-h-[60vh] mt-16">
           {/* Centered Image */}
-          <div>
+          <div className="w-full max-w-[320px]">
             <Image
               src="/yoda.gif"
               alt="Yoda GIF"
               width={320}
               height={65}
-              className="pixelated"
+              className="pixelated w-full h-auto"
               priority
               unoptimized
             />
           </div>
 
           {/* Text */}
-          <div className="mt-4">
+          <div className="mt-2">
             <motion.a
-              className="group mb-4"
+              className="group"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Meme is a game link"
@@ -74,7 +74,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-3xl sm:text-4xl font-bold text-white mb-2 text-center whitespace-nowrap">
+              <h2 className="text-2xl sm:text-4xl font-bold text-white text-center whitespace-nowrap">
                 MEME IS A GAME
               </h2>
             </motion.a>
@@ -82,14 +82,14 @@ export default function Home() {
 
           {/* Start Button */}
           <motion.div
-            className="mt-8"
+            className="mt-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <motion.button
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-4 px-8 rounded-lg shadow-md transition-colors duration-300 mb-8 text-xl"
+              className="text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 text-lg"
               animate={{
                 boxShadow: [
                   "0 0 0 0 rgba(84, 202, 155, 0.7)",
@@ -115,13 +115,13 @@ export default function Home() {
         </div>
 
         {/* Links Section at the Bottom */}
-        <div className="w-full mt-auto">
-          <div className="container mx-auto grid grid-cols-3 gap-4 max-w-3xl text-center px-4">
+        <div className="w-full mb-4">
+          <div className="container mx-auto grid grid-cols-3 gap-3 max-w-3xl text-center px-4">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -138,7 +138,7 @@ export default function Home() {
                 window.open("https://arena.social/glurbnok", "_blank")
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -158,7 +158,7 @@ export default function Home() {
                 )
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300"
+              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
