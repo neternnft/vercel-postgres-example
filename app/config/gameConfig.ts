@@ -32,4 +32,31 @@ export const GAME_CONFIG = {
     GROUND: '#4ade80',
     BACKGROUND: '#000000',
   },
+  DIFFICULTY: {
+    LEVELS: {
+      EASY: {
+        SPEED_MULTIPLIER: 1,
+        OBSTACLE_FREQUENCY: 0.8,
+        SCORE_MULTIPLIER: 1,
+        POWER_UP_FREQUENCY: 1.2
+      },
+      MEDIUM: {
+        SPEED_MULTIPLIER: 1.5,
+        OBSTACLE_FREQUENCY: 1,
+        SCORE_MULTIPLIER: 1.5,
+        POWER_UP_FREQUENCY: 1
+      },
+      HARD: {
+        SPEED_MULTIPLIER: 2,
+        OBSTACLE_FREQUENCY: 1.2,
+        SCORE_MULTIPLIER: 2,
+        POWER_UP_FREQUENCY: 0.8
+      }
+    },
+    PROGRESSION: {
+      EASY_THRESHOLD: 0,    // Score 0-19
+      MEDIUM_THRESHOLD: 20,  // Score 20-49
+      HARD_THRESHOLD: 50    // Score 50+
+    }
+  },
 } as const; 
