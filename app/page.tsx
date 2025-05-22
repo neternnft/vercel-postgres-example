@@ -87,6 +87,24 @@ export default function Home() {
           }
         }
 
+        @keyframes float {
+          0%, 100% {
+            transform: translateY(0);
+          }
+          50% {
+            transform: translateY(-20px);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            opacity: 0.2;
+          }
+          50% {
+            opacity: 0.5;
+          }
+        }
+
         .gradient-text {
           background: linear-gradient(
             90deg,
@@ -100,9 +118,7 @@ export default function Home() {
           animation: gradient 4s ease infinite;
           -webkit-background-clip: text;
           background-clip: text;
-          color: transparent;
-          font-weight: 900;
-          letter-spacing: 0.1em;
+                    color: transparent;          font-weight: 900;          letter-spacing: 0.1em;
         }
 
         * {
@@ -114,6 +130,59 @@ export default function Home() {
           opacity: 1 !important;
           transform: none !important;
         }
+
+        /* Futuristic background styles */
+        .futuristic-bg {
+          background: #000000;
+          position: relative;
+          overflow: hidden;
+        }
+
+        .futuristic-bg::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(
+            circle at center,
+            transparent 0%,
+            rgba(84, 202, 155, 0.03) 30%,
+            rgba(0, 0, 0, 0.9) 70%
+          );
+          animation: pulse 8s ease-in-out infinite;
+          pointer-events: none;
+        }
+
+        /* Hexagon grid background */
+        .futuristic-bg::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background-image: 
+            linear-gradient(60deg, rgba(84, 202, 155, 0.05) 25%, transparent 25%),
+            linear-gradient(-60deg, rgba(84, 202, 155, 0.05) 25%, transparent 25%);
+          background-size: 60px 60px;
+          opacity: 0.3;
+          animation: float 10s ease-in-out infinite;
+        }
+
+        /* Floating particles */
+        .particle {
+          position: absolute;
+          width: 3px;
+          height: 3px;
+          background: rgba(84, 202, 155, 0.5);
+          border-radius: 50%;
+          pointer-events: none;
+        }
+
+        .particle:nth-child(1) { top: 20%; left: 20%; animation: float 8s infinite; }
+        .particle:nth-child(2) { top: 60%; left: 80%; animation: float 9s infinite; }
+        .particle:nth-child(3) { top: 80%; left: 40%; animation: float 7s infinite; }
+        .particle:nth-child(4) { top: 40%; left: 60%; animation: float 10s infinite; }
+        .particle:nth-child(5) { top: 30%; left: 70%; animation: float 8.5s infinite; }
 
         .fade-in {
           opacity: 0;
@@ -177,10 +246,7 @@ export default function Home() {
           </div>
         </div>
       ) : (
-        <main 
-          className="fixed inset-0 bg-black flex flex-col justify-between"
-          style={{ height: 'var(--app-height)' }}
-        >
+                                 <main           className="fixed inset-0 bg-black flex flex-col justify-between futuristic-bg"          style={{ height: 'var(--app-height)' }}        >          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>
           {/* Top Bar */}
           <div className="h-[10vh] flex justify-between items-center px-4 sm:px-6 md:px-8">
             {/* Logo and Text */}
