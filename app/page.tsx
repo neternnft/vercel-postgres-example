@@ -27,18 +27,18 @@ export default function Home() {
       </Head>
       <main className="h-screen bg-black flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className="flex justify-between items-center p-4">
+        <div className="flex justify-between items-center p-2">
           {/* Logo and Text */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1">
             <Image
               src="/logo.png"
               alt="Logo"
               width={70}
               height={70}
-              className="object-contain w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[70px] md:h-[70px]"
+              className="object-contain w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px]"
             />
             <h1
-              className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold"
+              className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold"
               style={{ color: "#54CA9B" }}
             >
               Glurbnok
@@ -52,8 +52,8 @@ export default function Home() {
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex items-center justify-center px-4">
-          <div className="flex flex-col items-center justify-center gap-6 max-w-[min(320px,80vw)]">
+        <div className="flex-1 flex items-center justify-center min-h-0 px-2">
+          <div className="flex flex-col items-center justify-center gap-3 max-w-[min(280px,80vw)]">
             {/* Centered Image */}
             <div className="w-full">
               <Image
@@ -77,7 +77,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center whitespace-nowrap">
+              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white text-center whitespace-nowrap">
                 MEME IS A GAME
               </h2>
             </motion.a>
@@ -90,7 +90,7 @@ export default function Home() {
             >
               <motion.button
                 style={{ backgroundColor: "#54CA9B" }}
-                className="text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 text-base sm:text-lg md:text-xl"
+                className="text-black font-bold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base md:text-lg"
                 animate={{
                   boxShadow: [
                     "0 0 0 0 rgba(84, 202, 155, 0.7)",
@@ -117,13 +117,13 @@ export default function Home() {
         </div>
 
         {/* Bottom Links */}
-        <div className="p-4">
-          <div className="container mx-auto grid grid-cols-3 gap-3 max-w-3xl text-center">
+        <div className="p-2">
+          <div className="container mx-auto grid grid-cols-3 gap-2 max-w-3xl text-center">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-1.5 px-2 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -140,7 +140,7 @@ export default function Home() {
                 window.open("https://arena.social/glurbnok", "_blank")
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-1.5 px-2 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -160,7 +160,7 @@ export default function Home() {
                 )
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
+              className="text-black font-bold py-1.5 px-2 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
