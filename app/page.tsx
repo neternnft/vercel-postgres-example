@@ -136,7 +136,7 @@ export default function Home() {
         </div>
 
         {/* Links Section at the Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black pb-[calc(var(--vh,1vh)*2)] pt-2">
+        <div className="w-full mb-[calc(var(--vh,1vh)*4)]">
           <div className="container mx-auto grid grid-cols-3 gap-[2vw] max-w-3xl text-center px-4">
             {/* X Link */}
             <button
