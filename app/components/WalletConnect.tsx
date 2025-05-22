@@ -28,8 +28,9 @@ export default function WalletConnect() {
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.5 }}
-        className="flex items-center space-x-4"
+        className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:items-center sm:space-x-4"
       >
+        <ConnectButton label="Wallet" />
         {isConnected && (
           <div 
             className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
@@ -46,7 +47,6 @@ export default function WalletConnect() {
             </span>
           </div>
         )}
-        <ConnectButton />
       </motion.div>
 
       <UserProfileModal 
