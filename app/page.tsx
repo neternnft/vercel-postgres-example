@@ -115,8 +115,8 @@ export default function Home() {
         </div>
 
         {/* Links Section at the Bottom */}
-        <div className="w-full mb-4">
-          <div className="container mx-auto grid grid-cols-3 gap-3 max-w-3xl text-center px-4">
+        <div className="w-full mb-8">
+          <div className="container mx-auto grid grid-cols-3 gap-3 max-w-3xl text-center px-4 -mb-6">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
