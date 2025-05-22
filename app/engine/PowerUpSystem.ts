@@ -25,6 +25,7 @@ export class PowerUpSystem {
   private canvasWidth: number;
   private canvasHeight: number;
   private particles: ParticleSystem;
+  private _lastSpawnTime: number | null = null;
 
   constructor(ctx: CanvasRenderingContext2D, canvasWidth: number, canvasHeight: number) {
     this.ctx = ctx;
@@ -34,8 +35,26 @@ export class PowerUpSystem {
   }
 
   public spawnPowerUp(playerScore: number): void {
-    // Spawn power-ups based on score milestones
-    if (playerScore > 0 && playerScore % 5 === 0 && this.powerUps.length < 2) {
+    // Don't spawn power-ups before score 5 to give player time to get used to the game
+    if (playerScore < 5) return;
+
+    // Random chance to spawn power-ups, with consistent probability
+    const spawnChance = 0.01; // 1% chance per update
+
+    // Add minimum spawn time gap to prevent power-ups spawning too close together
+    const now = Date.now();
+    if (!this._lastSpawnTime) this._lastSpawnTime = now;
+    const timeSinceLastSpawn = now - this._lastSpawnTime;
+    
+    // Increase minimum time between spawns to 5 seconds
+    const minSpawnGap = 5000;
+
+    // Force spawn if it's been too long without a power-up (15 seconds)
+    const forceSpawnTime = 15000;
+    const shouldForceSpawn = timeSinceLastSpawn > forceSpawnTime;
+    
+    if (this.powerUps.length < 2 && timeSinceLastSpawn > minSpawnGap && 
+        (shouldForceSpawn || Math.random() < spawnChance)) {
       const types: Array<'shield' | 'doubleJump' | 'slowMotion'> = ['shield', 'doubleJump', 'slowMotion'];
       const type = types[Math.floor(Math.random() * types.length)];
       
@@ -49,6 +68,8 @@ export class PowerUpSystem {
         active: false,
         collected: false
       });
+      
+      this._lastSpawnTime = now;
     }
   }
 
