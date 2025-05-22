@@ -64,7 +64,8 @@ export default function Home() {
           min-height: 100vh;
           width: 100%;
           height: var(--app-height);
-          overflow-y: auto;
+          overflow: hidden;
+          position: fixed;
           -webkit-overflow-scrolling: touch;
         }
         
@@ -170,18 +171,18 @@ export default function Home() {
       `}</style>
       {isLoading ? (
         <div className="fixed inset-0 bg-black flex flex-col items-center justify-center">
-          <div className="w-[400px] sm:w-[500px] md:w-[600px] flex flex-col items-center">
+          <div className="w-[80vw] max-w-[600px] flex flex-col items-center">
             <div className="loading-bar rounded-full w-full"></div>
-            <div className="mt-8 loading-text">LOADING</div>
+            <div className="mt-8 loading-text text-base sm:text-xl md:text-2xl">LOADING</div>
           </div>
         </div>
       ) : (
         <main 
-          className="bg-black min-h-[var(--app-height)] w-full flex flex-col justify-between"
-          style={{ minHeight: 'var(--app-height)' }}
+          className="fixed inset-0 bg-black flex flex-col justify-between"
+          style={{ height: 'var(--app-height)' }}
         >
           {/* Top Bar */}
-          <div className="h-[80px] flex justify-between items-center px-4 sm:px-6 md:px-8">
+          <div className="h-[10vh] flex justify-between items-center px-4 sm:px-6 md:px-8">
             {/* Logo and Text */}
             <div className="flex items-center space-x-2">
               <Image
@@ -189,11 +190,11 @@ export default function Home() {
                 alt="Logo"
                 width={70}
                 height={70}
-                className="object-contain w-[30px] h-[30px] sm:w-[40px] sm:h-[40px] md:w-[50px] md:h-[50px]"
+                className="object-contain w-[20px] h-[20px] sm:w-[30px] sm:h-[30px] md:w-[40px] md:h-[40px]"
                 priority
               />
               <h1
-                className="text-lg sm:text-2xl md:text-3xl lg:text-4xl font-bold"
+                className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold"
                 style={{ color: "#54CA9B" }}
               >
                 Glurbnok
@@ -201,14 +202,14 @@ export default function Home() {
             </div>
             
             {/* Wallet Connect */}
-            <div>
+            <div className="scale-75 sm:scale-90 md:scale-100">
               <WalletConnect />
             </div>
           </div>
 
           {/* Main Content */}
-          <div className="flex-1 flex flex-col justify-center items-center py-4 sm:py-8">
-            <div className="flex flex-col items-center justify-center gap-8 sm:gap-12 w-full px-4">
+          <div className="flex-1 flex flex-col justify-center items-center">
+            <div className="flex flex-col items-center justify-center gap-4 sm:gap-8 w-full px-4">
               {/* Text */}
               <motion.a
                 className="group w-full"
@@ -216,7 +217,7 @@ export default function Home() {
                 rel="noopener noreferrer"
                 aria-label="Meme is a game link"
               >
-                <h2 className="text-[8vw] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center whitespace-nowrap tracking-wider gradient-text">
+                <h2 className="text-[6vw] sm:text-4xl md:text-5xl lg:text-6xl font-bold text-center whitespace-nowrap tracking-wider gradient-text">
                   MEME IS A GAME
                 </h2>
               </motion.a>
@@ -225,7 +226,7 @@ export default function Home() {
               <div>
                 <motion.button
                   style={{ backgroundColor: "#54CA9B" }}
-                  className="text-black font-bold py-3 px-8 rounded-lg shadow-md transition-colors duration-300 text-lg sm:text-xl md:text-2xl"
+                  className="text-black font-bold py-2 px-6 sm:py-3 sm:px-8 rounded-lg shadow-md transition-colors duration-300 text-base sm:text-lg md:text-xl"
                   animate={{
                     boxShadow: [
                       "0 0 0 0 rgba(84, 202, 155, 0.7)",
@@ -252,59 +253,72 @@ export default function Home() {
           </div>
 
           {/* Bottom Links */}
-          <div className="py-4 sm:py-6 px-4 sm:px-6 md:px-8 mt-auto relative z-10">
-            <div className="w-full grid grid-cols-3 gap-3 max-w-3xl mx-auto">
+          <div className="h-[10vh] py-2 px-4 sm:px-6 md:px-8">
+            <div className="w-full max-w-xs mx-auto flex justify-center items-center gap-6 sm:gap-8">
               {/* X Link */}
-              <button
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => window.open("https://x.com/glurbnok", "_blank")}
-                style={{ backgroundColor: "#54CA9B" }}
-                className="text-black font-bold py-3 sm:py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#42A97A")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#54CA9B")
-                }
+                className="cursor-pointer flex flex-col items-center group"
               >
-                X
-              </button>
+                <div 
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors duration-300 bg-black border-2 border-[#54CA9B] group-hover:bg-[#54CA9B]"
+                >
+                  <svg 
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-[#54CA9B] group-hover:text-black transition-colors duration-300" 
+                    fill="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                  </svg>
+                </div>
+                <span className="text-[#54CA9B] text-xs sm:text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">X</span>
+              </motion.div>
 
               {/* Arena Link */}
-              <button
-                onClick={() =>
-                  window.open("https://arena.social/glurbnok", "_blank")
-                }
-                style={{ backgroundColor: "#54CA9B" }}
-                className="text-black font-bold py-3 sm:py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#42A97A")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#54CA9B")
-                }
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.open("https://arena.social/glurbnok", "_blank")}
+                className="cursor-pointer flex flex-col items-center group"
               >
-                ARENA
-              </button>
+                <div 
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors duration-300 bg-black border-2 border-[#54CA9B] group-hover:bg-[#54CA9B]"
+                >
+                  <svg 
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-[#54CA9B] group-hover:text-black transition-colors duration-300" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                  </svg>
+                </div>
+                <span className="text-[#54CA9B] text-xs sm:text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">ARENA</span>
+              </motion.div>
 
               {/* Buy Link */}
-              <button
-                onClick={() =>
-                  window.open(
-                    "https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f",
-                    "_blank"
-                  )
-                }
-                style={{ backgroundColor: "#54CA9B" }}
-                className="text-black font-bold py-3 sm:py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#42A97A")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.backgroundColor = "#54CA9B")
-                }
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => window.open("https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f", "_blank")}
+                className="cursor-pointer flex flex-col items-center group"
               >
-                BUY
-              </button>
+                <div 
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-colors duration-300 bg-black border-2 border-[#54CA9B] group-hover:bg-[#54CA9B]"
+                >
+                  <svg 
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-[#54CA9B] group-hover:text-black transition-colors duration-300" 
+                    fill="none" 
+                    stroke="currentColor" 
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                  </svg>
+                </div>
+                <span className="text-[#54CA9B] text-xs sm:text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">BUY</span>
+              </motion.div>
             </div>
           </div>
         </main>

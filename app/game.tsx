@@ -31,12 +31,12 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
 
     if (isLandscape) {
       // Landscape mode
-      gameWidth = Math.min(screenWidth * 0.8, 1200); // Max width of 1200px
-      gameHeight = Math.min(screenHeight * 0.8, gameWidth * 0.6); // Maintain aspect ratio
+      gameWidth = Math.min(screenWidth * 0.9, 1200); // Use more width in landscape
+      gameHeight = Math.min(screenHeight * 0.9, gameWidth * 0.6); // Maintain aspect ratio
     } else {
       // Portrait mode
       gameWidth = screenWidth * 0.95; // Use more width in portrait
-      gameHeight = Math.min(screenHeight * 0.7, gameWidth * 1.2); // Taller in portrait
+      gameHeight = Math.min(screenHeight * 0.8, gameWidth * 1.2); // Taller in portrait
     }
 
     return {
