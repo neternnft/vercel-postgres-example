@@ -239,7 +239,7 @@ export default function Home() {
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col justify-center items-center">
-            <div className="flex flex-col items-center justify-center gap-8 sm:gap-12 w-full px-4">
+            <div className="flex flex-col items-center justify-center gap-4 sm:gap-8 w-full px-4">
               {/* Text */}
               <motion.a
                 className="group w-full"
@@ -283,11 +283,11 @@ export default function Home() {
           </div>
 
           {/* Bottom Links */}
-          <div className="h-[15vh] py-4 sm:py-6 md:py-8 px-4 sm:px-6 md:px-8">
+          <div className="h-[10vh] py-2 px-4 sm:px-6 md:px-8">
             <div className="w-full max-w-xs mx-auto flex justify-center items-center gap-6 sm:gap-8">
               {/* X Link */}
               <motion.div
-                whileHover={{ scale: 1.1, translateY: -10 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => window.open("https://x.com/glurbnok", "_blank")}
                 className="cursor-pointer flex flex-col items-center group"
@@ -303,12 +303,12 @@ export default function Home() {
                     <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
                   </svg>
                 </div>
-                <span className="text-[#54CA9B] text-xs sm:text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">X</span>
+                <span className="text-[#54CA9B] text-xs sm:text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">X</span>
               </motion.div>
 
               {/* Arena Link */}
               <motion.div
-                whileHover={{ scale: 1.1, translateY: -10 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => window.open("https://arena.social/glurbnok", "_blank")}
                 className="cursor-pointer flex flex-col items-center group"
@@ -325,12 +325,12 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
                   </svg>
                 </div>
-                <span className="text-[#54CA9B] text-xs sm:text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">ARENA</span>
+                <span className="text-[#54CA9B] text-xs sm:text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">ARENA</span>
               </motion.div>
 
               {/* Buy Link */}
               <motion.div
-                whileHover={{ scale: 1.1, translateY: -10 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => window.open("https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f", "_blank")}
                 className="cursor-pointer flex flex-col items-center group"
@@ -347,7 +347,7 @@ export default function Home() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                   </svg>
                 </div>
-                <span className="text-[#54CA9B] text-xs sm:text-sm mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">BUY</span>
+                <span className="text-[#54CA9B] text-xs sm:text-sm mt-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">BUY</span>
               </motion.div>
             </div>
           </div>
