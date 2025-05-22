@@ -138,51 +138,15 @@ export default function Home() {
           overflow: hidden;
         }
 
-        .futuristic-bg::before {
-          content: '';
-          position: absolute;
-          top: -50%;
-          left: -50%;
-          width: 200%;
-          height: 200%;
-          background: radial-gradient(
-            circle at center,
-            transparent 0%,
-            rgba(84, 202, 155, 0.03) 30%,
-            rgba(0, 0, 0, 0.9) 70%
-          );
-          animation: pulse 8s ease-in-out infinite;
-          pointer-events: none;
-        }
-
-        /* Hexagon grid background */
+        .futuristic-bg::before,
         .futuristic-bg::after {
-          content: '';
-          position: absolute;
-          inset: 0;
-          background-image: 
-            linear-gradient(60deg, rgba(84, 202, 155, 0.05) 25%, transparent 25%),
-            linear-gradient(-60deg, rgba(84, 202, 155, 0.05) 25%, transparent 25%);
-          background-size: 60px 60px;
-          opacity: 0.3;
-          animation: float 10s ease-in-out infinite;
+          display: none;
         }
 
         /* Floating particles */
         .particle {
-          position: absolute;
-          width: 3px;
-          height: 3px;
-          background: rgba(84, 202, 155, 0.5);
-          border-radius: 50%;
-          pointer-events: none;
+          display: none;
         }
-
-        .particle:nth-child(1) { top: 20%; left: 20%; animation: float 8s infinite; }
-        .particle:nth-child(2) { top: 60%; left: 80%; animation: float 9s infinite; }
-        .particle:nth-child(3) { top: 80%; left: 40%; animation: float 7s infinite; }
-        .particle:nth-child(4) { top: 40%; left: 60%; animation: float 10s infinite; }
-        .particle:nth-child(5) { top: 30%; left: 70%; animation: float 8.5s infinite; }
 
         .fade-in {
           opacity: 0;
