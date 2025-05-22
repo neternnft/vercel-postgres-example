@@ -38,10 +38,10 @@ export default function Home() {
             alt="Logo"
             width={70}
             height={70}
-            className="object-contain"
+            className="object-contain w-[50px] h-[50px] sm:w-[70px] sm:h-[70px]"
           />
           <h1
-            className="text-4xl sm:text-5xl font-bold"
+            className="text-2xl sm:text-4xl md:text-5xl font-bold"
             style={{ color: "#54CA9B" }}
           >
             Glurbnok
