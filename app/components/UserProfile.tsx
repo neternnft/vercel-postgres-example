@@ -9,27 +9,54 @@ interface UserProfileData {
   pfpUrl?: string;
 }
 
-// Function to check if username is taken (case-insensitive)
-function isUsernameTaken(username: string, currentAddress: string): boolean {
-  const takenUsernames = JSON.parse(localStorage.getItem('taken_usernames') || '{}');
-  const normalizedNewUsername = username.toLowerCase().trim();
-  
-  return Object.entries(takenUsernames).some(([address, name]) => {
-    const normalizedExistingUsername = (name as string).toLowerCase().trim();
-    return normalizedExistingUsername === normalizedNewUsername && address !== currentAddress;
-  });
-}
+// Global username registry
+const USERNAMES_KEY = 'glurbnok_usernames_registry';
 
-// Function to register a username
-function registerUsername(username: string, address: string): void {
-  const takenUsernames = JSON.parse(localStorage.getItem('taken_usernames') || '{}');
-  
-  // Update the username for this address
-  takenUsernames[address] = username.trim();
-  localStorage.setItem('taken_usernames', JSON.stringify(takenUsernames));
-  
-  // Log for debugging
-  console.log('Current taken usernames:', takenUsernames);
+function useUsernameRegistry() {
+  // Get all registered usernames
+  const getAllUsernames = () => {
+    try {
+      const data = localStorage.getItem(USERNAMES_KEY);
+      return data ? JSON.parse(data) : {};
+    } catch (e) {
+      console.error('Error reading username registry:', e);
+      return {};
+    }
+  };
+
+  // Check if username is taken
+  const isUsernameTaken = (username: string, currentAddress: string): boolean => {
+    const registry = getAllUsernames();
+    const normalizedUsername = username.toLowerCase().trim();
+    
+    // Check each address's username
+    for (const [addr, data] of Object.entries(registry)) {
+      if (addr !== currentAddress) {
+        const existingUsername = (data as any).username.toLowerCase().trim();
+        if (existingUsername === normalizedUsername) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  // Register a username
+  const registerUsername = (username: string, address: string) => {
+    try {
+      const registry = getAllUsernames();
+      registry[address] = {
+        username: username.trim(),
+        registeredAt: new Date().toISOString()
+      };
+      localStorage.setItem(USERNAMES_KEY, JSON.stringify(registry));
+    } catch (e) {
+      console.error('Error registering username:', e);
+      throw new Error('Failed to register username');
+    }
+  };
+
+  return { isUsernameTaken, registerUsername, getAllUsernames };
 }
 
 export function useUserProfile() {
@@ -39,45 +66,59 @@ export function useUserProfile() {
     pfpUrl: undefined
   });
   const [isMounted, setIsMounted] = useState(false);
+  const { isUsernameTaken, registerUsername } = useUsernameRegistry();
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Load profile data from localStorage when component mounts
+  // Load profile data when component mounts
   useEffect(() => {
     if (isMounted && address) {
-      const savedProfile = localStorage.getItem(`profile-${address}`);
-      if (savedProfile) {
-        setProfileData(JSON.parse(savedProfile));
+      // Load from username registry first
+      const registry = JSON.parse(localStorage.getItem(USERNAMES_KEY) || '{}');
+      const registeredData = registry[address];
+      
+      if (registeredData) {
+        setProfileData(prev => ({
+          ...prev,
+          username: registeredData.username
+        }));
+      } else {
+        // Fallback to old storage method
+        const savedProfile = localStorage.getItem(`profile-${address}`);
+        if (savedProfile) {
+          const data = JSON.parse(savedProfile);
+          setProfileData(data);
+          // Migrate to new registry
+          if (data.username) {
+            registerUsername(data.username, address);
+          }
+        }
       }
     }
-  }, [address, isMounted]);
+  }, [address, isMounted, registerUsername]);
 
-  // Save profile data to localStorage
+  // Save profile data
   const updateProfile = (newData: Partial<UserProfileData>) => {
     if (!address || !isMounted) return;
     
-    // Check if new username is taken
     if (newData.username) {
       const trimmedUsername = newData.username.trim();
       
+      // Check if username is taken
       if (isUsernameTaken(trimmedUsername, address)) {
         throw new Error('This username is already taken by another player');
       }
 
-      // Update with trimmed username
+      // Register in the global registry
+      registerUsername(trimmedUsername, address);
       newData.username = trimmedUsername;
     }
 
     const updatedData = { ...profileData, ...newData };
     setProfileData(updatedData);
     localStorage.setItem(`profile-${address}`, JSON.stringify(updatedData));
-
-    // Register the new username
-    if (newData.username) {
-      registerUsername(newData.username, address);
-    }
   };
 
   return { profileData, updateProfile, isMounted };
@@ -94,6 +135,7 @@ export default function UserProfileModal({
   const [tempUsername, setTempUsername] = useState('');
   const [error, setError] = useState<string>('');
   const { address } = useAccount();
+  const { isUsernameTaken } = useUsernameRegistry();
 
   useEffect(() => {
     if (isMounted) {
@@ -115,8 +157,12 @@ export default function UserProfileModal({
       return 'Username must be less than 20 characters';
     }
 
+    if (!address) {
+      return 'Please connect your wallet first';
+    }
+
     // Check for unique username
-    if (isUsernameTaken(username, address || '')) {
+    if (isUsernameTaken(username, address)) {
       return 'This username is already taken by another player';
     }
 
