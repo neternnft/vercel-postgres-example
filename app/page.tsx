@@ -86,20 +86,7 @@ export default function Home() {
 
         {/* Main Content */}
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 md:px-8 min-h-0 -mt-8">
-          <div className="flex flex-col items-center justify-center gap-4 max-w-[min(280px,80vw)]">
-            {/* Centered Image */}
-            <div className="w-full">
-              <Image
-                src="/yoda.gif"
-                alt="Yoda GIF"
-                width={320}
-                height={65}
-                className="pixelated w-full h-auto"
-                priority
-                unoptimized
-              />
-            </div>
-
+          <div className="flex flex-col items-center justify-center gap-6 max-w-[min(320px,80vw)]">
             {/* Text */}
             <motion.a
               className="group"
@@ -110,7 +97,9 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-bold text-white text-center whitespace-nowrap">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white text-center whitespace-nowrap tracking-wider"
+                  style={{ textShadow: '0 0 10px rgba(84, 202, 155, 0.5)' }}
+              >
                 MEME IS A GAME
               </h2>
             </motion.a>
@@ -123,7 +112,7 @@ export default function Home() {
             >
               <motion.button
                 style={{ backgroundColor: "#54CA9B" }}
-                className="text-black font-bold py-2.5 px-6 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base md:text-lg"
+                className="text-black font-bold py-3 px-8 rounded-lg shadow-md transition-colors duration-300 text-lg sm:text-xl md:text-2xl"
                 animate={{
                   boxShadow: [
                     "0 0 0 0 rgba(84, 202, 155, 0.7)",
