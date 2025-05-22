@@ -116,10 +116,10 @@ export default function Home() {
 
         {/* Main Content */}
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 md:px-8 min-h-0 -mt-8">
-          <div className="flex flex-col items-center justify-center gap-12 max-w-[min(320px,80vw)]">
+          <div className="flex flex-col items-center justify-center gap-12 w-full">
             {/* Text */}
             <motion.a
-              className="group"
+              className="group w-full"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Meme is a game link"
@@ -127,7 +127,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center whitespace-nowrap tracking-wider gradient-text">
+              <h2 className="text-[8vw] sm:text-5xl md:text-6xl lg:text-7xl font-bold text-center whitespace-nowrap tracking-wider gradient-text">
                 MEME IS A GAME
               </h2>
             </motion.a>
