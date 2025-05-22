@@ -25,9 +25,9 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="min-h-screen bg-black flex flex-col items-center justify-center px-4 py-8 relative overflow-hidden">
+      <main className="min-h-screen bg-black flex flex-col items-center justify-between px-4 py-8 relative overflow-hidden">
         {/* Wallet Connect Button */}
-        <div className="absolute top-4 right-4 z-20">
+        <div className="fixed top-4 right-4 z-20">
           <WalletConnect />
         </div>
 
@@ -48,8 +48,8 @@ export default function Home() {
           </h1>
         </div>
 
-        {/* Unmovable Container */}
-        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-10 flex flex-col items-center">
+        {/* Main Content Container */}
+        <div className="flex flex-col items-center justify-center flex-grow mt-20 mb-4">
           {/* Centered Image */}
           <div>
             <Image
@@ -115,8 +115,8 @@ export default function Home() {
         </div>
 
         {/* Links Section at the Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 mb-4 sm:mb-8">
-          <div className="container mx-auto grid grid-cols-3 gap-4 max-w-3xl text-center">
+        <div className="w-full mt-auto">
+          <div className="container mx-auto grid grid-cols-3 gap-4 max-w-3xl text-center px-4">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
