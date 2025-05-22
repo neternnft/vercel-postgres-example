@@ -86,7 +86,7 @@ export default function Home() {
 
         {/* Main Content */}
         <div className="flex-1 flex items-center justify-center px-4 sm:px-6 md:px-8 min-h-0 -mt-8">
-          <div className="flex flex-col items-center justify-center gap-6 max-w-[min(320px,80vw)]">
+          <div className="flex flex-col items-center justify-center gap-12 max-w-[min(320px,80vw)]">
             {/* Text */}
             <motion.a
               className="group"
@@ -109,6 +109,7 @@ export default function Home() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5, delay: 0.3 }}
+              className="mt-4"
             >
               <motion.button
                 style={{ backgroundColor: "#54CA9B" }}
