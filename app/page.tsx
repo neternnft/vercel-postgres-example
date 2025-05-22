@@ -25,31 +25,34 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="h-screen bg-black flex flex-col items-center relative overflow-hidden">
-        {/* Wallet Connect Button */}
-        <div className="fixed top-4 right-4 z-20">
-          <WalletConnect />
+      <main className="h-screen bg-black flex flex-col overflow-hidden">
+        {/* Top Bar */}
+        <div className="flex justify-between items-center p-4">
+          {/* Logo and Text */}
+          <div className="flex items-center space-x-2">
+            <Image
+              src="/logo.png"
+              alt="Logo"
+              width={70}
+              height={70}
+              className="object-contain w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[70px] md:h-[70px]"
+            />
+            <h1
+              className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold"
+              style={{ color: "#54CA9B" }}
+            >
+              Glurbnok
+            </h1>
+          </div>
+          
+          {/* Wallet Connect */}
+          <div>
+            <WalletConnect />
+          </div>
         </div>
 
-        {/* Glurbnok Logo and Text */}
-        <div className="fixed top-4 left-4 z-10 flex items-center space-x-2">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            width={70}
-            height={70}
-            className="object-contain w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[70px] md:h-[70px]"
-          />
-          <h1
-            className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold"
-            style={{ color: "#54CA9B" }}
-          >
-            Glurbnok
-          </h1>
-        </div>
-
-        {/* Main Content Container */}
-        <div className="flex-1 flex items-center justify-center w-full px-4">
+        {/* Main Content */}
+        <div className="flex-1 flex items-center justify-center px-4">
           <div className="flex flex-col items-center justify-center gap-6 max-w-[min(320px,80vw)]">
             {/* Centered Image */}
             <div className="w-full">
@@ -113,9 +116,9 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Links Section at the Bottom */}
-        <div className="fixed bottom-0 left-0 right-0 bg-black pb-4">
-          <div className="container mx-auto grid grid-cols-3 gap-3 max-w-3xl text-center px-4">
+        {/* Bottom Links */}
+        <div className="p-4">
+          <div className="container mx-auto grid grid-cols-3 gap-3 max-w-3xl text-center">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
