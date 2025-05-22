@@ -25,23 +25,23 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="h-screen bg-black flex flex-col items-center justify-between px-4 py-4 relative overflow-hidden">
+      <main className="h-[100dvh] bg-black flex flex-col items-center justify-between px-4 relative overflow-hidden">
         {/* Wallet Connect Button */}
-        <div className="fixed top-4 right-4 z-20">
+        <div className="fixed top-[2vh] right-4 z-20">
           <WalletConnect />
         </div>
 
         {/* Glurbnok Logo and Text */}
-        <div className="fixed top-4 left-4 z-10 flex items-center space-x-2">
+        <div className="fixed top-[2vh] left-4 z-10 flex items-center space-x-2">
           <Image
             src="/logo.png"
             alt="Logo"
             width={70}
             height={70}
-            className="object-contain w-[50px] h-[50px] sm:w-[70px] sm:h-[70px]"
+            className="object-contain w-[40px] h-[40px] sm:w-[50px] sm:h-[50px] md:w-[70px] md:h-[70px]"
           />
           <h1
-            className="text-2xl sm:text-4xl md:text-5xl font-bold"
+            className="text-xl sm:text-3xl md:text-4xl lg:text-5xl font-bold"
             style={{ color: "#54CA9B" }}
           >
             Glurbnok
@@ -49,9 +49,9 @@ export default function Home() {
         </div>
 
         {/* Main Content Container */}
-        <div className="flex flex-col items-center justify-center h-full max-h-[60vh] mt-16">
+        <div className="flex flex-col items-center justify-center h-[60vh] mt-[10vh]">
           {/* Centered Image */}
-          <div className="w-full max-w-[320px]">
+          <div className="w-full max-w-[min(320px,80vw)]">
             <Image
               src="/yoda.gif"
               alt="Yoda GIF"
@@ -64,7 +64,7 @@ export default function Home() {
           </div>
 
           {/* Text */}
-          <div className="mt-2">
+          <div className="mt-[2vh]">
             <motion.a
               className="group"
               target="_blank"
@@ -74,7 +74,7 @@ export default function Home() {
               animate={{ opacity: 1 }}
               transition={{ duration: 0.5 }}
             >
-              <h2 className="text-2xl sm:text-4xl font-bold text-white text-center whitespace-nowrap">
+              <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-white text-center whitespace-nowrap">
                 MEME IS A GAME
               </h2>
             </motion.a>
@@ -82,14 +82,14 @@ export default function Home() {
 
           {/* Start Button */}
           <motion.div
-            className="mt-4"
+            className="mt-[3vh]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5, delay: 0.3 }}
           >
             <motion.button
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-3 px-6 rounded-lg shadow-md transition-colors duration-300 text-lg"
+              className="text-black font-bold py-[1.5vh] px-[3vw] rounded-lg shadow-md transition-colors duration-300 text-base sm:text-lg md:text-xl"
               animate={{
                 boxShadow: [
                   "0 0 0 0 rgba(84, 202, 155, 0.7)",
@@ -115,13 +115,13 @@ export default function Home() {
         </div>
 
         {/* Links Section at the Bottom */}
-        <div className="w-full mb-8">
-          <div className="container mx-auto grid grid-cols-3 gap-3 max-w-3xl text-center px-4 -mb-6">
+        <div className="w-full mb-[4vh]">
+          <div className="container mx-auto grid grid-cols-3 gap-[2vw] max-w-3xl text-center px-4">
             {/* X Link */}
             <button
               onClick={() => window.open("https://x.com/glurbnok", "_blank")}
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base"
+              className="text-black font-bold py-[1vh] px-[1.5vw] rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -138,7 +138,7 @@ export default function Home() {
                 window.open("https://arena.social/glurbnok", "_blank")
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base"
+              className="text-black font-bold py-[1vh] px-[1.5vw] rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
@@ -158,7 +158,7 @@ export default function Home() {
                 )
               }
               style={{ backgroundColor: "#54CA9B" }}
-              className="text-black font-bold py-2 px-3 rounded-lg shadow-md transition-colors duration-300 text-sm sm:text-base"
+              className="text-black font-bold py-[1vh] px-[1.5vw] rounded-lg shadow-md transition-colors duration-300 text-xs sm:text-sm md:text-base"
               onMouseEnter={(e) =>
                 (e.currentTarget.style.backgroundColor = "#42A97A")
               }
