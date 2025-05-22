@@ -60,11 +60,18 @@ export default function Home() {
         body {
           padding: 0;
           margin: 0;
-          overflow: hidden;
-          position: fixed;
-          width: 100%;
-          height: 100%;
           background: black;
+          min-height: 100vh;
+          width: 100%;
+          height: var(--app-height);
+          overflow-y: auto;
+          -webkit-overflow-scrolling: touch;
+        }
+        
+        @supports (-webkit-touch-callout: none) {
+          body {
+            height: -webkit-fill-available;
+          }
         }
         
         @keyframes gradient {
@@ -170,7 +177,8 @@ export default function Home() {
         </div>
       ) : (
         <main 
-          className="bg-black min-h-screen w-full flex flex-col"
+          className="bg-black min-h-[var(--app-height)] w-full flex flex-col justify-between"
+          style={{ minHeight: 'var(--app-height)' }}
         >
           {/* Top Bar */}
           <div className="h-[80px] flex justify-between items-center px-4 sm:px-6 md:px-8">
@@ -244,7 +252,7 @@ export default function Home() {
           </div>
 
           {/* Bottom Links */}
-          <div className="py-4 sm:py-6 px-4 sm:px-6 md:px-8 mt-auto">
+          <div className="py-4 sm:py-6 px-4 sm:px-6 md:px-8 mt-auto relative z-10">
             <div className="w-full grid grid-cols-3 gap-3 max-w-3xl mx-auto">
               {/* X Link */}
               <button
