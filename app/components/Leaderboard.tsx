@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getDatabase, ref, query, orderByChild, limitToLast, onValue, off, get } from 'firebase/database';
 
 interface LeaderboardEntry {
   score: number;
   username: string;
-  created_at: string;
+  timestamp: number;
 }
 
 interface LeaderboardProps {
@@ -18,32 +19,85 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchLeaderboard() {
-      if (!isOpen) return;
-      
+    if (!isOpen) return;
+
+    let unsubscribe: (() => void) | undefined;
+
+    async function fetchData() {
+      console.log('Starting leaderboard data fetch...');
       setIsLoading(true);
       setError(null);
-      
+
       try {
-        const response = await fetch('/api/leaderboard');
-        const data = await response.json();
-        
-        if (!response.ok) {
-          throw new Error(data.details || data.error || 'Failed to fetch leaderboard data');
+        console.log('Initializing database connection...');
+        const db = getDatabase();
+        console.log('Database connection initialized');
+
+        const scoresRef = ref(db, 'scores');
+        console.log('Created scores reference');
+
+        // Create query for top 10 scores
+        const topScoresQuery = query(
+          scoresRef,
+          orderByChild('score'),
+          limitToLast(10)
+        );
+        console.log('Created top scores query');
+
+        // First try to get initial data
+        const snapshot = await get(topScoresQuery);
+        console.log('Initial data fetch complete:', snapshot.exists() ? 'Data exists' : 'No data');
+
+        if (!snapshot.exists()) {
+          console.log('No scores found in database');
+          setLeaderboardData([]);
+          setIsLoading(false);
+          return;
         }
-        
-        console.log('Received leaderboard data:', data);
-        setLeaderboardData(data);
+
+        // Set up real-time listener
+        unsubscribe = onValue(topScoresQuery, (snapshot) => {
+          console.log('Received real-time update');
+          try {
+            const scores: LeaderboardEntry[] = [];
+            snapshot.forEach((childSnapshot) => {
+              const score = childSnapshot.val();
+              scores.push(score);
+            });
+            
+            // Sort by score in descending order
+            scores.sort((a, b) => b.score - a.score);
+            console.log('Processed scores:', scores);
+            
+            setLeaderboardData(scores);
+            setIsLoading(false);
+          } catch (err) {
+            console.error('Error processing score data:', err);
+            setError('Error processing leaderboard data');
+            setIsLoading(false);
+          }
+        }, (error) => {
+          console.error('Firebase subscription error:', error);
+          setError('Failed to load leaderboard data');
+          setIsLoading(false);
+        });
+
       } catch (err) {
-        const errorMessage = err instanceof Error ? err.message : 'Failed to load leaderboard';
-        setError(errorMessage);
-        console.error('Leaderboard fetch error:', err);
-      } finally {
+        console.error('Error in leaderboard setup:', err);
+        setError('Failed to set up leaderboard');
         setIsLoading(false);
       }
     }
 
-    fetchLeaderboard();
+    fetchData();
+
+    return () => {
+      console.log('Cleaning up leaderboard...');
+      if (unsubscribe) {
+        console.log('Unsubscribing from Firebase updates');
+        unsubscribe();
+      }
+    };
   }, [isOpen]);
 
   return (
@@ -63,11 +117,14 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
             className="bg-[#1A1A1A] p-6 rounded-lg shadow-xl max-w-md w-full mx-4"
             onClick={e => e.stopPropagation()}
           >
-            <h2 className="text-2xl font-bold mb-4 text-[#54CA9B]">Leaderboard</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-2xl font-bold text-[#54CA9B]">Leaderboard</h2>
+            </div>
             
             {isLoading ? (
-              <div className="flex justify-center items-center h-48">
-                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#54CA9B]"></div>
+              <div className="flex flex-col items-center justify-center h-48">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-[#54CA9B] mb-4"></div>
+                <p className="text-gray-400">Loading leaderboard...</p>
               </div>
             ) : error ? (
               <div className="text-red-500 text-center py-4">
