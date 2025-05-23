@@ -1,36 +1,33 @@
 export const GAME_CONFIG = {
-  DESKTOP_SPEED_MULTIPLIER: 1.5,
-  MOBILE_SPEED_MULTIPLIER: 2.5,
-  GROUND_HEIGHT: 20,
+  DESKTOP_SPEED_MULTIPLIER: 1,
+  MOBILE_SPEED_MULTIPLIER: 0.8,
+  GROUND_HEIGHT: 60,
   PLAYER: {
-    WIDTH: 50,
-    HEIGHT: 50,
-    INITIAL_X: 50,
-    JUMP_VELOCITY: -18,
+    WIDTH: 30,
+    HEIGHT: 30,
+    INITIAL_X: 80,
+    JUMP_VELOCITY: -12,
     MAX_JUMPS: 2,
-    GRAVITY: 1.0,
+    GRAVITY: 0.8,
   },
   OBSTACLE: {
-    MIN_WIDTH: 15,
-    MAX_WIDTH_ADDITION: 25,
-    MIN_HEIGHT: 35,
-    MAX_HEIGHT_ADDITION: 35,
-    SPAWN_CHANCE: 0.025,
+    MIN_WIDTH: 20,
+    MAX_WIDTH_ADDITION: 30,
+    MIN_HEIGHT: 40,
+    MAX_HEIGHT_ADDITION: 60,
+    SPAWN_CHANCE: 0.02,
   },
   COLORS: {
     DISCO: [
-      '#FF0000',
-      '#FF7F00',
-      '#FFFF00',
-      '#00FF00',
-      '#0000FF',
-      '#4B0082',
-      '#8F00FF',
-      '#00FFFF',
-      '#FF00FF',
+      '#54CA9B',  // Main theme green
+      '#4a90e2',  // Theme blue
+      '#c471ed',  // Theme purple
+      '#f64f59',  // Theme red
+      '#54CA9B',  // Theme green again
+      '#4a90e2'   // Theme blue again
     ],
-    GROUND: '#4ade80',
-    BACKGROUND: '#000000',
+    GROUND: '#000000',  // Black ground to match app
+    BACKGROUND: '#000000',  // Black background to match app
   },
   DIFFICULTY: {
     LEVELS: {

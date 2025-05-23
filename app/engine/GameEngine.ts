@@ -47,8 +47,8 @@ export class GameEngine {
     rotation: number,
     color: string
   }> = [];
-  private readonly MAX_TRAIL_POINTS = 3;
-  private readonly TRAIL_FADE_SPEED = 0.15;
+  private readonly MAX_TRAIL_POINTS = 8;
+  private readonly TRAIL_FADE_SPEED = 0.1;
   private parallaxLayers: Array<{
     x: number;
     speed: number;
@@ -110,33 +110,41 @@ export class GameEngine {
   }
 
   private initParallaxLayers(): void {
-    // Create layers with natural depth simulation
-    // Layer 1: Far background (slowest, smallest, most transparent)
-    // Layer 2: Middle ground
-    // Layer 3: Foreground (fastest, largest, most opaque)
     const layers = [
-      { count: 25, speed: 0.05, size: { min: 1, max: 1.5 }, colors: ['rgba(255, 255, 255, 0.1)'] },  // Stars in far background
-      { count: 15, speed: 0.1, size: { min: 1.5, max: 2 }, colors: ['rgba(96, 165, 250, 0.15)'] }, // Middle layer
-      { count: 10, speed: 0.15, size: { min: 2, max: 2.5 }, colors: ['rgba(52, 211, 153, 0.2)'] }   // Closest layer
+      { 
+        count: 30, 
+        speed: 0.05, 
+        size: { min: 1, max: 2 }, 
+        colors: ['rgba(84, 202, 155, 0.3)']  // Theme green stars
+      },
+      { 
+        count: 20, 
+        speed: 0.1, 
+        size: { min: 2, max: 3 }, 
+        colors: ['rgba(74, 144, 226, 0.3)']  // Theme blue stars
+      },
+      { 
+        count: 15, 
+        speed: 0.15, 
+        size: { min: 2.5, max: 3.5 }, 
+        colors: ['rgba(196, 113, 237, 0.3)']  // Theme purple stars
+      }
     ];
 
     layers.forEach((layer, index) => {
       const elements = Array.from({ length: layer.count }, () => {
-        // Distribute elements more naturally across the screen
         const x = Math.random() * this.canvas.width;
-        // More elements in upper part of screen for perspective
         const heightRange = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT;
-        const y = Math.random() * heightRange * 0.9; // Keep slightly away from ground
+        const y = Math.random() * heightRange * 0.9;
         
         return {
           x,
           y,
           size: layer.size.min + Math.random() * (layer.size.max - layer.size.min),
           color: layer.colors[Math.floor(Math.random() * layer.colors.length)],
-          shape: 'circle' as 'circle' | 'square' | 'star',
-          // Add slight vertical movement for more natural feel
+          shape: Math.random() > 0.7 ? 'star' as const : 'circle' as const,
           yOffset: 0,
-          ySpeed: (0.1 + Math.random() * 0.1) * (Math.random() < 0.5 ? 1 : -1) // Reduced vertical movement speed
+          ySpeed: (0.05 + Math.random() * 0.05) * (Math.random() < 0.5 ? 1 : -1)
         };
       });
 
@@ -218,35 +226,63 @@ export class GameEngine {
   }
 
   private drawBackground(): void {
-    // Create a modern gradient background
-    const gradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height);
-    gradient.addColorStop(0, '#1a1a1a');  // Dark top
-    gradient.addColorStop(0.5, '#2d2d2d'); // Slightly lighter middle
-    gradient.addColorStop(1, '#1a1a1a');   // Dark bottom
-
-    // Fill background
-    this.ctx.fillStyle = gradient;
+    // Create a pure black background
+    this.ctx.fillStyle = '#000000';
     this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
     // Draw parallax layers
     this.drawParallaxLayers();
 
-    // Add a subtle glow at the top
-    const glowGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height * 0.4);
-    glowGradient.addColorStop(0, 'rgba(255, 255, 255, 0.1)');
-    glowGradient.addColorStop(1, 'rgba(255, 255, 255, 0)');
-    this.ctx.fillStyle = glowGradient;
-    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height * 0.4);
-
-    // Draw ground
-    this.ctx.fillStyle = GAME_CONFIG.COLORS.GROUND;
-    this.ctx.fillRect(0, this.canvas.height - GAME_CONFIG.GROUND_HEIGHT, this.canvas.width, GAME_CONFIG.GROUND_HEIGHT);
-
-    // Add subtle ground texture
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.1)';
-    for (let x = 0; x < this.canvas.width; x += 40) {
-      this.ctx.fillRect(x, this.canvas.height - GAME_CONFIG.GROUND_HEIGHT, 20, GAME_CONFIG.GROUND_HEIGHT);
+    // Add futuristic grid effect
+    this.ctx.strokeStyle = 'rgba(84, 202, 155, 0.1)';  // Theme green
+    this.ctx.lineWidth = 1;
+    const gridSize = 50;
+    
+    for (let x = 0; x < this.canvas.width; x += gridSize) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(x, 0);
+      this.ctx.lineTo(x, this.canvas.height);
+      this.ctx.stroke();
     }
+    
+    for (let y = 0; y < this.canvas.height; y += gridSize) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(0, y);
+      this.ctx.lineTo(this.canvas.width, y);
+      this.ctx.stroke();
+    }
+
+    // Add atmospheric glow at the top
+    const glowGradient = this.ctx.createLinearGradient(0, 0, 0, this.canvas.height * 0.6);
+    glowGradient.addColorStop(0, 'rgba(84, 202, 155, 0.15)');  // Theme green glow
+    glowGradient.addColorStop(1, 'rgba(84, 202, 155, 0)');
+    this.ctx.fillStyle = glowGradient;
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height * 0.6);
+
+    // Draw ground with futuristic effect
+    const groundGradient = this.ctx.createLinearGradient(
+      0, 
+      this.canvas.height - GAME_CONFIG.GROUND_HEIGHT, 
+      0, 
+      this.canvas.height
+    );
+    groundGradient.addColorStop(0, 'rgba(84, 202, 155, 0.2)');  // Theme green
+    groundGradient.addColorStop(1, '#000000');
+    this.ctx.fillStyle = groundGradient;
+    this.ctx.fillRect(
+      0, 
+      this.canvas.height - GAME_CONFIG.GROUND_HEIGHT, 
+      this.canvas.width, 
+      GAME_CONFIG.GROUND_HEIGHT
+    );
+
+    // Add ground line effect
+    this.ctx.strokeStyle = '#54CA9B';  // Theme green
+    this.ctx.lineWidth = 2;
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, this.canvas.height - GAME_CONFIG.GROUND_HEIGHT);
+    this.ctx.lineTo(this.canvas.width, this.canvas.height - GAME_CONFIG.GROUND_HEIGHT);
+    this.ctx.stroke();
   }
 
   private drawPlayer(): void {
@@ -311,12 +347,57 @@ export class GameEngine {
   private drawObstacle(obstacle: Obstacle): void {
     const obstacleY = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT - obstacle.height;
     
-    // Draw obstacle
-    this.ctx.fillStyle = GAME_CONFIG.COLORS.GROUND;
-    this.ctx.fillRect(obstacle.x, obstacleY, obstacle.width, obstacle.height);
+    // Create obstacle gradient
+    const gradient = this.ctx.createLinearGradient(
+      obstacle.x,
+      obstacleY,
+      obstacle.x,
+      obstacleY + obstacle.height
+    );
+    gradient.addColorStop(0, 'rgba(84, 202, 155, 0.8)');  // Theme green
+    gradient.addColorStop(1, 'rgba(74, 144, 226, 0.8)');  // Theme blue
 
-    // Draw obstacle shadow
-    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    // Draw obstacle with futuristic style
+    this.ctx.save();
+    this.ctx.beginPath();
+    const radius = 2;  // Sharper corners for futuristic look
+    this.ctx.moveTo(obstacle.x + radius, obstacleY);
+    this.ctx.lineTo(obstacle.x + obstacle.width - radius, obstacleY);
+    this.ctx.arcTo(obstacle.x + obstacle.width, obstacleY, obstacle.x + obstacle.width, obstacleY + radius, radius);
+    this.ctx.lineTo(obstacle.x + obstacle.width, obstacleY + obstacle.height - radius);
+    this.ctx.arcTo(obstacle.x + obstacle.width, obstacleY + obstacle.height, obstacle.x + obstacle.width - radius, obstacleY + obstacle.height, radius);
+    this.ctx.lineTo(obstacle.x + radius, obstacleY + obstacle.height);
+    this.ctx.arcTo(obstacle.x, obstacleY + obstacle.height, obstacle.x, obstacleY + obstacle.height - radius, radius);
+    this.ctx.lineTo(obstacle.x, obstacleY + radius);
+    this.ctx.arcTo(obstacle.x, obstacleY, obstacle.x + radius, obstacleY, radius);
+    this.ctx.closePath();
+
+    // Add glow effect
+    this.ctx.shadowColor = '#54CA9B';  // Theme green glow
+    this.ctx.shadowBlur = 10;
+    this.ctx.shadowOffsetX = 0;
+    this.ctx.shadowOffsetY = 0;
+
+    // Fill with gradient
+    this.ctx.fillStyle = gradient;
+    this.ctx.fill();
+
+    // Add circuit-like lines
+    this.ctx.strokeStyle = 'rgba(84, 202, 155, 0.5)';  // Theme green
+    this.ctx.lineWidth = 1;
+    
+    // Horizontal lines
+    for (let y = obstacleY; y < obstacleY + obstacle.height; y += 10) {
+      this.ctx.beginPath();
+      this.ctx.moveTo(obstacle.x, y);
+      this.ctx.lineTo(obstacle.x + obstacle.width, y);
+      this.ctx.stroke();
+    }
+    
+    this.ctx.restore();
+
+    // Draw ground shadow
+    this.ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';  // Lighter ground shadow
     this.ctx.beginPath();
     this.ctx.ellipse(
       obstacle.x + obstacle.width / 2,
@@ -442,17 +523,17 @@ export class GameEngine {
   }
 
   private updateTrail(): void {
-    // Get current player color
     const colorIndex = Math.floor(this.frameCount / 5) % GAME_CONFIG.COLORS.DISCO.length;
     const currentColor = GAME_CONFIG.COLORS.DISCO[colorIndex];
 
-    // Add new trail point
+    // Add new trail point with velocity-based properties
+    const velocityFactor = Math.abs(this.player.yVelocity) / 10;
     this.trailPoints.unshift({
       x: this.player.x,
       y: this.player.y,
-      alpha: 0.3,
+      alpha: 0.5, // Increased initial alpha
       rotation: this.player.rotation,
-      color: currentColor
+      color: currentColor,
     });
 
     // Remove excess points
@@ -460,46 +541,46 @@ export class GameEngine {
       this.trailPoints.pop();
     }
 
-    // Update alpha of existing points
+    // Update alpha of existing points with smooth curve
     for (let i = 0; i < this.trailPoints.length; i++) {
-      this.trailPoints[i].alpha = Math.max(0, 0.3 - (i * this.TRAIL_FADE_SPEED));
+      const progress = i / this.trailPoints.length;
+      this.trailPoints[i].alpha = Math.max(0, 0.5 * (1 - Math.pow(progress, 2)));
     }
   }
 
   private drawTrail(): void {
-    // Draw trail images from oldest to newest
     for (let i = this.trailPoints.length - 1; i >= 0; i--) {
       const point = this.trailPoints[i];
+      const size = this.player.width * (1 - i / this.trailPoints.length * 0.5); // Trail gets smaller
       
       this.ctx.save();
-      
-      // Set transparency
       this.ctx.globalAlpha = point.alpha;
-      
-      // Translate to trail position
       this.ctx.translate(
         point.x + this.player.width / 2,
         point.y + this.player.height / 2
       );
-      
-      // Apply rotation
       this.ctx.rotate(point.rotation);
 
-      // Draw player shape with trail color
+      // Draw trail with glow effect
+      this.ctx.shadowColor = point.color;
+      this.ctx.shadowBlur = 15;
       this.ctx.fillStyle = point.color;
       
-      // Draw with rounded corners (same as player)
+      // Draw with rounded corners
       this.ctx.beginPath();
-      const radius = 5;
-      this.ctx.moveTo(-this.player.width/2 + radius, -this.player.height/2);
-      this.ctx.lineTo(this.player.width/2 - radius, -this.player.height/2);
-      this.ctx.arcTo(this.player.width/2, -this.player.height/2, this.player.width/2, -this.player.height/2 + radius, radius);
-      this.ctx.lineTo(this.player.width/2, this.player.height/2 - radius);
-      this.ctx.arcTo(this.player.width/2, this.player.height/2, this.player.width/2 - radius, this.player.height/2, radius);
-      this.ctx.lineTo(-this.player.width/2 + radius, this.player.height/2);
-      this.ctx.arcTo(-this.player.width/2, this.player.height/2, -this.player.width/2, this.player.height/2 - radius, radius);
-      this.ctx.lineTo(-this.player.width/2, -this.player.height/2 + radius);
-      this.ctx.arcTo(-this.player.width/2, -this.player.height/2, -this.player.width/2 + radius, -this.player.height/2, radius);
+      const radius = 5 * (1 - i / this.trailPoints.length * 0.3); // Dynamic corner radius
+      const width = size;
+      const height = this.player.height * (1 - i / this.trailPoints.length * 0.3);
+      
+      this.ctx.moveTo(-width/2 + radius, -height/2);
+      this.ctx.lineTo(width/2 - radius, -height/2);
+      this.ctx.arcTo(width/2, -height/2, width/2, -height/2 + radius, radius);
+      this.ctx.lineTo(width/2, height/2 - radius);
+      this.ctx.arcTo(width/2, height/2, width/2 - radius, height/2, radius);
+      this.ctx.lineTo(-width/2 + radius, height/2);
+      this.ctx.arcTo(-width/2, height/2, -width/2, height/2 - radius, radius);
+      this.ctx.lineTo(-width/2, -height/2 + radius);
+      this.ctx.arcTo(-width/2, -height/2, -width/2 + radius, -height/2, radius);
       this.ctx.fill();
 
       this.ctx.restore();
@@ -553,9 +634,10 @@ export class GameEngine {
       return;
     }
 
+    // Draw score with white color and shadow
     this.ctx.shadowColor = 'rgba(0, 0, 0, 0.5)';
     this.ctx.shadowBlur = 5;
-    this.ctx.fillStyle = GAME_CONFIG.COLORS.GROUND;
+    this.ctx.fillStyle = '#FFFFFF';  // White color
     this.ctx.font = 'bold 24px Arial';
     this.ctx.textAlign = 'left';
     this.ctx.fillText(`Score: ${this.score}`, 10, 30);
