@@ -255,14 +255,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
               </motion.button>
 
               <motion.button
-                onClick={() => setShowLeaderboard(true)}
-                className="w-full bg-[#54CA9B] hover:bg-[#42A97A] text-black font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-sm sm:text-base font-pixel"
-                aria-label="View leaderboard"
-              >
-                View Leaderboard
-              </motion.button>
-
-              <motion.button
                 onClick={onClose}
                 className="w-full bg-red-400 hover:bg-red-500 text-black font-bold py-3 px-6 rounded-lg transition-colors duration-300 text-sm sm:text-base font-pixel"
                 aria-label="Close game"
