@@ -6,10 +6,31 @@ import { motion } from "framer-motion";
 import { useState, useEffect } from "react";
 import Game from "./game";
 import WalletConnect from "./components/WalletConnect";
+import { useAccount } from 'wagmi';
 
 export default function Home() {
   const [showGame, setShowGame] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const { isConnected } = useAccount();
+  const [showNotice, setShowNotice] = useState(true);
+
+  // Handle notice visibility based on wallet connection status
+  useEffect(() => {
+    const noticeState = localStorage.getItem('walletNoticeState');
+    if (noticeState) {
+      const { isConnected: wasConnected, isVisible } = JSON.parse(noticeState);
+      // Only show notice if connection status has changed
+      setShowNotice(wasConnected !== isConnected || isVisible);
+    }
+  }, [isConnected]);
+
+  const handleCloseNotice = () => {
+    setShowNotice(false);
+    localStorage.setItem('walletNoticeState', JSON.stringify({
+      isConnected,
+      isVisible: false
+    }));
+  };
 
   // Handle mobile viewport height
   useEffect(() => {
@@ -210,6 +231,21 @@ export default function Home() {
           letter-spacing: 0.2em;
           text-shadow: 0 0 15px rgba(84, 202, 155, 0.5);
         }
+
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-10px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
       `}</style>
       {isLoading ? (
         <div className="fixed inset-0 bg-black flex flex-col items-center justify-center">
@@ -221,7 +257,7 @@ export default function Home() {
       ) : (
                                  <main           className="fixed inset-0 bg-black flex flex-col justify-between futuristic-bg"          style={{ height: 'var(--app-height)' }}        >          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>
           {/* Top Bar */}
-          <div className="h-[10vh] flex justify-between items-center px-4 sm:px-6 md:px-8">
+          <div className="h-[10vh] flex justify-between items-center px-4 sm:px-6 md:px-8 pt-4">
             {/* Logo and Text */}
             <div className="flex items-center space-x-2">
               <Image
@@ -240,9 +276,72 @@ export default function Home() {
               </h1>
             </div>
             
-            {/* Wallet Connect */}
-            <div className="scale-75 sm:scale-90 md:scale-100">
-              <WalletConnect />
+            {/* Wallet Connect and Notice */}
+            <div className="flex flex-col relative">
+              <div className="flex items-center">
+                <WalletConnect />
+              </div>
+              
+              {/* Enhanced Wallet Connection Notice */}
+              {showNotice && (
+                <div className="absolute top-full right-0 w-[280px] sm:w-[320px] animate-fade-in mt-2 z-10">
+                  <div className="relative flex items-start gap-2 bg-[#54CA9B]/10 px-3 py-2 rounded-lg border border-[#54CA9B]/20">
+                    {/* Close Button */}
+                    <button
+                      onClick={handleCloseNotice}
+                      className="absolute top-1 right-1 p-1 text-[#54CA9B] hover:text-[#54CA9B]/80 transition-colors"
+                      aria-label="Close notice"
+                    >
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M6 18L18 6M6 6l12 12"
+                        />
+                      </svg>
+                    </button>
+                    
+                    {/* Trophy Icon */}
+                    <svg
+                      className="w-5 h-5 text-[#54CA9B] mt-0.5 flex-shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"
+                      />
+                    </svg>
+                    <div>
+                      <p className="text-[#54CA9B] text-sm sm:text-base font-medium pr-4">
+                        {isConnected ? (
+                          "Your scores will be recorded on the leaderboard! 🎮"
+                        ) : (
+                          <>
+                            Connect wallet to:
+                            <span className="block text-xs sm:text-sm opacity-90 mt-1">
+                              • Compete on the leaderboard
+                              <br />
+                              • Save your high scores
+                              <br />
+                              • Earn achievements
+                            </span>
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
