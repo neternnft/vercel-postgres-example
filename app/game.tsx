@@ -228,17 +228,17 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             {/* Score save status message */}
             {!address && (
               <p className="text-yellow-400 text-sm text-center mb-3">
-                Connect your wallet and set a username to compete for the top 10 leaderboard!
+                Connect your wallet and set a username to compete for the top 5 leaderboard!
               </p>
             )}
             {address && !profileData.username && (
               <p className="text-yellow-400 text-sm text-center mb-3">
-                Set a username in your profile to compete for the top 10 leaderboard!
+                Set a username in your profile to compete for the top 5 leaderboard!
               </p>
             )}
             {address && profileData.username && (
               <p className="text-[#54CA9B] text-sm text-center mb-3">
-                Your score will be saved if it makes it to the top 10!
+                Your score will be saved if it makes it to the top 5!
               </p>
             )}
             
