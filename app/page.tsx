@@ -49,7 +49,10 @@ export default function Home() {
           name="viewport" 
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" 
         />
-        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" href="/GLURB coin.png" sizes="32x32" />
+        <link rel="icon" type="image/png" href="/GLURB coin.png" sizes="96x96" />
+        <link rel="icon" type="image/png" href="/GLURB coin.png" sizes="192x192" />
+        <link rel="apple-touch-icon" href="/GLURB coin.png" />
         <link rel="preload" href="/GLURB coin.png" as="image" />
       </Head>
       <style jsx global>{`
