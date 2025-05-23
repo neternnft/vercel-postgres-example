@@ -50,7 +50,7 @@ export default function Home() {
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" 
         />
         <link rel="icon" href="/favicon.ico" />
-        <link rel="preload" href="/logo.png" as="image" />
+        <link rel="preload" href="/GLURB coin.png" as="image" />
       </Head>
       <style jsx global>{`
         :root {
@@ -216,15 +216,15 @@ export default function Home() {
             {/* Logo and Text */}
             <div className="flex items-center space-x-2">
               <Image
-                src="/logo.png"
+                src="/GLURB coin.png"
                 alt="Logo"
                 width={70}
                 height={70}
-                className="object-contain w-[20px] h-[20px] sm:w-[30px] sm:h-[30px] md:w-[40px] md:h-[40px]"
+                className="object-contain w-[50px] h-[50px] sm:w-[60px] sm:h-[60px] md:w-[70px] md:h-[70px]"
                 priority
               />
               <h1
-                className="text-base sm:text-xl md:text-2xl lg:text-3xl font-bold"
+                className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold"
                 style={{ color: "#54CA9B" }}
               >
                 Glurbnok
