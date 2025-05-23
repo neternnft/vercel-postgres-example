@@ -50,6 +50,7 @@ export default function Home() {
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" 
         />
         <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
+        <link rel="icon" type="image/png" href="/favicon-100x100.png" sizes="100x100" />
         <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
         <link rel="icon" type="image/png" href="/favicon-192x192.png" sizes="192x192" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
