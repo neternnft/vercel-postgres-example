@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { useUserProfile } from '../components/UserProfile';
 import { saveScore } from '../lib/firebase';
@@ -7,6 +7,7 @@ interface GameState {
   gameOver: boolean;
   gameStarted: boolean;
   score: number;
+  personalBest: number;
 }
 
 export const useGameState = () => {
@@ -16,9 +17,21 @@ export const useGameState = () => {
     gameOver: false,
     gameStarted: false,
     score: 0,
+    personalBest: 0
   });
 
   const scoreRef = useRef(0);
+
+  // Load personal best from localStorage when component mounts
+  useEffect(() => {
+    const storedBest = localStorage.getItem('personalBest');
+    if (storedBest) {
+      setGameState(prev => ({
+        ...prev,
+        personalBest: parseInt(storedBest, 10)
+      }));
+    }
+  }, []);
 
   const startGame = useCallback(() => {
     setGameState(prev => ({
@@ -36,11 +49,18 @@ export const useGameState = () => {
     console.log('Current wallet address:', address);
     console.log('Current profile data:', profileData);
     
+    // Update personal best if necessary
+    const newPersonalBest = Math.max(finalScore, gameState.personalBest);
+    if (newPersonalBest > gameState.personalBest) {
+      localStorage.setItem('personalBest', newPersonalBest.toString());
+    }
+
     setGameState(prev => ({
       ...prev,
       gameOver: true,
       gameStarted: false,
       score: finalScore,
+      personalBest: newPersonalBest
     }));
     
     try {
@@ -72,7 +92,7 @@ export const useGameState = () => {
     } catch (error) {
       console.error('Failed to save score:', error);
     }
-  }, [address, profileData.username]);
+  }, [address, profileData.username, gameState.personalBest]);
 
   const updateScore = useCallback(() => {
     scoreRef.current += 1;

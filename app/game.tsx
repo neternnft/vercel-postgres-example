@@ -223,7 +223,10 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
             style={{ zIndex: 10 }}
           >
             <h2 className="text-2xl sm:text-4xl font-bold text-white mb-2 sm:mb-4">Game Over!</h2>
-            <p className="text-xl sm:text-2xl text-white mb-1 sm:mb-2">Score: {gameState.score}</p>
+            <div className="flex flex-col items-center gap-1">
+              <p className="text-xl sm:text-2xl text-white">Score: {gameState.score}</p>
+              <p className="text-xl sm:text-2xl text-white">High Score: {gameState.personalBest}</p>
+            </div>
             
             {/* Score save status message */}
             {!address && (
