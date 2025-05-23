@@ -82,12 +82,9 @@ export class GameEngine {
     this.sounds = new SoundManager();
     this.powerUps = new PowerUpSystem(ctx, canvas.width, canvas.height);
 
-    // Initialize speed based on screen size with better scaling
-    this.baseSpeed = Math.min(canvas.width / 160, 8); // Cap the base speed
-    const isMobile = window.innerWidth <= 768;
-    this.speed = isMobile
-      ? this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER
-      : this.baseSpeed * GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
+    // Initialize speed with consistent scaling
+    this.baseSpeed = Math.min(canvas.width / 160, 8);  // Base speed calculation
+    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER;  // Using same multiplier for all screens
 
     // Initialize player with safe starting position
     this.player = {
@@ -482,7 +479,7 @@ export class GameEngine {
 
   private updateObstacles(): void {
     // Don't spawn obstacles immediately at game start
-    if (this.frameCount < 60) { // Wait for 60 frames
+    if (this.frameCount < 30) { // Reduced from 60 to 30 for faster start
       this.frameCount++;
       return;
     }
@@ -591,12 +588,9 @@ export class GameEngine {
     this.deltaTime = Math.min(currentTime - this.lastTime, 32);
     this.lastTime = currentTime;
 
+    // Update speed with consistent progression
     const speedIncrease = Math.min(this.score * 0.15, 8);
-    const isMobile = window.innerWidth <= 768;
-    const baseMultiplier = isMobile ? GAME_CONFIG.MOBILE_SPEED_MULTIPLIER : GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
-    
-    this.speed = (this.powerUps.hasPowerUp('slowMotion') ? 0.5 : 1) * 
-                 (this.baseSpeed + speedIncrease) * baseMultiplier;
+    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER + speedIncrease;
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -705,11 +699,8 @@ export class GameEngine {
   }
 
   public resize(): void {
-    // Update base speed with better scaling on resize
-    this.baseSpeed = Math.min(this.canvas.width / 160, 8);
-    const isMobile = window.innerWidth <= 768;
-    this.speed = isMobile
-      ? this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER
-      : this.baseSpeed * GAME_CONFIG.DESKTOP_SPEED_MULTIPLIER;
+    // Update speed with consistent scaling
+    this.baseSpeed = Math.min(this.canvas.width / 160, 8);  // Base speed calculation
+    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER;  // Using same multiplier for all screens
   }
 } 

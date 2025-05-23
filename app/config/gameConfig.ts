@@ -1,14 +1,14 @@
 export const GAME_CONFIG = {
-  DESKTOP_SPEED_MULTIPLIER: 1,
-  MOBILE_SPEED_MULTIPLIER: 0.8,
+  DESKTOP_SPEED_MULTIPLIER: 1.5,
+  MOBILE_SPEED_MULTIPLIER: 1.5,
   GROUND_HEIGHT: 60,
   PLAYER: {
     WIDTH: 30,
     HEIGHT: 30,
     INITIAL_X: 80,
-    JUMP_VELOCITY: -12,
+    JUMP_VELOCITY: -14,
     MAX_JUMPS: 2,
-    GRAVITY: 0.8,
+    GRAVITY: 0.7,
   },
   OBSTACLE: {
     MIN_WIDTH: 20,
@@ -32,28 +32,28 @@ export const GAME_CONFIG = {
   DIFFICULTY: {
     LEVELS: {
       EASY: {
-        SPEED_MULTIPLIER: 1,
+        SPEED_MULTIPLIER: 1.2,
         OBSTACLE_FREQUENCY: 0.8,
         SCORE_MULTIPLIER: 1,
         POWER_UP_FREQUENCY: 1.2
       },
       MEDIUM: {
-        SPEED_MULTIPLIER: 1.5,
+        SPEED_MULTIPLIER: 1.6,
         OBSTACLE_FREQUENCY: 1,
         SCORE_MULTIPLIER: 1.5,
         POWER_UP_FREQUENCY: 1
       },
       HARD: {
-        SPEED_MULTIPLIER: 2,
+        SPEED_MULTIPLIER: 2.1,
         OBSTACLE_FREQUENCY: 1.2,
         SCORE_MULTIPLIER: 2,
         POWER_UP_FREQUENCY: 0.8
       }
     },
     PROGRESSION: {
-      EASY_THRESHOLD: 0,    // Score 0-19
-      MEDIUM_THRESHOLD: 20,  // Score 20-49
-      HARD_THRESHOLD: 50    // Score 50+
+      EASY_THRESHOLD: 0,
+      MEDIUM_THRESHOLD: 15,
+      HARD_THRESHOLD: 40
     }
   },
 } as const; 
