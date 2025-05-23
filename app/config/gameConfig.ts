@@ -1,6 +1,11 @@
 export const GAME_CONFIG = {
-  DESKTOP_SPEED_MULTIPLIER: 1.5,
-  MOBILE_SPEED_MULTIPLIER: 1.5,
+  // Base resolution that all calculations will be relative to
+  BASE_WIDTH: 800,  // Base width to calculate ratios from
+  BASE_HEIGHT: 600, // Base height to calculate ratios from
+  
+  // Remove separate desktop/mobile multipliers since we want consistency
+  SPEED_MULTIPLIER: 1.5,
+  
   GROUND_HEIGHT: 60,
   PLAYER: {
     WIDTH: 30,
@@ -16,6 +21,7 @@ export const GAME_CONFIG = {
     MIN_HEIGHT: 40,
     MAX_HEIGHT_ADDITION: 60,
     SPAWN_CHANCE: 0.02,
+    MIN_DISTANCE_RATIO: 0.5,  // Minimum distance between obstacles as ratio of BASE_WIDTH
   },
   COLORS: {
     DISCO: [

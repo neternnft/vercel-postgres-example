@@ -31,6 +31,7 @@ export class GameEngine {
   private score: number;
   private speed: number;
   private baseSpeed: number;
+  private scaleFactor: number;  // New property to track canvas scaling
   private animationFrameId?: number;
   private onScore: () => void;
   private onGameOver: () => void;
@@ -82,16 +83,26 @@ export class GameEngine {
     this.sounds = new SoundManager();
     this.powerUps = new PowerUpSystem(ctx, canvas.width, canvas.height);
 
-    // Initialize speed with fixed base value
-    this.baseSpeed = 5;  // Fixed base speed for all screen sizes
-    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER;
+    // Calculate scale factor based on canvas width relative to base width
+    this.scaleFactor = canvas.width / GAME_CONFIG.BASE_WIDTH;
+    
+    // Initialize speed with consistent base value scaled to canvas size
+    this.baseSpeed = 5 * this.scaleFactor;
+    this.speed = this.baseSpeed * GAME_CONFIG.SPEED_MULTIPLIER;
 
-    // Initialize player with safe starting position
+    // Scale the player dimensions
+    const playerWidth = GAME_CONFIG.PLAYER.WIDTH * this.scaleFactor;
+    const playerHeight = GAME_CONFIG.PLAYER.HEIGHT * this.scaleFactor;
+
+    // Calculate the correct ground position
+    const groundY = canvas.height - GAME_CONFIG.GROUND_HEIGHT - playerHeight;
+
+    // Initialize player with scaled position and proper ground alignment
     this.player = {
-      x: GAME_CONFIG.PLAYER.INITIAL_X,
-      y: canvas.height - GAME_CONFIG.GROUND_HEIGHT - GAME_CONFIG.PLAYER.HEIGHT,
-      width: GAME_CONFIG.PLAYER.WIDTH,
-      height: GAME_CONFIG.PLAYER.HEIGHT,
+      x: GAME_CONFIG.PLAYER.INITIAL_X * this.scaleFactor,
+      y: groundY,  // Place exactly on the ground
+      width: playerWidth,
+      height: playerHeight,
       jumping: false,
       yVelocity: 0,
       landingGracePeriod: 0,
@@ -410,9 +421,11 @@ export class GameEngine {
 
   private updatePlayerJump(): void {
     if (this.player.jumping) {
+      // Scale gravity based on canvas size
+      const baseGravity = GAME_CONFIG.PLAYER.GRAVITY * this.scaleFactor;
       const gravity = this.powerUps.hasPowerUp('slowMotion') 
-        ? GAME_CONFIG.PLAYER.GRAVITY * 0.5 
-        : GAME_CONFIG.PLAYER.GRAVITY;
+        ? baseGravity * 0.5 
+        : baseGravity;
       
       // Fixed timestep for more consistent physics
       const fixedDeltaTime = Math.min(this.deltaTime, 32) / 16;
@@ -424,7 +437,7 @@ export class GameEngine {
         this.player.y = groundY;
         this.player.jumping = false;
         this.player.yVelocity = 0;
-        this.player.landingGracePeriod = 5; // Reduced from 10 to 5 for more responsive jumps
+        this.player.landingGracePeriod = 0;
         this.player.jumpCount = 0;
         
         this.particles.createJumpParticles(
@@ -432,8 +445,6 @@ export class GameEngine {
           this.player.y + this.player.height
         );
       }
-    } else if (this.player.landingGracePeriod > 0) {
-      this.player.landingGracePeriod--;
     }
 
     if (this.player.y < 0) {
@@ -479,13 +490,14 @@ export class GameEngine {
 
   private updateObstacles(): void {
     // Don't spawn obstacles immediately at game start
-    if (this.frameCount < 30) { // Reduced from 60 to 30 for faster start
+    if (this.frameCount < 30) {
       this.frameCount++;
       return;
     }
 
     for (let i = this.obstacles.length - 1; i >= 0; i--) {
       const obstacle = this.obstacles[i];
+      // Scale speed by deltaTime for consistent movement
       obstacle.x -= this.speed * (this.deltaTime / 16);
 
       if (obstacle.x + obstacle.width < 0) {
@@ -498,22 +510,23 @@ export class GameEngine {
       }
     }
 
-    const minObstacleDistance = this.canvas.width / 2;
+    // Calculate minimum distance based on base width and scale factor
+    const minObstacleDistance = GAME_CONFIG.BASE_WIDTH * GAME_CONFIG.OBSTACLE.MIN_DISTANCE_RATIO * this.scaleFactor;
+
     if (
       this.obstacles.length === 0 ||
       (this.canvas.width - this.obstacles[this.obstacles.length - 1].x > minObstacleDistance &&
         Math.random() < GAME_CONFIG.OBSTACLE.SPAWN_CHANCE)
     ) {
-      // Ensure first obstacle is far enough away
-      const startingX = this.obstacles.length === 0 
-        ? this.canvas.width * 1.5 // Place first obstacle further away
-        : this.canvas.width;
+      // Scale obstacle dimensions
+      const width = (GAME_CONFIG.OBSTACLE.MIN_WIDTH + Math.random() * GAME_CONFIG.OBSTACLE.MAX_WIDTH_ADDITION) * this.scaleFactor;
+      const height = (GAME_CONFIG.OBSTACLE.MIN_HEIGHT + Math.random() * GAME_CONFIG.OBSTACLE.MAX_HEIGHT_ADDITION) * this.scaleFactor;
 
       this.obstacles.push({
-        x: startingX,
+        x: this.obstacles.length === 0 ? this.canvas.width * 1.5 : this.canvas.width,
         y: this.canvas.height - GAME_CONFIG.GROUND_HEIGHT,
-        width: GAME_CONFIG.OBSTACLE.MIN_WIDTH + Math.random() * GAME_CONFIG.OBSTACLE.MAX_WIDTH_ADDITION,
-        height: GAME_CONFIG.OBSTACLE.MIN_HEIGHT + Math.random() * GAME_CONFIG.OBSTACLE.MAX_HEIGHT_ADDITION,
+        width: width,
+        height: height,
         type: 'cactus',
       });
     }
@@ -588,10 +601,10 @@ export class GameEngine {
     this.deltaTime = Math.min(currentTime - this.lastTime, 32);
     this.lastTime = currentTime;
 
-    // Update speed with consistent progression
-    const speedIncrease = Math.min(this.score * 0.15, 8);
+    // Scale speed increase with canvas size
+    const speedIncrease = Math.min(this.score * 0.15, 8) * this.scaleFactor;
     this.speed = (this.powerUps.hasPowerUp('slowMotion') ? 0.5 : 1) * 
-                 (this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER + speedIncrease);
+                 (this.baseSpeed * GAME_CONFIG.SPEED_MULTIPLIER + speedIncrease);
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -645,11 +658,11 @@ export class GameEngine {
     const maxJumps = this.powerUps.hasPowerUp('doubleJump') ? 3 : 2;
     
     if (this.player.jumpCount < maxJumps) {
-      // Reduced jump cooldown for more responsive controls
       const now = performance.now();
-      if (!this._lastJumpTime || now - this._lastJumpTime > 50) { // Reduced from 100 to 50ms
+      if (!this._lastJumpTime || now - this._lastJumpTime > 50) {
         this.player.jumping = true;
-        this.player.yVelocity = GAME_CONFIG.PLAYER.JUMP_VELOCITY;
+        // Scale jump velocity based on canvas size
+        this.player.yVelocity = GAME_CONFIG.PLAYER.JUMP_VELOCITY * this.scaleFactor;
         this.player.jumpCount++;
         this._lastJumpTime = now;
         
@@ -671,13 +684,17 @@ export class GameEngine {
     this.obstacles = [];
     this.score = 0;
     this.frameCount = 0;
-    this.trailPoints = []; // Clear trail points
+    this.trailPoints = [];
     
-    // Reset player to safe position
-    this.player.y = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT - GAME_CONFIG.PLAYER.HEIGHT;
+    // Calculate the correct ground position
+    const groundY = this.canvas.height - GAME_CONFIG.GROUND_HEIGHT - this.player.height;
+    
+    // Reset player to correct ground position
+    this.player.y = groundY;
     this.player.jumping = false;
     this.player.yVelocity = 0;
     this.player.jumpCount = 0;
+    this.player.landingGracePeriod = 0;
     this.player.rotation = 0;
     
     // Reset parallax layers
@@ -687,10 +704,8 @@ export class GameEngine {
     // Clear power-ups
     this.powerUps.clear();
     
-    setTimeout(() => {
-      this.lastTime = performance.now();
-      this.update();
-    }, 500);
+    this.lastTime = performance.now();
+    this.update();
   }
 
   public stop(): void {
@@ -700,8 +715,20 @@ export class GameEngine {
   }
 
   public resize(): void {
-    // Keep the same fixed base speed on resize
-    this.baseSpeed = 5;  // Fixed base speed for all screen sizes
-    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER;
+    // Recalculate scale factor
+    this.scaleFactor = this.canvas.width / GAME_CONFIG.BASE_WIDTH;
+    
+    // Update base speed
+    this.baseSpeed = 5 * this.scaleFactor;
+    
+    // Update player dimensions
+    this.player.width = GAME_CONFIG.PLAYER.WIDTH * this.scaleFactor;
+    this.player.height = GAME_CONFIG.PLAYER.HEIGHT * this.scaleFactor;
+    
+    // Update obstacle dimensions
+    this.obstacles.forEach(obstacle => {
+      obstacle.width *= this.scaleFactor;
+      obstacle.height *= this.scaleFactor;
+    });
   }
 } 
