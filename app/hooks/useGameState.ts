@@ -32,6 +32,9 @@ export const useGameState = () => {
 
   const endGame = useCallback(async () => {
     const finalScore = scoreRef.current;
+    console.log('Game ended with score:', finalScore);
+    console.log('Current wallet address:', address);
+    console.log('Current profile data:', profileData);
     
     setGameState(prev => ({
       ...prev,
@@ -43,7 +46,11 @@ export const useGameState = () => {
     try {
       // Only save score if wallet is connected and username is set
       if (address && profileData.username) {
-        console.log('Saving score:', finalScore);
+        console.log('Attempting to save score:', {
+          username: profileData.username,
+          score: finalScore,
+          address
+        });
         
         const saved = await saveScore(
           profileData.username,
@@ -52,14 +59,15 @@ export const useGameState = () => {
         );
 
         if (saved) {
-          console.log('Score saved successfully');
+          console.log('Score saved successfully to Firebase');
         } else {
-          console.log('Failed to save score');
+          console.log('Failed to save score - saveScore returned false');
         }
-      } else if (address && !profileData.username) {
-        console.log('Score not saved: Wallet connected but username not set');
       } else {
-        console.log('Score not saved: Wallet not connected');
+        console.log('Score not saved:', {
+          hasAddress: !!address,
+          hasUsername: !!profileData.username
+        });
       }
     } catch (error) {
       console.error('Failed to save score:', error);

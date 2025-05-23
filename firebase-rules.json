@@ -5,7 +5,12 @@
     "scores": {
       ".read": true,
       ".write": true,
-      ".indexOn": ["score"]
+      ".indexOn": ["score", "walletAddress"]
+    },
+    "users": {
+      ".read": true,
+      ".write": true,
+      ".indexOn": ["username", "walletAddress"]
     },
     "connection_test": {
       ".read": true,

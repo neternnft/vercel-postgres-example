@@ -5,7 +5,13 @@ import { getDatabase, ref, query, orderByChild, limitToLast, onValue, off, get }
 interface LeaderboardEntry {
   score: number;
   username: string;
+  walletAddress: string;
   timestamp: number;
+}
+
+interface UserProfile {
+  username: string;
+  walletAddress: string;
 }
 
 interface LeaderboardProps {
@@ -17,6 +23,7 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [userProfiles, setUserProfiles] = useState<Record<string, UserProfile>>({});
 
   useEffect(() => {
     if (!isOpen) return;
@@ -33,43 +40,71 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
         const db = getDatabase();
         console.log('Database connection initialized');
 
-        const scoresRef = ref(db, 'scores');
-        console.log('Created scores reference');
+        // First, fetch all user profiles
+        const usersRef = ref(db, 'users');
+        const usersSnapshot = await get(usersRef);
+        const profiles: Record<string, UserProfile> = {};
+        
+        if (usersSnapshot.exists()) {
+          usersSnapshot.forEach((childSnapshot) => {
+            const walletAddress = childSnapshot.key;
+            const userData = childSnapshot.val();
+            if (walletAddress && userData.username) {
+              profiles[walletAddress] = {
+                username: userData.username,
+                walletAddress
+              };
+            }
+          });
+        }
+        setUserProfiles(profiles);
+        console.log('Loaded user profiles:', profiles);
 
-        // Create query for top 10 scores
+        const scoresRef = ref(db, 'scores');
         const topScoresQuery = query(
           scoresRef,
           orderByChild('score'),
-          limitToLast(10)
+          limitToLast(20) // Get more to handle duplicates
         );
-        console.log('Created top scores query');
 
-        // First try to get initial data
-        const snapshot = await get(topScoresQuery);
-        console.log('Initial data fetch complete:', snapshot.exists() ? 'Data exists' : 'No data');
-
-        if (!snapshot.exists()) {
-          console.log('No scores found in database');
-          setLeaderboardData([]);
-          setIsLoading(false);
-          return;
-        }
-
-        // Set up real-time listener
+        // Set up real-time listener for scores
         unsubscribe = onValue(topScoresQuery, (snapshot) => {
           console.log('Received real-time update');
           try {
             const scores: LeaderboardEntry[] = [];
+            const walletHighScores: Record<string, LeaderboardEntry> = {};
+
+            // Process all scores and keep only the highest score per wallet
             snapshot.forEach((childSnapshot) => {
               const score = childSnapshot.val();
-              scores.push(score);
+              console.log('Processing score:', score);
+              
+              // Use current username from profiles if available
+              const currentProfile = profiles[score.walletAddress];
+              const entry = {
+                ...score,
+                username: currentProfile ? currentProfile.username : score.username
+              };
+
+              // Only keep the highest score for each wallet
+              if (!walletHighScores[score.walletAddress] || 
+                  walletHighScores[score.walletAddress].score < score.score) {
+                walletHighScores[score.walletAddress] = entry;
+                console.log('Updated high score for wallet:', {
+                  wallet: score.walletAddress,
+                  score: score.score,
+                  username: entry.username
+                });
+              }
             });
-            
-            // Sort by score in descending order
-            scores.sort((a, b) => b.score - a.score);
-            console.log('Processed scores:', scores);
-            
-            setLeaderboardData(scores);
+
+            // Convert to array and sort
+            const uniqueScores = Object.values(walletHighScores);
+            uniqueScores.sort((a, b) => b.score - a.score);
+            console.log('Final sorted scores:', uniqueScores);
+
+            // Take only top 5
+            setLeaderboardData(uniqueScores.slice(0, 5));
             setIsLoading(false);
           } catch (err) {
             console.error('Error processing score data:', err);

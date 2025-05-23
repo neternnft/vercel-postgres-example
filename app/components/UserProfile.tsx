@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useAccount } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getUserProfile, updateUserProfile } from '../lib/firebase';
 
 interface UserProfileData {
   username: string;
@@ -30,11 +31,9 @@ export function useUserProfile() {
       console.log('Loading profile data for address:', address);
       setIsLoading(true);
       try {
-        const response = await fetch(`/api/users?walletAddress=${address}`);
-        console.log('Profile data response:', response.status);
-        if (response.ok) {
-          const userData = await response.json();
-          console.log('Loaded user data:', userData);
+        const userData = await getUserProfile(address);
+        console.log('Loaded user data:', userData);
+        if (userData) {
           setProfileData(prev => ({
             ...prev,
             username: userData.username
@@ -59,33 +58,16 @@ export function useUserProfile() {
     console.log('Updating profile:', { address, newData });
     setIsLoading(true);
     try {
-      // Check if user exists
-      const checkResponse = await fetch(`/api/users?walletAddress=${address}`);
-      const method = checkResponse.ok ? 'PUT' : 'POST';
-      console.log('User exists check:', { status: checkResponse.status, method });
+      const result = await updateUserProfile(address, newData.username.trim());
+      console.log('Profile update result:', result);
       
-      // Create or update user
-      const response = await fetch('/api/users', {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          walletAddress: address,
-          username: newData.username.trim(),
-        }),
-      });
-
-      const data = await response.json();
-      console.log('Profile update response:', { status: response.status, data });
-      
-      if (!response.ok) {
-        throw new Error(data.details || data.error || 'Failed to update profile');
+      if (!result) {
+        throw new Error('Failed to update profile');
       }
 
       setProfileData(prev => ({
         ...prev,
-        username: data.username
+        username: result.username
       }));
     } catch (error) {
       console.error('Profile update error:', error);
