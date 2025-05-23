@@ -228,13 +228,6 @@ const Game: React.FC<GameProps> = ({ onClose }) => {
               <p className="text-xl sm:text-2xl text-white">High Score: {gameState.personalBest}</p>
             </div>
             
-            {/* Score save status message - only show when user can save scores */}
-            {address && profileData.username && (
-              <p className="text-[#54CA9B] text-sm text-center mb-3">
-                Your score will be saved if it makes it to the top 5!
-              </p>
-            )}
-            
             <div className="w-full max-w-[200px] flex flex-col gap-3">
               <motion.button
                 onClick={startGame}
