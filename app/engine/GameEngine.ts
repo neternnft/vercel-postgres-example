@@ -82,9 +82,9 @@ export class GameEngine {
     this.sounds = new SoundManager();
     this.powerUps = new PowerUpSystem(ctx, canvas.width, canvas.height);
 
-    // Initialize speed with consistent scaling
-    this.baseSpeed = Math.min(canvas.width / 160, 8);  // Base speed calculation
-    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER;  // Using same multiplier for all screens
+    // Initialize speed with fixed base value
+    this.baseSpeed = 5;  // Fixed base speed for all screen sizes
+    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER;
 
     // Initialize player with safe starting position
     this.player = {
@@ -590,7 +590,8 @@ export class GameEngine {
 
     // Update speed with consistent progression
     const speedIncrease = Math.min(this.score * 0.15, 8);
-    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER + speedIncrease;
+    this.speed = (this.powerUps.hasPowerUp('slowMotion') ? 0.5 : 1) * 
+                 (this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER + speedIncrease);
 
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -699,8 +700,8 @@ export class GameEngine {
   }
 
   public resize(): void {
-    // Update speed with consistent scaling
-    this.baseSpeed = Math.min(this.canvas.width / 160, 8);  // Base speed calculation
-    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER;  // Using same multiplier for all screens
+    // Keep the same fixed base speed on resize
+    this.baseSpeed = 5;  // Fixed base speed for all screen sizes
+    this.speed = this.baseSpeed * GAME_CONFIG.MOBILE_SPEED_MULTIPLIER;
   }
 } 
