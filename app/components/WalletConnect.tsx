@@ -25,13 +25,11 @@ export default function WalletConnect() {
   
   return (
     <>
-      <div className="flex flex-col items-end">
-        <div>
-          <ConnectButton label="Wallet" />
-        </div>
+      <div className="flex flex-col">
+        <ConnectButton label="Wallet" />
         {isConnected && (
           <div 
-            className="mt-2 flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity self-start"
+            className="absolute top-full mt-2 flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
             onClick={() => setIsProfileOpen(true)}
           >
             {/* Profile picture or initial */}

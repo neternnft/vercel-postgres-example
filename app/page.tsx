@@ -268,7 +268,7 @@ export default function Home() {
       ) : (
                                  <main           className="fixed inset-0 bg-black flex flex-col justify-between futuristic-bg"          style={{ height: 'var(--app-height)' }}        >          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>
           {/* Top Bar */}
-          <div className="h-[10vh] flex justify-between items-start px-4 sm:px-6 md:px-8 pt-4">
+          <div className="h-[10vh] flex justify-between items-center px-4 sm:px-6 md:px-8 pt-4">
             {/* Logo and Text */}
             <div className="flex items-center space-x-2">
               <Image
@@ -288,7 +288,7 @@ export default function Home() {
             </div>
             
             {/* Wallet Connect and Notice */}
-            <div className="flex flex-col relative">
+            <div className="flex flex-col relative pt-2">
               <WalletConnect />
               
               {/* Enhanced Wallet Connection Notice */}
