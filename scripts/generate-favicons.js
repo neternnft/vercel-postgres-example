@@ -1,7 +1,7 @@
 const sharp = require('sharp');
 const path = require('path');
 
-const sizes = [32, 96, 100, 192];
+const sizes = [32, 96, 100, 192, 512];
 const inputFile = path.join(process.cwd(), 'public', 'GLURB coin.png');
 
 async function generateFavicons() {

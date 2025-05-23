@@ -49,6 +49,11 @@ export default function Home() {
           name="viewport" 
           content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" 
         />
+        <meta name="theme-color" content="#000000" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+        <meta name="apple-mobile-web-app-title" content="Glurbnok" />
+        <link rel="manifest" href="/manifest.json" />
         <link rel="icon" type="image/png" href="/favicon-32x32.png" sizes="32x32" />
         <link rel="icon" type="image/png" href="/favicon-100x100.png" sizes="100x100" />
         <link rel="icon" type="image/png" href="/favicon-96x96.png" sizes="96x96" />
