@@ -12,12 +12,33 @@ interface LeaderboardEntry {
 interface UserProfile {
   username: string;
   walletAddress: string;
+  arenaUsername?: string;
 }
 
 interface LeaderboardProps {
   isOpen: boolean;
   onClose: () => void;
 }
+
+// Add helper function to create Arena profile URL
+const getArenaProfileUrl = (username: string) => `https://arena.social/${username}`;
+
+// Add helper function to format username display
+const formatUsername = (profile: UserProfile) => {
+  if (profile.arenaUsername) {
+    return (
+      <a
+        href={getArenaProfileUrl(profile.arenaUsername)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-white hover:text-[#54CA9B] transition-colors"
+      >
+        {profile.username}
+      </a>
+    );
+  }
+  return <span className="text-white">{profile.username}</span>;
+};
 
 export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
   const [leaderboardData, setLeaderboardData] = useState<LeaderboardEntry[]>([]);
@@ -52,7 +73,8 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
             if (walletAddress && userData.username) {
               profiles[walletAddress] = {
                 username: userData.username,
-                walletAddress
+                walletAddress,
+                arenaUsername: userData.arenaUsername || ''
               };
             }
           });
@@ -175,22 +197,23 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
             ) : (
               <div className="space-y-2">
                 {leaderboardData.map((entry, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-[#2A2A2A] rounded"
+                  <motion.div
+                    key={`${entry.walletAddress}-${entry.score}`}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="flex items-center justify-between bg-[#2A2A2A] p-3 rounded"
                   >
                     <div className="flex items-center space-x-3">
-                      <span className="text-[#54CA9B] font-bold w-6">
-                        #{index + 1}
-                      </span>
-                      <span className="text-white">
-                        {entry.username || 'Anonymous'}
-                      </span>
+                      <span className="text-[#54CA9B] font-bold">{index + 1}</span>
+                      {formatUsername({
+                        username: entry.username,
+                        walletAddress: entry.walletAddress,
+                        arenaUsername: userProfiles[entry.walletAddress]?.arenaUsername
+                      })}
                     </div>
-                    <span className="text-[#54CA9B] font-bold">
-                      {entry.score}
-                    </span>
-                  </div>
+                    <span className="text-white">{entry.score}</span>
+                  </motion.div>
                 ))}
                 
                 {leaderboardData.length === 0 && (

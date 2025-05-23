@@ -7,6 +7,7 @@ import { getUserProfile, updateUserProfile } from '../lib/firebase';
 
 interface UserProfileData {
   username: string;
+  arenaUsername: string;
   pfpUrl?: string;
 }
 
@@ -14,6 +15,7 @@ export function useUserProfile() {
   const { address } = useAccount();
   const [profileData, setProfileData] = useState<UserProfileData>({
     username: '',
+    arenaUsername: '',
     pfpUrl: undefined
   });
   const [isMounted, setIsMounted] = useState(false);
@@ -36,7 +38,8 @@ export function useUserProfile() {
         if (userData) {
           setProfileData(prev => ({
             ...prev,
-            username: userData.username
+            username: userData.username,
+            arenaUsername: userData.arenaUsername || ''
           }));
         } else {
           console.log('No profile found for address');
@@ -58,7 +61,7 @@ export function useUserProfile() {
     console.log('Updating profile:', { address, newData });
     setIsLoading(true);
     try {
-      const result = await updateUserProfile(address, newData.username.trim());
+      const result = await updateUserProfile(address, newData.username.trim(), newData.arenaUsername?.trim());
       console.log('Profile update result:', result);
       
       if (!result) {
@@ -67,7 +70,8 @@ export function useUserProfile() {
 
       setProfileData(prev => ({
         ...prev,
-        username: result.username
+        username: result.username,
+        arenaUsername: result.arenaUsername || ''
       }));
     } catch (error) {
       console.error('Profile update error:', error);
@@ -93,15 +97,17 @@ export default function UserProfileModal({
 }) {
   const { profileData, updateProfile, isMounted, isLoading } = useUserProfile();
   const [tempUsername, setTempUsername] = useState('');
+  const [tempArenaUsername, setTempArenaUsername] = useState('');
   const [error, setError] = useState<string>('');
   const { address } = useAccount();
 
   useEffect(() => {
     if (isMounted) {
       setTempUsername(profileData.username || '');
+      setTempArenaUsername(profileData.arenaUsername || '');
       setError('');
     }
-  }, [profileData.username, isMounted]);
+  }, [profileData.username, profileData.arenaUsername, isMounted]);
 
   const validateUsername = (username: string): string | null => {
     if (!username.trim()) {
@@ -134,8 +140,11 @@ export default function UserProfileModal({
         return;
       }
 
-      // Try to update profile
-      await updateProfile({ username: tempUsername });
+      // Try to update profile with both usernames
+      await updateProfile({ 
+        username: tempUsername,
+        arenaUsername: tempArenaUsername 
+      });
       onClose();
     } catch (err) {
       if (err instanceof Error) {
@@ -160,6 +169,10 @@ export default function UserProfileModal({
     }
   };
 
+  const handleArenaUsernameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTempArenaUsername(e.target.value);
+  };
+
   if (!isMounted) return null;
 
   return (
@@ -181,7 +194,7 @@ export default function UserProfileModal({
           >
             <h2 className="text-2xl font-bold mb-4 text-[#54CA9B]">Edit Profile</h2>
             
-            {/* Username Input */}
+            {/* App Username Input */}
             <div className="mb-4">
               <label className="block text-[#54CA9B] text-sm font-bold mb-2">
                 Username
@@ -198,6 +211,28 @@ export default function UserProfileModal({
               {error && (
                 <p className="mt-2 text-red-500 text-sm">{error}</p>
               )}
+            </div>
+
+            {/* Arena Username Input */}
+            <div className="mb-4">
+              <label className="block text-[#54CA9B] text-sm font-bold mb-2">
+                Arena Username (Optional)
+              </label>
+              <div className="flex items-center space-x-2">
+                <span className="text-gray-400">@</span>
+                <input
+                  type="text"
+                  value={tempArenaUsername}
+                  onChange={handleArenaUsernameChange}
+                  className="flex-1 px-3 py-2 bg-[#2A2A2A] rounded border border-[#54CA9B] text-white focus:outline-none focus:ring-2 focus:ring-[#54CA9B]"
+                  placeholder="Enter your Arena username"
+                  maxLength={20}
+                  disabled={isLoading}
+                />
+              </div>
+              <p className="mt-2 text-gray-400 text-sm">
+                Your Arena profile will be linked at: https://arena.social/{tempArenaUsername || '[username]'}
+              </p>
             </div>
 
             {/* Profile Picture - Coming Soon */}

@@ -38,8 +38,19 @@ export default function WalletConnect() {
             </div>
             
             {/* Username display */}
-            <span className="text-[#54CA9B] text-sm">
-              {profileData.username || 'Set Username'}
+            <span className="text-[#54CA9B] text-sm flex items-center">
+              {profileData.username}
+              {profileData.arenaUsername && (
+                <svg 
+                  className="ml-1 w-4 h-4" 
+                  viewBox="0 0 24 24" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  strokeWidth="2"
+                >
+                  <path d="M7 7h10v10M7 17L17 7" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
             </span>
           </div>
         )}

@@ -209,7 +209,7 @@ export async function getUserProfile(walletAddress: string) {
   }
 }
 
-export async function updateUserProfile(walletAddress: string, username: string) {
+export async function updateUserProfile(walletAddress: string, username: string, arenaUsername?: string) {
   if (!database) {
     console.error('Database not initialized');
     return null;
@@ -222,9 +222,13 @@ export async function updateUserProfile(walletAddress: string, username: string)
     
     if (snapshot.exists()) {
       let isUsernameTaken = false;
+      const lowercaseNewUsername = username.toLowerCase();
+      
       snapshot.forEach((childSnapshot) => {
         const userData = childSnapshot.val();
-        if (userData.username === username && childSnapshot.key !== walletAddress) {
+        // Compare usernames case-insensitively
+        if (userData.username.toLowerCase() === lowercaseNewUsername && 
+            childSnapshot.key !== walletAddress) {
           isUsernameTaken = true;
         }
       });
@@ -236,13 +240,15 @@ export async function updateUserProfile(walletAddress: string, username: string)
 
     // Update or create user profile
     const userRef = ref(database, `users/${walletAddress}`);
-    await set(userRef, {
+    const userData = {
       username,
       walletAddress,
+      arenaUsername: arenaUsername || '',
       updatedAt: Date.now()
-    });
-
-    return { username, walletAddress };
+    };
+    
+    await set(userRef, userData);
+    return userData;
   } catch (error: unknown) {
     console.error('Error updating user profile:', error);
     if (error instanceof Error) {
