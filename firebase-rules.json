@@ -4,13 +4,32 @@
     ".write": true,
     "scores": {
       ".read": true,
-      ".write": true,
-      ".indexOn": ["score", "walletAddress"]
+      ".write": "auth != null",
+      ".indexOn": ["score", "walletAddress"],
+      "$score": {
+        // Validate score data structure
+        ".validate": "newData.hasChildren(['username', 'score', 'walletAddress', 'timestamp']) &&
+                     newData.child('score').isNumber() &&
+                     newData.child('score').val() >= 0 &&
+                     newData.child('score').val() <= 1000 &&
+                     newData.child('timestamp').isNumber() &&
+                     newData.child('timestamp').val() <= now &&
+                     newData.child('walletAddress').isString() &&
+                     newData.child('username').isString()"
+      }
     },
     "users": {
       ".read": true,
-      ".write": true,
-      ".indexOn": ["username", "walletAddress"]
+      ".write": "auth != null",
+      ".indexOn": ["username"],
+      "$userId": {
+        // Only allow users to modify their own data
+        ".write": "auth != null && $userId === auth.uid",
+        // Validate user data structure
+        ".validate": "newData.hasChildren(['username', 'walletAddress']) &&
+                     newData.child('username').isString() &&
+                     newData.child('walletAddress').isString()"
+      }
     },
     "connection_test": {
       ".read": true,

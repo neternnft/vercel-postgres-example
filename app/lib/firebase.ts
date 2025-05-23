@@ -48,6 +48,10 @@ try {
   throw error;
 }
 
+// Add score verification constants
+const MAX_SCORE_PER_SECOND = 2; // Maximum possible score increase per second
+const MIN_GAME_DURATION = 3; // Minimum game duration in seconds
+
 export async function saveScore(username: string, score: number, walletAddress: string) {
   if (!database) {
     console.error('Database not initialized');
@@ -57,10 +61,32 @@ export async function saveScore(username: string, score: number, walletAddress: 
   try {
     console.log('Starting saveScore process:', { username, score, walletAddress });
 
+    // Basic score validation
+    if (typeof score !== 'number' || score < 0 || score > 1000) {
+      console.error('Invalid score value:', score);
+      return false;
+    }
+
+    // Get timestamp for anti-cheat verification
+    const timestamp = Date.now();
+    const gameStartTime = localStorage.getItem('gameStartTime');
+    const startTime = gameStartTime ? parseInt(gameStartTime, 10) : timestamp - (score * 1000 / MAX_SCORE_PER_SECOND);
+    const gameDuration = (timestamp - startTime) / 1000; // in seconds
+
+    // Anti-cheat validations
+    if (gameDuration < MIN_GAME_DURATION) {
+      console.error('Game duration too short:', gameDuration);
+      return false;
+    }
+
+    const maxPossibleScore = Math.ceil(gameDuration * MAX_SCORE_PER_SECOND);
+    if (score > maxPossibleScore) {
+      console.error('Score too high for game duration:', { score, maxPossibleScore, gameDuration });
+      return false;
+    }
+
     // Get all scores for this wallet address
     const scoresRef = ref(database, 'scores');
-    
-    // First get all scores to check if this is a high score
     const allScoresSnapshot = await get(scoresRef);
     let currentHighScore = -1;
     let oldScoreKeys: string[] = [];
@@ -96,12 +122,14 @@ export async function saveScore(username: string, score: number, walletAddress: 
       const scoreId = `${Date.now()}_${walletAddress}`;
       const newScoreRef = ref(database, `scores/${scoreId}`);
       
-      // Save new score
+      // Save new score with anti-cheat metadata
       await set(newScoreRef, {
         username,
         score,
         walletAddress,
-        timestamp: Date.now()
+        timestamp,
+        gameDuration,
+        startTime
       });
 
       // Clean up old scores for this wallet

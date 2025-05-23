@@ -34,6 +34,9 @@ export const useGameState = () => {
   }, []);
 
   const startGame = useCallback(() => {
+    // Record game start time for anti-cheat
+    localStorage.setItem('gameStartTime', Date.now().toString());
+    
     setGameState(prev => ({
       ...prev,
       gameStarted: true,
