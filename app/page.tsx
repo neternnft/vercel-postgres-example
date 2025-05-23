@@ -16,19 +16,30 @@ export default function Home() {
 
   // Handle notice visibility based on wallet connection status
   useEffect(() => {
-    const noticeState = localStorage.getItem('walletNoticeState');
-    if (noticeState) {
-      const { isConnected: wasConnected, isVisible } = JSON.parse(noticeState);
-      // Only show notice if connection status has changed
-      setShowNotice(wasConnected !== isConnected || isVisible);
+    try {
+      const noticeState = localStorage.getItem('walletNoticeState');
+      
+      if (!noticeState) {
+        setShowNotice(true);
+        return;
+      }
+
+      const { isConnected: wasConnected } = JSON.parse(noticeState);
+      // Show notice if connection status has changed
+      if (wasConnected !== isConnected) {
+        setShowNotice(true);
+      }
+    } catch (error) {
+      console.error('Error handling notice state:', error);
+      localStorage.removeItem('walletNoticeState');
+      setShowNotice(true);
     }
   }, [isConnected]);
 
   const handleCloseNotice = () => {
     setShowNotice(false);
     localStorage.setItem('walletNoticeState', JSON.stringify({
-      isConnected,
-      isVisible: false
+      isConnected
     }));
   };
 
