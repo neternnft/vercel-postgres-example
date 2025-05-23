@@ -257,7 +257,7 @@ export default function Home() {
       ) : (
                                  <main           className="fixed inset-0 bg-black flex flex-col justify-between futuristic-bg"          style={{ height: 'var(--app-height)' }}        >          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>          <div className="particle"></div>
           {/* Top Bar */}
-          <div className="h-[10vh] flex justify-between items-center px-4 sm:px-6 md:px-8 pt-4">
+          <div className="h-[10vh] flex justify-between items-start px-4 sm:px-6 md:px-8 pt-4">
             {/* Logo and Text */}
             <div className="flex items-center space-x-2">
               <Image
@@ -278,13 +278,11 @@ export default function Home() {
             
             {/* Wallet Connect and Notice */}
             <div className="flex flex-col relative">
-              <div className="flex items-center">
-                <WalletConnect />
-              </div>
+              <WalletConnect />
               
               {/* Enhanced Wallet Connection Notice */}
               {showNotice && (
-                <div className="absolute top-full right-0 w-[280px] sm:w-[320px] animate-fade-in mt-2 z-10">
+                <div className="absolute top-[calc(100%+2.5rem)] right-0 w-[280px] sm:w-[320px] animate-fade-in mt-2 z-10">
                   <div className="relative flex items-start gap-2 bg-[#54CA9B]/10 px-3 py-2 rounded-lg border border-[#54CA9B]/20">
                     {/* Close Button */}
                     <button
