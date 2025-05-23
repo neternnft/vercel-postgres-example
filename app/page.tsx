@@ -341,7 +341,7 @@ export default function Home() {
               <motion.div
                 whileHover={{ scale: 1.1, translateY: -10 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => window.open("https://arena.social/glurbnok/status/5aec79f7-ecae-45a8-9978-d3bbb0920b6f", "_blank")}
+                onClick={() => window.open("https://arena.social/community/0x2Eab7E5e4fA9EaEd6065592bFBa27BBeA456e257", "_blank")}
                 className="cursor-pointer flex flex-col items-center group"
               >
                 <div 
