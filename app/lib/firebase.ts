@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp, FirebaseApp, FirebaseError } from 'firebase/app';
 import { getDatabase, ref, set, query, orderByChild, limitToLast, Database, onValue, get, equalTo } from 'firebase/database';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -51,6 +52,14 @@ try {
 // Add score verification constants
 const MAX_SCORE_PER_SECOND = 2; // Maximum possible score increase per second
 const MIN_GAME_DURATION = 3; // Minimum game duration in seconds
+
+interface UserProfile {
+  username: string;
+  walletAddress: string;
+  arenaUsername?: string;
+  updatedAt: number;
+  pfpUrl?: string;
+}
 
 export async function saveScore(username: string, score: number, walletAddress: string) {
   if (!database) {
@@ -238,13 +247,18 @@ export async function updateUserProfile(walletAddress: string, username: string,
       }
     }
 
-    // Update or create user profile
+    // Get existing user data to preserve pfpUrl if it exists
     const userRef = ref(database, `users/${walletAddress}`);
-    const userData = {
+    const userSnapshot = await get(userRef);
+    const existingData = userSnapshot.exists() ? userSnapshot.val() : {};
+
+    // Update or create user profile
+    const userData: UserProfile = {
       username,
       walletAddress,
       arenaUsername: arenaUsername || '',
-      updatedAt: Date.now()
+      updatedAt: Date.now(),
+      pfpUrl: existingData.pfpUrl
     };
     
     await set(userRef, userData);
@@ -255,5 +269,80 @@ export async function updateUserProfile(walletAddress: string, username: string,
       throw error;
     }
     throw new Error('Failed to update profile');
+  }
+}
+
+// Add image compression and conversion to Base64
+async function compressAndConvertToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = URL.createObjectURL(file);
+    
+    img.onload = () => {
+      URL.revokeObjectURL(img.src);
+      
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Calculate new dimensions while maintaining aspect ratio
+      let width = img.width;
+      let height = img.height;
+      const maxDimension = 150; // Smaller max dimension for base64 storage
+      
+      if (width > height && width > maxDimension) {
+        height = (height * maxDimension) / width;
+        width = maxDimension;
+      } else if (height > maxDimension) {
+        width = (width * maxDimension) / height;
+        height = maxDimension;
+      }
+      
+      canvas.width = width;
+      canvas.height = height;
+      
+      ctx?.drawImage(img, 0, 0, width, height);
+      
+      // Convert to base64 with high compression
+      const base64 = canvas.toDataURL('image/jpeg', 0.6);
+      resolve(base64);
+    };
+    
+    img.onerror = () => {
+      URL.revokeObjectURL(img.src);
+      reject(new Error('Failed to load image for compression'));
+    };
+  });
+}
+
+// Replace uploadProfilePicture with new version that uses Base64
+export async function uploadProfilePicture(walletAddress: string, file: File) {
+  if (!database) {
+    console.error('Database not initialized');
+    return null;
+  }
+
+  try {
+    console.log('[Upload] Starting profile picture processing');
+    const base64Image = await compressAndConvertToBase64(file);
+    console.log('[Upload] Image compressed and converted to base64');
+
+    // Update user profile with the base64 image
+    const userRef = ref(database, `users/${walletAddress}`);
+    const userSnapshot = await get(userRef);
+    
+    if (userSnapshot.exists()) {
+      const userData = userSnapshot.val();
+      await set(userRef, {
+        ...userData,
+        pfpUrl: base64Image,
+        updatedAt: Date.now()
+      });
+    }
+    
+    console.log('[Upload] Profile picture update complete');
+    return base64Image;
+  } catch (error) {
+    console.error('[Upload] Error processing profile picture:', error);
+    throw error;
   }
 } 

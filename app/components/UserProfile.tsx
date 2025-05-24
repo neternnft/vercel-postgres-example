@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAccount } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getUserProfile, updateUserProfile } from '../lib/firebase';
+import { getUserProfile, updateUserProfile, uploadProfilePicture } from '../lib/firebase';
 
 interface UserProfileData {
   username: string;
@@ -39,7 +39,8 @@ export function useUserProfile() {
           setProfileData(prev => ({
             ...prev,
             username: userData.username,
-            arenaUsername: userData.arenaUsername || ''
+            arenaUsername: userData.arenaUsername || '',
+            pfpUrl: userData.pfpUrl
           }));
         } else {
           console.log('No profile found for address');
@@ -71,7 +72,8 @@ export function useUserProfile() {
       setProfileData(prev => ({
         ...prev,
         username: result.username,
-        arenaUsername: result.arenaUsername || ''
+        arenaUsername: result.arenaUsername || '',
+        pfpUrl: result.pfpUrl
       }));
     } catch (error) {
       console.error('Profile update error:', error);
@@ -85,7 +87,7 @@ export function useUserProfile() {
     }
   };
 
-  return { profileData, updateProfile, isMounted, isLoading };
+  return { profileData, updateProfile, isMounted, isLoading, setIsLoading };
 }
 
 export default function UserProfileModal({ 
@@ -95,19 +97,23 @@ export default function UserProfileModal({
   isOpen: boolean; 
   onClose: () => void;
 }) {
-  const { profileData, updateProfile, isMounted, isLoading } = useUserProfile();
+  const { profileData, updateProfile, isMounted, isLoading, setIsLoading } = useUserProfile();
   const [tempUsername, setTempUsername] = useState('');
   const [tempArenaUsername, setTempArenaUsername] = useState('');
   const [error, setError] = useState<string>('');
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { address } = useAccount();
 
   useEffect(() => {
     if (isMounted) {
       setTempUsername(profileData.username || '');
       setTempArenaUsername(profileData.arenaUsername || '');
+      setImagePreview(profileData.pfpUrl || null);
       setError('');
     }
-  }, [profileData.username, profileData.arenaUsername, isMounted]);
+  }, [profileData.username, profileData.arenaUsername, profileData.pfpUrl, isMounted]);
 
   const validateUsername = (username: string): string | null => {
     if (!username.trim()) {
@@ -129,10 +135,39 @@ export default function UserProfileModal({
     return null;
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setError('Please upload an image file');
+        return;
+      }
+      
+      // Validate file size (max 2MB for base64 conversion)
+      if (file.size > 2 * 1024 * 1024) {
+        setError('Image must be less than 2MB');
+        return;
+      }
+
+      setImageFile(file);
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleSave = async () => {
     if (!isMounted || !address) return;
     
+    const startTime = Date.now();
+    console.log('[Profile] Starting profile save process');
+    
     try {
+      setIsLoading(true);
+      
       // Validate username
       const validationError = validateUsername(tempUsername);
       if (validationError) {
@@ -140,18 +175,45 @@ export default function UserProfileModal({
         return;
       }
 
-      // Try to update profile with both usernames
+      // Upload image if selected
+      let pfpUrl = profileData.pfpUrl;
+      if (imageFile) {
+        try {
+          console.log(`[Profile] Starting image upload at ${Date.now() - startTime}ms`);
+          const uploadedUrl = await uploadProfilePicture(address, imageFile);
+          console.log(`[Profile] Image upload completed at ${Date.now() - startTime}ms`);
+          if (uploadedUrl) {
+            pfpUrl = uploadedUrl;
+          }
+        } catch (err) {
+          console.error(`[Profile] Failed to upload image at ${Date.now() - startTime}ms:`, err);
+          setError('Failed to upload image. Please try again.');
+          return;
+        }
+      }
+
+      // Update profile
+      console.log(`[Profile] Starting profile update at ${Date.now() - startTime}ms`);
       await updateProfile({ 
         username: tempUsername,
-        arenaUsername: tempArenaUsername 
+        arenaUsername: tempArenaUsername,
+        pfpUrl
       });
+      console.log(`[Profile] Profile update completed at ${Date.now() - startTime}ms`);
+      
       onClose();
     } catch (err) {
+      const errorTime = Date.now() - startTime;
       if (err instanceof Error) {
+        console.error(`[Profile] Error at ${errorTime}ms:`, err.message);
         setError(err.message);
       } else {
+        console.error(`[Profile] Unknown error at ${errorTime}ms:`, err);
         setError('An error occurred while saving');
       }
+    } finally {
+      setIsLoading(false);
+      console.log(`[Profile] Total process time: ${Date.now() - startTime}ms`);
     }
   };
 
@@ -194,6 +256,42 @@ export default function UserProfileModal({
           >
             <h2 className="text-2xl font-bold mb-4 text-[#54CA9B]">Edit Profile</h2>
             
+            {/* Profile Picture Upload */}
+            <div className="mb-6">
+              <label className="block text-[#54CA9B] text-sm font-bold mb-2">
+                Profile Picture
+              </label>
+              <div 
+                className="bg-[#2A2A2A] p-4 rounded border border-dashed border-[#54CA9B] text-center cursor-pointer hover:bg-[#3A3A3A] transition-colors"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {imagePreview ? (
+                  <div className="relative w-32 h-32 mx-auto">
+                    <img
+                      src={imagePreview}
+                      alt="Profile preview"
+                      className="w-full h-full object-cover rounded-full"
+                    />
+                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 transition-opacity">
+                      <p className="text-white text-sm">Change Picture</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="py-4">
+                    <p className="text-[#54CA9B] mb-2">Click to upload picture</p>
+                    <p className="text-gray-400 text-sm">PNG, JPG up to 2MB</p>
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageChange}
+                  className="hidden"
+                />
+              </div>
+            </div>
+
             {/* App Username Input */}
             <div className="mb-4">
               <label className="block text-[#54CA9B] text-sm font-bold mb-2">
@@ -235,18 +333,13 @@ export default function UserProfileModal({
               </p>
             </div>
 
-            {/* Profile Picture - Coming Soon */}
-            <div className="mb-6">
-              <label className="block text-[#54CA9B] text-sm font-bold mb-2">
-                Profile Picture
-              </label>
-              <div className="bg-[#2A2A2A] p-4 rounded border border-dashed border-[#54CA9B] text-center">
-                <p className="text-gray-400">Coming Soon</p>
-              </div>
-            </div>
+            {/* Error display */}
+            {error && (
+              <p className="mt-2 text-red-500 text-sm">{error}</p>
+            )}
 
             {/* Buttons */}
-            <div className="flex justify-end space-x-3">
+            <div className="mt-6 flex justify-end space-x-3">
               <button
                 onClick={onClose}
                 className="px-4 py-2 rounded bg-[#2A2A2A] text-[#54CA9B] hover:bg-[#3A3A3A] transition-colors"

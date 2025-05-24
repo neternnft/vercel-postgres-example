@@ -33,8 +33,16 @@ export default function WalletConnect() {
             onClick={() => setIsProfileOpen(true)}
           >
             {/* Profile picture or initial */}
-            <div className="w-8 h-8 rounded-full bg-[#54CA9B] flex items-center justify-center text-black">
-              {profileData.username ? profileData.username[0].toUpperCase() : 'P'}
+            <div className="w-8 h-8 rounded-full bg-[#54CA9B] flex items-center justify-center text-black overflow-hidden">
+              {profileData.pfpUrl ? (
+                <img 
+                  src={profileData.pfpUrl} 
+                  alt="Profile" 
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <span>{profileData.username ? profileData.username[0].toUpperCase() : 'P'}</span>
+              )}
             </div>
             
             {/* Username display */}
