@@ -253,12 +253,13 @@ export async function updateUserProfile(walletAddress: string, username: string,
     const existingData = userSnapshot.exists() ? userSnapshot.val() : {};
 
     // Update or create user profile
-    const userData: UserProfile = {
+    const userData = {
       username,
       walletAddress,
       arenaUsername: arenaUsername || '',
       updatedAt: Date.now(),
-      pfpUrl: existingData.pfpUrl
+      // Only include pfpUrl if it exists in existing data
+      ...(existingData.pfpUrl ? { pfpUrl: existingData.pfpUrl } : {})
     };
     
     await set(userRef, userData);
