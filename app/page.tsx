@@ -12,7 +12,7 @@ export default function Home() {
   const [showGame, setShowGame] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const { isConnected } = useAccount();
-  const [showNotice, setShowNotice] = useState(true);
+  const [showNotice, setShowNotice] = useState(false);
 
   // Handle notice visibility based on wallet connection status
   useEffect(() => {
@@ -20,14 +20,27 @@ export default function Home() {
       const noticeState = localStorage.getItem('walletNoticeState');
       
       if (!noticeState) {
+        // First time visit, show notice
         setShowNotice(true);
+        localStorage.setItem('walletNoticeState', JSON.stringify({
+          isConnected,
+          wasClosed: false
+        }));
         return;
       }
 
-      const { isConnected: wasConnected } = JSON.parse(noticeState);
-      // Show notice if connection status has changed
-      if (wasConnected !== isConnected) {
+      const state = JSON.parse(noticeState);
+      
+      if (state.isConnected !== isConnected) {
+        // Connection status changed, show notice and reset wasClosed
         setShowNotice(true);
+        localStorage.setItem('walletNoticeState', JSON.stringify({
+          isConnected,
+          wasClosed: false
+        }));
+      } else {
+        // Same connection status, maintain previous visibility
+        setShowNotice(!state.wasClosed);
       }
     } catch (error) {
       console.error('Error handling notice state:', error);
@@ -39,7 +52,8 @@ export default function Home() {
   const handleCloseNotice = () => {
     setShowNotice(false);
     localStorage.setItem('walletNoticeState', JSON.stringify({
-      isConnected
+      isConnected,
+      wasClosed: true
     }));
   };
 
