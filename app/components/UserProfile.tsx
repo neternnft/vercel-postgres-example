@@ -381,6 +381,9 @@ export default function UserProfileModal({
                   />
                 </div>
               )}
+              {error && error.includes('2MB') && (
+                <p className="mt-2 text-red-500 text-sm">{error}</p>
+              )}
             </div>
 
             {/* App Username Input */}
@@ -397,7 +400,7 @@ export default function UserProfileModal({
                 maxLength={20}
                 disabled={isLoading}
               />
-              {error && (
+              {error && !error.includes('2MB') && (
                 <p className="mt-2 text-red-500 text-sm">{error}</p>
               )}
             </div>
@@ -423,11 +426,6 @@ export default function UserProfileModal({
                 Your Arena profile will be linked at: https://arena.social/{tempArenaUsername || '[username]'}
               </p>
             </div>
-
-            {/* Error display */}
-            {error && (
-              <p className="mt-2 text-red-500 text-sm">{error}</p>
-            )}
 
             {/* Buttons */}
             <div className="mt-6 flex justify-end space-x-3">
