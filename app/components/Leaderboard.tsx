@@ -188,7 +188,10 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
             onClick={e => e.stopPropagation()}
           >
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-2xl font-bold text-[#54CA9B]">Leaderboard</h2>
+              <div>
+                <h2 className="text-2xl font-bold text-[#54CA9B]">Leaderboard</h2>
+                <p className="text-sm text-gray-400 mt-1">Top 5 Players</p>
+              </div>
             </div>
             
             {isLoading ? (
