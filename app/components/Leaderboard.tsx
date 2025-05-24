@@ -13,6 +13,7 @@ interface UserProfile {
   username: string;
   walletAddress: string;
   arenaUsername?: string;
+  pfpUrl?: string;
 }
 
 interface LeaderboardProps {
@@ -85,7 +86,8 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
               profiles[walletAddress] = {
                 username: userData.username,
                 walletAddress,
-                arenaUsername: userData.arenaUsername || ''
+                arenaUsername: userData.arenaUsername || '',
+                pfpUrl: userData.pfpUrl || ''
               };
             }
           });
@@ -217,6 +219,17 @@ export default function Leaderboard({ isOpen, onClose }: LeaderboardProps) {
                   >
                     <div className="flex items-center space-x-3">
                       <span className="text-[#54CA9B] font-bold">{index + 1}</span>
+                      <div className="w-8 h-8 rounded-full bg-[#54CA9B] flex items-center justify-center text-black overflow-hidden">
+                        {userProfiles[entry.walletAddress]?.pfpUrl ? (
+                          <img 
+                            src={userProfiles[entry.walletAddress].pfpUrl} 
+                            alt="Profile" 
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span>{entry.username[0].toUpperCase()}</span>
+                        )}
+                      </div>
                       {formatUsername({
                         username: entry.username,
                         walletAddress: entry.walletAddress,
