@@ -1,14 +1,57 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { useAccount } from 'wagmi';
 import { motion, AnimatePresence } from 'framer-motion';
+import Cropper from 'react-easy-crop';
 import { getUserProfile, updateUserProfile, uploadProfilePicture } from '../lib/firebase';
 
 interface UserProfileData {
   username: string;
   arenaUsername: string;
   pfpUrl?: string;
+}
+
+// Add getCroppedImg helper function
+const createImage = (url: string): Promise<HTMLImageElement> =>
+  new Promise((resolve, reject) => {
+    const image = new Image();
+    image.addEventListener('load', () => resolve(image));
+    image.addEventListener('error', error => reject(error));
+    image.src = url;
+  });
+
+async function getCroppedImg(
+  imageSrc: string,
+  pixelCrop: { x: number; y: number; width: number; height: number }
+): Promise<string> {
+  const image = await createImage(imageSrc);
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+
+  if (!ctx) {
+    throw new Error('No 2d context');
+  }
+
+  // Set canvas size to the desired width/height
+  canvas.width = pixelCrop.width;
+  canvas.height = pixelCrop.height;
+
+  // Draw the cropped image
+  ctx.drawImage(
+    image,
+    pixelCrop.x,
+    pixelCrop.y,
+    pixelCrop.width,
+    pixelCrop.height,
+    0,
+    0,
+    pixelCrop.width,
+    pixelCrop.height
+  );
+
+  // Return as base64
+  return canvas.toDataURL('image/jpeg', 0.8);
 }
 
 export function useUserProfile() {
@@ -103,6 +146,10 @@ export default function UserProfileModal({
   const [error, setError] = useState<string>('');
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [showCropper, setShowCropper] = useState(false);
+  const [crop, setCrop] = useState({ x: 0, y: 0 });
+  const [zoom, setZoom] = useState(1);
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<{ width: number; height: number; x: number; y: number } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { address } = useAccount();
 
@@ -115,25 +162,9 @@ export default function UserProfileModal({
     }
   }, [profileData.username, profileData.arenaUsername, profileData.pfpUrl, isMounted]);
 
-  const validateUsername = (username: string): string | null => {
-    if (!username.trim()) {
-      return 'Username cannot be empty';
-    }
-    
-    if (username.trim().length < 3) {
-      return 'Username must be at least 3 characters long';
-    }
-    
-    if (username.trim().length > 20) {
-      return 'Username must be less than 20 characters';
-    }
-
-    if (!address) {
-      return 'Please connect your wallet first';
-    }
-
-    return null;
-  };
+  const onCropComplete = useCallback((croppedArea: any, croppedAreaPixels: any) => {
+    setCroppedAreaPixels(croppedAreaPixels);
+  }, []);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -153,7 +184,9 @@ export default function UserProfileModal({
       setImageFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        const result = reader.result as string;
+        setImagePreview(result);
+        setShowCropper(true);
       };
       reader.readAsDataURL(file);
     }
@@ -175,12 +208,14 @@ export default function UserProfileModal({
         return;
       }
 
-      // Upload image if selected
+      // Upload image if selected and cropped
       let pfpUrl = profileData.pfpUrl;
-      if (imageFile) {
+      if (imagePreview && croppedAreaPixels) {
         try {
+          console.log(`[Profile] Starting image cropping at ${Date.now() - startTime}ms`);
+          const croppedImage = await getCroppedImg(imagePreview, croppedAreaPixels);
           console.log(`[Profile] Starting image upload at ${Date.now() - startTime}ms`);
-          const uploadedUrl = await uploadProfilePicture(address, imageFile);
+          const uploadedUrl = await uploadProfilePicture(address, croppedImage);
           console.log(`[Profile] Image upload completed at ${Date.now() - startTime}ms`);
           if (uploadedUrl) {
             pfpUrl = uploadedUrl;
@@ -201,6 +236,7 @@ export default function UserProfileModal({
       });
       console.log(`[Profile] Profile update completed at ${Date.now() - startTime}ms`);
       
+      setShowCropper(false);
       onClose();
     } catch (err) {
       const errorTime = Date.now() - startTime;
@@ -235,6 +271,26 @@ export default function UserProfileModal({
     setTempArenaUsername(e.target.value);
   };
 
+  const validateUsername = (username: string): string | null => {
+    if (!username.trim()) {
+      return 'Username cannot be empty';
+    }
+    
+    if (username.trim().length < 3) {
+      return 'Username must be at least 3 characters long';
+    }
+    
+    if (username.trim().length > 20) {
+      return 'Username must be less than 20 characters';
+    }
+
+    if (!address) {
+      return 'Please connect your wallet first';
+    }
+
+    return null;
+  };
+
   if (!isMounted) return null;
 
   return (
@@ -261,35 +317,70 @@ export default function UserProfileModal({
               <label className="block text-[#54CA9B] text-sm font-bold mb-2">
                 Profile Picture
               </label>
-              <div 
-                className="bg-[#2A2A2A] p-4 rounded border border-dashed border-[#54CA9B] text-center cursor-pointer hover:bg-[#3A3A3A] transition-colors"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {imagePreview ? (
-                  <div className="relative w-32 h-32 mx-auto">
-                    <img
-                      src={imagePreview}
-                      alt="Profile preview"
-                      className="w-full h-full object-cover rounded-full"
+              {showCropper && imagePreview ? (
+                <div className="relative h-[300px] rounded-lg overflow-hidden bg-[#2A2A2A]">
+                  <Cropper
+                    image={imagePreview}
+                    crop={crop}
+                    zoom={zoom}
+                    aspect={1}
+                    onCropChange={setCrop}
+                    onZoomChange={setZoom}
+                    onCropComplete={onCropComplete}
+                    cropShape="round"
+                    showGrid={false}
+                    objectFit="contain"
+                  />
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <input
+                      type="range"
+                      value={zoom}
+                      min={1}
+                      max={3}
+                      step={0.1}
+                      aria-labelledby="Zoom"
+                      onChange={(e) => setZoom(Number(e.target.value))}
+                      className="w-full"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 transition-opacity">
-                      <p className="text-white text-sm">Change Picture</p>
+                  </div>
+                  <button
+                    onClick={() => setShowCropper(false)}
+                    className="absolute top-2 right-2 bg-[#1A1A1A] text-white p-2 rounded-full hover:bg-[#2A2A2A] transition-colors"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ) : (
+                <div 
+                  className="bg-[#2A2A2A] p-4 rounded border border-dashed border-[#54CA9B] text-center cursor-pointer hover:bg-[#3A3A3A] transition-colors"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  {imagePreview ? (
+                    <div className="relative w-32 h-32 mx-auto">
+                      <img
+                        src={imagePreview}
+                        alt="Profile preview"
+                        className="w-full h-full object-cover rounded-full"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-50 rounded-full opacity-0 hover:opacity-100 transition-opacity">
+                        <p className="text-white text-sm">Change Picture</p>
+                      </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="py-4">
-                    <p className="text-[#54CA9B] mb-2">Click to upload picture</p>
-                    <p className="text-gray-400 text-sm">PNG, JPG up to 2MB</p>
-                  </div>
-                )}
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </div>
+                  ) : (
+                    <div className="py-4">
+                      <p className="text-[#54CA9B] mb-2">Click to upload picture</p>
+                      <p className="text-gray-400 text-sm">PNG, JPG up to 2MB</p>
+                    </div>
+                  )}
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </div>
+              )}
             </div>
 
             {/* App Username Input */}

@@ -314,17 +314,15 @@ async function compressAndConvertToBase64(file: File): Promise<string> {
   });
 }
 
-// Replace uploadProfilePicture with new version that uses Base64
-export async function uploadProfilePicture(walletAddress: string, file: File) {
+// Replace uploadProfilePicture with new version that accepts base64 string
+export async function uploadProfilePicture(walletAddress: string, base64Image: string) {
   if (!database) {
     console.error('Database not initialized');
     return null;
   }
 
   try {
-    console.log('[Upload] Starting profile picture processing');
-    const base64Image = await compressAndConvertToBase64(file);
-    console.log('[Upload] Image compressed and converted to base64');
+    console.log('[Upload] Starting profile picture update');
 
     // Update user profile with the base64 image
     const userRef = ref(database, `users/${walletAddress}`);
@@ -342,7 +340,7 @@ export async function uploadProfilePicture(walletAddress: string, file: File) {
     console.log('[Upload] Profile picture update complete');
     return base64Image;
   } catch (error) {
-    console.error('[Upload] Error processing profile picture:', error);
+    console.error('[Upload] Error updating profile picture:', error);
     throw error;
   }
 } 
