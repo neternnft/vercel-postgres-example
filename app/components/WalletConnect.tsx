@@ -34,12 +34,12 @@ export default function WalletConnect() {
           >
             {/* Profile picture or initial */}
             <div className="w-8 h-8 rounded-full bg-[#54CA9B] flex items-center justify-center text-black">
-              {profileData.username ? profileData.username[0].toUpperCase() : '?'}
+              {profileData.username ? profileData.username[0].toUpperCase() : 'P'}
             </div>
             
             {/* Username display */}
             <span className="text-[#54CA9B] text-sm flex items-center">
-              {profileData.username}
+              Profile
               {profileData.arenaUsername && (
                 <svg 
                   className="ml-1 w-4 h-4" 
