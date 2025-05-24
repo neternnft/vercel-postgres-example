@@ -23,8 +23,19 @@ interface LeaderboardProps {
 // Add helper function to create Arena profile URL
 const getArenaProfileUrl = (username: string) => `https://arena.social/${username}`;
 
+// Add helper function to truncate wallet address
+const truncateAddress = (address: string) => {
+  if (!address) return '';
+  return `${address.slice(0, 6)}...${address.slice(-4)}`;
+};
+
 // Add helper function to format username display
 const formatUsername = (profile: UserProfile) => {
+  // If no username is set, display truncated wallet address
+  if (!profile.username || profile.username === profile.walletAddress) {
+    return <span className="text-gray-400 font-mono">{truncateAddress(profile.walletAddress)}</span>;
+  }
+
   if (profile.arenaUsername) {
     return (
       <a

@@ -67,16 +67,16 @@ export const useGameState = () => {
     }));
     
     try {
-      // Only save score if wallet is connected and username is set
-      if (address && profileData.username) {
+      // Allow saving score if wallet is connected, even without username
+      if (address) {
         console.log('Attempting to save score:', {
-          username: profileData.username,
+          username: profileData.username || address,
           score: finalScore,
           address
         });
         
         const saved = await saveScore(
-          profileData.username,
+          profileData.username || address, // Use wallet address if no username
           finalScore,
           address
         );
@@ -87,10 +87,7 @@ export const useGameState = () => {
           console.log('Failed to save score - saveScore returned false');
         }
       } else {
-        console.log('Score not saved:', {
-          hasAddress: !!address,
-          hasUsername: !!profileData.username
-        });
+        console.log('Score not saved: wallet not connected');
       }
     } catch (error) {
       console.error('Failed to save score:', error);
